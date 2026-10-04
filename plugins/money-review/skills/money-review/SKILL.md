@@ -2,7 +2,7 @@
 name: money-review
 description: Review the current change for bugs that lose or duplicate money - transaction boundaries, races, idempotency, money arithmetic. Use when the user asks to review a branch, a diff or a merge request that touches payments, balances, payouts, refunds or invoices.
 argument-hint: "[--base REF] [--diff FILE] [--config FILE]"
-allowed-tools: Bash, Read, Agent
+allowed-tools: Bash, Read, Write, Agent
 ---
 
 # money-review
@@ -52,13 +52,11 @@ decided, without a model, which checklists apply:
 
    It returns the report `{"findings": [...], "rejected": [...]}`.
 
-6. Save the report next to the diff and render it. Use the directory of `diff` from
-   the JSON above, and pass the report exactly as the agent returned it:
+6. Save the report next to the diff and render it. Write the report exactly as the
+   agent returned it, with the Write tool, to `report.json` in the directory of
+   `diff` from the JSON above. Then run:
 
    ```bash
-   cat > "<dir of diff>/report.json" <<'MONEY_REVIEW_REPORT'
-   <report JSON>
-   MONEY_REVIEW_REPORT
    "${CLAUDE_PLUGIN_ROOT}/scripts/render.sh" "<dir of diff>/report.json"
    ```
 
