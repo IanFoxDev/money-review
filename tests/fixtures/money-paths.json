@@ -1,0 +1,4 @@
+{
+  "money_paths": ["app/Billing/*"],
+  "context": "Wallet balances live in wallets.balance_cents."
+}

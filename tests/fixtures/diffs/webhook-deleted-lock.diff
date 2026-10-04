@@ -1,0 +1,12 @@
+diff --git a/app/Http/Controllers/PspCallbackController.php b/app/Http/Controllers/PspCallbackController.php
+index 1111111..2222222 100644
+--- a/app/Http/Controllers/PspCallbackController.php
++++ b/app/Http/Controllers/PspCallbackController.php
+@@ -20,7 +20,7 @@ final class PspCallbackController
+     public function __invoke(Request $request): Response
+     {
+-        $payment = Payment::whereKey($request->input('id'))->lockForUpdate()->firstOrFail();
++        $payment = Payment::findOrFail($request->input('id'));
+         $payment->status = $request->input('status');
+         $payment->save();
+         return response()->noContent();

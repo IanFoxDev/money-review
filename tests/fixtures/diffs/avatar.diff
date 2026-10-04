@@ -1,0 +1,13 @@
+diff --git a/app/Http/Controllers/AvatarController.php b/app/Http/Controllers/AvatarController.php
+index 1111111..2222222 100644
+--- a/app/Http/Controllers/AvatarController.php
++++ b/app/Http/Controllers/AvatarController.php
+@@ -10,6 +10,8 @@ final class AvatarController
+     public function update(Request $request): Response
+     {
+         $user = $request->user();
++        $user->avatar_path = $request->file('avatar')->store('avatars');
++        $user->save();
+         return response()->noContent();
+     }
+ }

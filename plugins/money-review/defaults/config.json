@@ -1,0 +1,15 @@
+{
+  "paths": {
+    "include": ["*.php"],
+    "exclude": ["tests/*", "*/tests/*", "vendor/*", "*.blade.php", "lang/*", "resources/*"]
+  },
+  "money_paths": [],
+  "signals": "amount|balance|payment|payout|refund|chargeback|wallet|ledger|invoice|price|fee|commission|currency|charge|capture|settle|credit|debit|money|Money|cents|deposit|withdraw|subscription|rebill",
+  "categories": {
+    "TX": "->save\\(|::create\\(|->create\\(|->delete\\(|->insert\\(|DB::transaction|beginTransaction|wrapInTransaction|->commit\\(|->rollBack\\(|afterCommit|Http::|->post\\(|->request\\(|dispatch|event\\(|Mail::|Notification::|->publish\\(|->send\\(",
+    "RACE": "lockForUpdate|sharedLock|FOR UPDATE|->save\\(|->update\\(|::find|->first\\(|->exists\\(|firstOr|updateOrCreate|->increment\\(|->decrement\\(|status|->state",
+    "IDEM": "webhook|Webhook|callback|Callback|ShouldQueue|function handle\\(|retry\\(|tries|backoff|idempoten|Idempoten|event_id|eventId|insertOrIgnore|upsert|schedule|Schedule|refund|payout|capture",
+    "MONEY": "float|floatval|round\\(|floor\\(|ceil\\(|intdiv|number_format|amount|balance|price|fee|commission|currency|bc(add|sub|mul|div)|Money::|->decimal\\(|->double\\(|->float\\(|percent|rate"
+  },
+  "context": ""
+}

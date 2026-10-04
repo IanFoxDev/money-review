@@ -1,0 +1,16 @@
+diff --git a/app/WithdrawalService.php b/app/WithdrawalService.php
+index 96850fe..3927e7b 100644
+--- a/app/WithdrawalService.php
++++ b/app/WithdrawalService.php
+@@ -3,5 +3,11 @@ final class WithdrawalService
+ {
+     public function withdraw(int $walletId, int $amount): void
+     {
++        $wallet = Wallet::find($walletId);
++        if ($wallet->balance >= $amount) {
++            $wallet->balance -= $amount;
++            $wallet->save();
++            $this->psp->payout($wallet->userId, $amount);
++        }
+     }
+ }
