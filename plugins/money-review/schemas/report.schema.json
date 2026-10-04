@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/IanFoxDev/money-review/schemas/report.schema.json",
+  "title": "money-review report",
+  "description": "Result of one review: confirmed findings and the candidates the verifier dropped.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["findings", "rejected"],
+  "properties": {
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "rejected": {
+      "description": "Candidates dropped by the verifier. Kept for the eval and for debugging false positives.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/rejection" }
+    }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "severity", "file", "line", "title", "scenario", "fix"],
+      "properties": {
+        "rule": {
+          "description": "Checklist rule id, for example RACE-1.",
+          "type": "string",
+          "pattern": "^(TX|RACE|IDEM|MONEY)-[0-9]+$"
+        },
+        "severity": {
+          "description": "high: money is lost or duplicated in a realistic case. medium: needs an unusual timing or a second bug. low: makes a future bug likely or hides one.",
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "file": {
+          "description": "Path relative to the repository root, as in the diff.",
+          "type": "string",
+          "minLength": 1
+        },
+        "line": {
+          "description": "Line in the new version of the file, inside a changed hunk when possible.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "description": "One line, what is wrong. No more than 100 characters.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "scenario": {
+          "description": "The order of events that loses or duplicates money, with concrete actors and values.",
+          "type": "string",
+          "minLength": 40
+        },
+        "fix": {
+          "description": "What to change, short. A code snippet is allowed.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rejection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "file", "line", "reason"],
+      "properties": {
+        "rule": { "type": "string" },
+        "file": { "type": "string" },
+        "line": { "type": "integer" },
+        "reason": {
+          "description": "Why the scenario cannot happen, pointing at the code that prevents it.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
