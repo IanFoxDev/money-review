@@ -1,0 +1,9 @@
+{
+  "title": "Partner statement adds up amounts in different currencies into one total",
+  "bugs": [
+    {"rules": ["MONEY-2"], "file": "app/Services/PartnerStatement.php", "anchor": "'total_cents' => array_sum"}
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-2", "MONEY-5"], "file": "app/Services/PartnerStatement.php"}
+  ]
+}

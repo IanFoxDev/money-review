@@ -1,0 +1,9 @@
+{
+  "title": "Welcome bonus increments the cached balance without a ledger entry",
+  "bugs": [
+    {"rules": ["MONEY-6", "TX-3"], "file": "app/Services/PromoCredit.php", "anchor": "increment\\('balance_cents', 500\\)"}
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-2", "MONEY-6", "RACE-1"], "file": "app/Services/PromoCredit.php"}
+  ]
+}

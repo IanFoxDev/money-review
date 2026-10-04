@@ -1,0 +1,10 @@
+{
+  "title": "Payout job loses its per-period key and is no longer safe to re-run",
+  "bugs": [
+    {"rules": ["IDEM-5", "IDEM-1", "RACE-5"], "file": "app/Jobs/RunMonthlyPayouts.php", "anchor": "\\$run = \\(string\\) Str::ulid\\(\\)", "anchor_end": "\"payout:\\{\\$run\\}\""}
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-5", "RACE-5", "RACE-1", "RACE-6"], "file": "app/Jobs/RunMonthlyPayouts.php"},
+    {"rules": ["IDEM-5", "RACE-5"], "file": "database/migrations/2026_10_03_000000_allow_many_payouts_per_period.php"}
+  ]
+}

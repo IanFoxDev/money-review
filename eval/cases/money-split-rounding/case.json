@@ -1,0 +1,9 @@
+{
+  "title": "Revenue share rounds every share on its own, so shares do not add up to the pool",
+  "bugs": [
+    {"rules": ["MONEY-4", "MONEY-3"], "file": "app/Services/RevenueShare.php", "anchor": "\\(int\\) round\\("}
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-1", "MONEY-3", "MONEY-4"], "file": "app/Services/RevenueShare.php"}
+  ]
+}

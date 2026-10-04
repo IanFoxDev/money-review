@@ -1,0 +1,9 @@
+{
+  "title": "Payout retry generates a new idempotency key on every attempt",
+  "bugs": [
+    {"rules": ["IDEM-3", "IDEM-6"], "file": "app/Jobs/RetryFailedPayout.php", "anchor": "'payout-retry-'.Str::uuid\\(\\)"}
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-4", "IDEM-6", "RACE-1"], "file": "app/Jobs/RetryFailedPayout.php"}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "title": "retry() around a credit and an email, with the attempt number in the key",
+  "bugs": [
+    {"rules": ["IDEM-6", "IDEM-3"], "file": "app/Services/GoodwillService.php", "anchor": "retry\\(3, function", "anchor_end": "Mail::to"}
+  ],
+  "acceptable": [
+    {"rules": ["TX-2", "IDEM-1"], "file": "app/Services/GoodwillService.php"}
+  ]
+}

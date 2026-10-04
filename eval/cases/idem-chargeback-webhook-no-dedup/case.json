@@ -1,0 +1,9 @@
+{
+  "title": "Chargeback webhook debits the wallet on every delivery",
+  "bugs": [
+    {"rules": ["IDEM-1", "IDEM-3"], "file": "app/Http/Controllers/ChargebackWebhookController.php", "anchor": "'chargeback:'.Str::uuid\\(\\)"}
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-1", "IDEM-3", "MONEY-2"], "file": "app/Http/Controllers/ChargebackWebhookController.php"}
+  ]
+}

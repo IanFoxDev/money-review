@@ -1,0 +1,9 @@
+{
+  "title": "Event dedup moved out of the transaction: check, work, mark as three steps",
+  "bugs": [
+    {"rules": ["IDEM-2", "IDEM-1"], "file": "app/Http/Controllers/PspWebhookController.php", "anchor": "\\$seen = DB::table", "anchor_end": "insertOrIgnore\\(\\['source'"}
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-1", "IDEM-2", "IDEM-3", "MONEY-2", "MONEY-3"], "file": "app/Http/Controllers/PspWebhookController.php"}
+  ]
+}

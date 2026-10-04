@@ -1,0 +1,7 @@
+{
+  "title": "A payout timeout is treated as a decline and the money is returned",
+  "bugs": [
+    {"rules": ["IDEM-4"], "file": "app/Jobs/RunMonthlyPayouts.php", "anchor": "catch \\(GatewayTimeout\\|GatewayDeclined\\)", "anchor_end": "'payout_return'"}
+  ],
+  "acceptable": []
+}
