@@ -80,3 +80,11 @@ field() { jq -c "$1" <<< "$output"; }
     [ "$status" -eq 2 ]
     [[ "$output" == *"no base branch found"* ]]
 }
+
+@test "a diff that already sits in the output directory is used in place" {
+    mkdir -p "$BATS_TEST_TMPDIR/out"
+    cp "$diffs/withdrawal.diff" "$BATS_TEST_TMPDIR/out/change.diff"
+    run "$prepare" --diff "$BATS_TEST_TMPDIR/out/change.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(field .money)" = "true" ]
+}

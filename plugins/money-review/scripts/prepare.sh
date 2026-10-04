@@ -38,7 +38,7 @@ mkdir -p "$out"
 diff_file="$out/change.diff"
 
 if [ -n "$diff_in" ]; then
-    cp "$diff_in" "$diff_file"
+    [ "$diff_in" -ef "$diff_file" ] || cp "$diff_in" "$diff_file"
 else
     git rev-parse --git-dir >/dev/null 2>&1 || { echo "prepare: not a git repository" >&2; exit 2; }
     if [ -z "$base" ]; then
