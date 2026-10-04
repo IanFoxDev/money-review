@@ -1,0 +1,15 @@
+{
+  "name": "money-review",
+  "owner": {
+    "name": "Anatoly Pankratyev",
+    "email": "ianfoxdeveloper@gmail.com"
+  },
+  "description": "Claude Code review for code that moves money",
+  "plugins": [
+    {
+      "name": "money-review",
+      "source": "./plugins/money-review",
+      "description": "Reviews a diff for transaction boundaries, races, idempotency and money arithmetic. Every finding comes with a failure scenario."
+    }
+  ]
+}
