@@ -1,0 +1,9 @@
+{
+  "title": "Refund cap is a sum over refunds without locking the payment",
+  "bugs": [
+    {"rules": ["RACE-6", "RACE-1"], "file": "app/Services/RefundService.php", "anchor": "alreadyRefunded = "}
+  ],
+  "acceptable": [
+    {"rules": ["RACE-1", "RACE-6", "RACE-2"], "file": "app/Services/RefundService.php"}
+  ]
+}

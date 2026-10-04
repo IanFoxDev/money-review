@@ -1,0 +1,9 @@
+{
+  "title": "One active subscription per user moves from a unique index to a check in code",
+  "bugs": [
+    {"rules": ["RACE-5", "RACE-1"], "file": "app/Services/SubscriptionService.php", "anchor": "->first\\(\\);"}
+  ],
+  "acceptable": [
+    {"rules": ["RACE-5", "RACE-1"], "file": "database/migrations/2026_10_02_000000_drop_one_active_index.php"}
+  ]
+}

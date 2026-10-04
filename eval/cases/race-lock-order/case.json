@@ -1,0 +1,7 @@
+{
+  "title": "Ledger locks source then target, so opposite transfers deadlock",
+  "bugs": [
+    {"rules": ["RACE-4"], "file": "app/Services/Ledger.php", "anchor": "\\$source = Account::whereKey"}
+  ],
+  "acceptable": []
+}

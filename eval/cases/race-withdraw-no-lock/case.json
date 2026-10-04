@@ -1,0 +1,9 @@
+{
+  "title": "Withdrawal checks the balance outside the transaction and without a lock",
+  "bugs": [
+    {"rules": ["RACE-1", "RACE-2"], "file": "app/Services/WithdrawalService.php", "anchor": "balance_cents < \\$amountCents"}
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-6", "TX-3", "IDEM-1", "IDEM-5", "RACE-2"], "file": "app/Services/WithdrawalService.php"}
+  ]
+}
