@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Stand-in for the Claude Code CLI in tests. Records its arguments and writes
+# the report from $FAKE_REPORT into the --out directory named in the prompt.
+set -euo pipefail
+if [ "${1:-}" = "--version" ]; then
+    echo "${FAKE_VERSION:-2.1.289} (Claude Code)"
+    exit 0
+fi
+printf '%s\n' "$@" > "${FAKE_LOG:?}"
+prompt="$2"
+out="$(sed -E 's/.*--out ([^ ]+).*/\1/' <<< "$prompt")"
+[ -n "${FAKE_REPORT:-}" ] && cp "$FAKE_REPORT" "$out/report.json"
+echo '{"type": "result", "num_turns": 4, "total_cost_usd": 0.3712, "result": "done"}'

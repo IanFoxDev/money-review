@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Reviews the current change for money bugs from a shell, through the Claude
+# Code CLI on your subscription. A change that does not touch money never
+# starts Claude.
+#
+# Usage: money-review [options]
+#   --base REF          compare against REF (default: origin/HEAD, master, main)
+#   --diff FILE         review this unified diff instead of the git change
+#   --config FILE       project config (default: .money-review.json in the repo)
+#   --format FORMAT     markdown (default) or json
+#   --out DIR           keep the diff, report.json and claude.json here
+#   --fail-on LEVEL     exit 1 when a finding is at LEVEL or above:
+#                       high, medium, low or never (default)
+#   --model MODEL       model for the coordinator (default: sonnet)
+#   --max-turns N       turn limit for the coordinator (default: 20)
+#   --allow-api-key     run even if ANTHROPIC_API_KEY is set (paid API billing)
+#
+# Exit codes: 0 done, 1 findings at --fail-on level, 2 usage error,
+# 3 refused to run, 4 the review did not produce a report.
+set -euo pipefail
+
+plugin="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+claude="${MONEY_REVIEW_CLAUDE:-claude}"
+min_version="2.1.0"
+
+base=""
+diff_in=""
+config=""
+format="markdown"
+out=""
+fail_on="never"
+model="sonnet"
+max_turns="20"
+allow_api_key=0
+
+die() { echo "money-review: $2" >&2; exit "$1"; }
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --base) base="${2:?}"; shift 2 ;;
+        --diff) diff_in="${2:?}"; shift 2 ;;
+        --config) config="${2:?}"; shift 2 ;;
+        --format) format="${2:?}"; shift 2 ;;
+        --out) out="${2:?}"; shift 2 ;;
+        --fail-on) fail_on="${2:?}"; shift 2 ;;
+        --model) model="${2:?}"; shift 2 ;;
+        --max-turns) max_turns="${2:?}"; shift 2 ;;
+        --allow-api-key) allow_api_key=1; shift ;;
+        -h|--help) sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) die 2 "unknown argument $1 (see --help)" ;;
+    esac
+done
+
+case "$format" in markdown|json) ;; *) die 2 "--format must be markdown or json" ;; esac
+case "$fail_on" in high|medium|low|never) ;; *) die 2 "--fail-on must be high, medium, low or never" ;; esac
+
+if [ -n "${ANTHROPIC_API_KEY:-}" ] && [ "$allow_api_key" -eq 0 ]; then
+    die 3 "ANTHROPIC_API_KEY is set, so Claude Code would bill the API instead of your subscription. Unset it, or pass --allow-api-key if that is what you want."
+fi
+
+command -v jq >/dev/null || die 2 "jq is required"
+
+if [ -z "$out" ]; then
+    tmp="${TMPDIR:-/tmp}"
+    out="$(mktemp -d "${tmp%/}/money-review.XXXXXX")"
+fi
+mkdir -p "$out"
+out="$(cd "$out" && pwd)"
+
+prep_args=(--out "$out")
+[ -n "$base" ] && prep_args+=(--base "$base")
+[ -n "$diff_in" ] && prep_args+=(--diff "$diff_in")
+[ -n "$config" ] && prep_args+=(--config "$config")
+prepared="$("$plugin/scripts/prepare.sh" "${prep_args[@]}")"
+
+emit() { # report file
+    if [ "$format" = "json" ]; then jq . "$1"; else "$plugin/scripts/render.sh" "$1"; fi
+}
+
+if [ "$(jq -r .money <<< "$prepared")" != "true" ]; then
+    echo '{"findings": [], "rejected": []}' > "$out/report.json"
+    if [ "$format" = "json" ]; then
+        jq . "$out/report.json"
+    else
+        echo "money-review: no money-related changes, nothing to review."
+    fi
+    exit 0
+fi
+
+command -v "$claude" >/dev/null || die 2 "claude CLI not found. Install Claude Code and log in with your subscription."
+version="$("$claude" --version 2>/dev/null | awk '{print $1}')"
+if [ "$(printf '%s\n%s\n' "$min_version" "$version" | sort -t. -k1,1n -k2,2n -k3,3n | head -n 1)" != "$min_version" ]; then
+    die 2 "Claude Code $min_version or newer is required, found ${version:-unknown}"
+fi
+
+# The coordinator gets the two plugin scripts and Write for report.json, not a
+# general shell: the diff is untrusted input, and the agents that read it are
+# read-only.
+skill_args="--diff $out/change.diff --out $out"
+[ -n "$config" ] && skill_args="$skill_args --config $config"
+rm -f "$out/report.json"
+started=$(date +%s)
+"$claude" -p "/money-review:money-review $skill_args" \
+    --plugin-dir "$plugin" \
+    --model "$model" \
+    --max-turns "$max_turns" \
+    --output-format json \
+    --allowedTools "Bash($plugin/scripts/prepare.sh:*)" "Bash($plugin/scripts/render.sh:*)" \
+        "Read" "Grep" "Glob" "Agent" "Write($out/report.json)" \
+    < /dev/null > "$out/claude.json" || true
+elapsed=$(( $(date +%s) - started ))
+
+if ! jq -e '(.findings | type) == "array" and (.rejected | type) == "array"' "$out/report.json" >/dev/null 2>&1; then
+    echo "money-review: the review finished without a valid report. Claude said:" >&2
+    jq -r '.result // .' "$out/claude.json" >&2 2>/dev/null || cat "$out/claude.json" >&2
+    die 4 "files are in $out"
+fi
+
+jq -r --arg s "$elapsed" '"money-review: \(.num_turns // "?") turns, \($s) s, API-equivalent \(.total_cost_usd // 0 | . * 100 | round / 100) USD (not billed on a subscription)"' \
+    "$out/claude.json" >&2 2>/dev/null || true
+
+emit "$out/report.json"
+
+case "$fail_on" in
+    never) exit 0 ;;
+    high) levels='["high"]' ;;
+    medium) levels='["high","medium"]' ;;
+    low) levels='["high","medium","low"]' ;;
+esac
+if jq -e --argjson l "$levels" '[.findings[] | select(.severity as $s | $l | index($s))] | length > 0' "$out/report.json" >/dev/null; then
+    exit 1
+fi

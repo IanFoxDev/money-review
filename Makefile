@@ -1,4 +1,4 @@
-SCRIPTS := $(shell find plugins -name '*.sh')
+SCRIPTS := $(shell find plugins -name '*.sh') plugins/money-review/bin/money-review tests/fake/claude
 
 .PHONY: test lint validate check
 
