@@ -17,7 +17,7 @@ This is the output of the preparation script. It already collected the diff and
 decided, without a model, which checklists apply:
 
 ```json
-!`"${CLAUDE_PLUGIN_ROOT}/scripts/prepare.sh" $ARGUMENTS 2>&1`
+!`"${CLAUDE_PLUGIN_ROOT}/scripts/prepare.sh" $ARGUMENTS 2>&1 || true`
 ```
 
 ## Steps
