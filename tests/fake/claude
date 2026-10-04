@@ -7,6 +7,7 @@ if [ "${1:-}" = "--version" ]; then
     exit 0
 fi
 printf '%s\n' "$@" > "${FAKE_LOG:?}"
+pwd > "$FAKE_LOG.cwd"
 prompt="$2"
 out="$(sed -E 's/.*--out ([^ ]+).*/\1/' <<< "$prompt")"
 [ -n "${FAKE_REPORT:-}" ] && cp "$FAKE_REPORT" "$out/report.json"

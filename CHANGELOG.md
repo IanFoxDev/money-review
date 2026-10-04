@@ -16,3 +16,6 @@ All notable changes to this project are documented here. The format follows
 - `bin/money-review` for shell use: refuses to run with `ANTHROPIC_API_KEY` set, never
   starts Claude for a change without money, prints Markdown or JSON, `--fail-on` exit
   code.
+- GitLab merge requests: `--mr N` reviews the MR in a temporary worktree, `--post`
+  opens a discussion per finding and keeps one summary note, later runs check only
+  commits added since the last review (`--full` to review everything again).
