@@ -52,7 +52,8 @@ setup() {
     grep -qx -- "--model" "$FAKE_LOG"
     grep -qx -- "sonnet" "$FAKE_LOG"
     grep -qx -- "--plugin-dir" "$FAKE_LOG"
-    grep -qx -- "Write($out/report.json)" "$FAKE_LOG"
+    grep -qx -- "Edit(/$out/report.json)" "$FAKE_LOG"
+    grep -q -- "^Edit(//" "$FAKE_LOG"
     grep -q -- "^Bash(.*/scripts/prepare.sh:\*)$" "$FAKE_LOG"
     ! grep -qx -- "Bash" "$FAKE_LOG"
 }

@@ -149,7 +149,8 @@ fi
 
 # The coordinator gets the two plugin scripts and Write for report.json, not a
 # general shell: the diff is untrusted input, and the agents that read it are
-# read-only.
+# read-only. File rules are Edit(...) rules (they cover Write too), and an
+# absolute path needs a double slash: Write(/abs/path) never matches.
 skill_args="--diff $out/change.diff --out $out"
 [ -n "$config" ] && skill_args="$skill_args --config $config"
 rm -f "$out/report.json"
@@ -160,7 +161,7 @@ started=$(date +%s)
     --max-turns "$max_turns" \
     --output-format json \
     --allowedTools "Bash($plugin/scripts/prepare.sh:*)" "Bash($plugin/scripts/render.sh:*)" \
-        "Read" "Grep" "Glob" "Agent" "Write($out/report.json)" \
+        "Read" "Grep" "Glob" "Agent" "Edit(/$out/report.json)" \
     < /dev/null > "$out/claude.json" || true
 elapsed=$(( $(date +%s) - started ))
 
