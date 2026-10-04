@@ -19,3 +19,5 @@ All notable changes to this project are documented here. The format follows
 - GitLab merge requests: `--mr N` reviews the MR in a temporary worktree, `--post`
   opens a discussion per finding and keeps one summary note, later runs check only
   commits added since the last review (`--full` to review everything again).
+- Eval: a billing app with 25 cases (20 bugs, 5 clean), a runner and scoring with
+  precision and recall per category (`eval/`, `docs/eval.md`).
