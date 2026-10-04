@@ -1,0 +1,30 @@
+{
+  "findings": [
+    {
+      "rule": "MONEY-2",
+      "severity": "low",
+      "file": "app/WithdrawalService.php",
+      "line": 4,
+      "title": "Withdrawal amount carries no currency",
+      "scenario": "A USD amount in cents is debited from a JPY wallet as whole yen.",
+      "fix": "Pass a Money object."
+    },
+    {
+      "rule": "RACE-1",
+      "severity": "high",
+      "file": "app/WithdrawalService.php",
+      "line": 7,
+      "title": "Balance check and debit are not atomic",
+      "scenario": "Two withdrawals of 80 from 100 both pass the check and both pay out.",
+      "fix": "lockForUpdate() inside a transaction."
+    }
+  ],
+  "rejected": [
+    {
+      "rule": "IDEM-1",
+      "file": "app/Jobs/ApplyRefund.php",
+      "line": 19,
+      "reason": "Deduplicated by middleware."
+    }
+  ]
+}
