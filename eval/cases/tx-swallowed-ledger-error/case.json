@@ -1,0 +1,9 @@
+{
+  "title": "Ledger failure in the webhook is logged and the payment still commits as succeeded",
+  "bugs": [
+    {"rules": ["TX-4"], "file": "app/Http/Controllers/PspWebhookController.php", "anchor": "catch \\(\\\\Throwable \\$e\\)"}
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-1", "IDEM-2"], "file": "app/Http/Controllers/PspWebhookController.php"}
+  ]
+}

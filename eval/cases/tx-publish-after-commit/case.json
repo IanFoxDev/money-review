@@ -1,0 +1,9 @@
+{
+  "title": "Payout event published after commit with no record that it must be sent",
+  "bugs": [
+    {"rules": ["TX-2"], "file": "app/Jobs/MarkPayoutSent.php", "anchor": "notifier->payoutSent"}
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-6", "IDEM-1"], "file": "app/Jobs/MarkPayoutSent.php"}
+  ]
+}

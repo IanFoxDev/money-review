@@ -1,0 +1,9 @@
+{
+  "title": "Provider refund call moved inside the database transaction",
+  "bugs": [
+    {"rules": ["TX-1"], "file": "app/Services/RefundService.php", "anchor": "reference = \\$this->gateway->refund"}
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-4", "IDEM-3", "TX-4"], "file": "app/Services/RefundService.php"}
+  ]
+}

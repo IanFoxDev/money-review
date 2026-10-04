@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Services;
+
+use App\Exceptions\InsufficientFunds;
+use App\Models\Account;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * Double-entry ledger. accounts.balance_cents is a cache of ledger_entries and is
+ * changed only here, in the same transaction as the entries.
+ */
+final class Ledger
+{
+    /** Returns the ledger transaction id. A repeated key returns the first transaction. */
+    public function transfer(string $idempotencyKey, Account $from, Account $to, int $amountCents, string $kind): int
+    {
+        if ($amountCents <= 0) {
+            throw new \InvalidArgumentException('Amount must be positive');
+        }
+        if ($from->currency !== $to->currency) {
+            throw new \InvalidArgumentException('Currency mismatch');
+        }
+
+        $txId = DB::transaction(function () use ($idempotencyKey, $from, $amountCents, $kind) {
+            $inserted = DB::table('ledger_transactions')->insertOrIgnore([
+                'idempotency_key' => $idempotencyKey,
+                'kind' => $kind,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $txId = (int) DB::table('ledger_transactions')->where('idempotency_key', $idempotencyKey)->value('id');
+            if ($inserted === 0) {
+                return null;
+            }
+
+            $source = Account::whereKey($from->id)->lockForUpdate()->firstOrFail();
+            if (! $source->allow_negative && $source->balance_cents < $amountCents) {
+                throw new InsufficientFunds();
+            }
+            DB::table('ledger_entries')->insert(['ledger_transaction_id' => $txId, 'account_id' => $source->id, 'amount_cents' => -$amountCents, 'currency' => $source->currency, 'created_at' => now()]);
+            Account::whereKey($source->id)->update(['balance_cents' => DB::raw('balance_cents - '.$amountCents)]);
+
+            return $txId;
+        });
+
+        if ($txId === null) {
+            return (int) DB::table('ledger_transactions')->where('idempotency_key', $idempotencyKey)->value('id');
+        }
+
+        // Credit side in its own short transaction to keep the lock on the source short.
+        DB::transaction(function () use ($txId, $to, $amountCents) {
+            DB::table('ledger_entries')->insert(['ledger_transaction_id' => $txId, 'account_id' => $to->id, 'amount_cents' => $amountCents, 'currency' => $to->currency, 'created_at' => now()]);
+            Account::whereKey($to->id)->update(['balance_cents' => DB::raw('balance_cents + '.$amountCents)]);
+        });
+
+        return $txId;
+    }
+}

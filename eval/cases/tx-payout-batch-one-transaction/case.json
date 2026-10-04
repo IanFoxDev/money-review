@@ -1,0 +1,9 @@
+{
+  "title": "Monthly payouts wrapped in one transaction with provider calls inside",
+  "bugs": [
+    {"rules": ["TX-6", "TX-1"], "file": "app/Jobs/RunMonthlyPayouts.php", "anchor": "DB::transaction\\(function \\(\\) use \\(\\$ledger, \\$gateway\\)", "anchor_end": "payout->update\\("}
+  ],
+  "acceptable": [
+    {"rules": ["TX-1", "TX-6", "IDEM-4", "IDEM-6", "IDEM-5"], "file": "app/Jobs/RunMonthlyPayouts.php"}
+  ]
+}
