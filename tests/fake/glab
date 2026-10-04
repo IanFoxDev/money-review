@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Stand-in for glab in tests. State lives in $FAKE_GLAB_DIR:
+#   mr.json             answer for GET merge_requests/N
+#   notes.ndjson        existing notes, one JSON object per line
+#   discussions.ndjson  existing discussions, one JSON object per line
+#   calls               every call, one per line: METHOD ENDPOINT
+#   bodies/             request bodies of POST and PUT, numbered
+# A discussion whose position.new_line is 999 is refused, like a line outside
+# the MR diff.
+set -euo pipefail
+dir="${FAKE_GLAB_DIR:?}"
+[ "${1:-}" = "api" ] || { echo "fake glab: only api is supported" >&2; exit 2; }
+shift
+method=GET
+endpoint=""
+input=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -X|--method) method="$2"; shift 2 ;;
+        --input) input="$2"; shift 2 ;;
+        -H|--header|--output) shift 2 ;;
+        --paginate|--silent) shift ;;
+        *) endpoint="$1"; shift ;;
+    esac
+done
+echo "$method $endpoint" >> "$dir/calls"
+if [ -n "$input" ]; then
+    mkdir -p "$dir/bodies"
+    n="$(find "$dir/bodies" -type f | wc -l | tr -d ' ')"
+    cp "$input" "$dir/bodies/$((n + 1)).json"
+fi
+case "$method $endpoint" in
+    "GET projects/:id/merge_requests/"*"/notes"*) cat "$dir/notes.ndjson" 2>/dev/null || true ;;
+    "GET projects/:id/merge_requests/"*"/discussions"*) cat "$dir/discussions.ndjson" 2>/dev/null || true ;;
+    "GET projects/:id/merge_requests/"*) cat "$dir/mr.json" ;;
+    "POST projects/:id/merge_requests/"*"/discussions")
+        if [ "$(jq -r .position.new_line "$input")" = "999" ]; then
+            echo '{"message": "400 Bad request - Note {:line_code=>[\"can'"'"'t be blank\"]}"}' >&2
+            exit 1
+        fi
+        echo '{"id": "d1"}' ;;
+    *) echo '{"id": 1}' ;;
+esac
