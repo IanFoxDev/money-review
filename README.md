@@ -149,7 +149,7 @@ Every field is described in [docs/config.md](docs/config.md).
 
 The repository has an eval: a small Laravel billing app with no known money bugs and
 25 merge requests on top of it, 20 with one bug each and 5 clean ones (some of them
-touch money code correctly). See [docs/eval.md](docs/eval.md).
+touch money code correctly). See [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/) for full reports.
 
 Results of the full run (2026-10-05, Claude Code 2.1.289, every case three times, 75
 runs):
