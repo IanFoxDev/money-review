@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-05
+
+First release.
+
 ### Added
 
 - Plugin and marketplace manifests.
@@ -25,3 +29,6 @@ All notable changes to this project are documented here. The format follows
   in every caller, another safety layer) as `low`, and says what protects it today.
 - A finding that points past the end of its file moves to the first added line of
   that file.
+
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/IanFoxDev/money-review/releases/tag/v0.1.0
