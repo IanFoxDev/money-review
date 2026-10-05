@@ -156,24 +156,28 @@ runs):
 
 | | |
 |---|---|
-| Precision | 98% (52 true positives, 1 false) |
-| Recall | 87% (52 of 60 planted bugs found) |
+| Precision | 100% (56 true positives, 0 false) |
+| Recall | 93% (56 of 60 planted bugs found) |
 | False alarms on the 5 clean cases | 0 in 15 runs |
-| Time per review | 50 s |
+| Time per review | 48 s |
 | API-equivalent cost per review | 0.28 USD, not billed on a subscription |
 
 | Checklist | Recall |
 |---|---|
 | RACE | 100% |
-| MONEY | 92% |
-| IDEM | 83% |
-| TX | 73% |
+| TX | 100% |
+| MONEY | 100% |
+| IDEM | 78% |
 
-Five of the eight misses are bugs that the verifier dropped because other code in
-the app hides them today: every caller of the ledger already opens an outer
-transaction, a state guard stops a duplicate event before the missing dedup matters.
-The verifier said so and pointed at that code. Two misses are findings on a line that
-does not exist in the file. One bug was not seen at all.
+All four misses are in two cases where the change removes one of two safety layers
+and the other one still holds: a webhook moves its dedup out of the transaction, but
+a state guard and an idempotent ledger key still stop the double credit. Whether that
+is a bug is arguable; the reviewer stayed silent or the verifier pointed at the
+remaining guard.
+
+Bugs that only the current callers hide are reported as `low`, with the code that
+protects them today: a ledger transfer split over two transactions is safe while
+every caller opens an outer transaction, and breaks with the first one that does not.
 
 ## Limits
 
