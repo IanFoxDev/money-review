@@ -35,11 +35,23 @@ The caller gives you:
 4. Decide:
    - the scenario can happen as written: keep it. Fix the `line`, `severity` or
      wording if the reviewer got them wrong. Make `scenario` concrete if it is vague.
-   - the scenario cannot happen: reject it, and in `reason` name the code that
-     prevents it (`file:line` and what it does).
+   - the scenario is stopped by the mechanism this code relies on by design: a lock
+     taken earlier in the same transaction, a constraint on the table it writes,
+     middleware or a base class declared for this handler, a guard in the same
+     function. Reject it, and in `reason` name that code (`file:line` and what it
+     does).
+   - the scenario is stopped today only by code around it that does not have to
+     stay that way: every current caller happens to open an outer transaction or
+     take a lock, another safety layer elsewhere in the flow catches the duplicate
+     that this change no longer catches. Keep it with severity `low`. In `scenario`
+     say what breaks when that outside code changes (a new caller, a refactor of the
+     other layer); in `fix` name the code that protects it today and how to make the
+     changed code safe on its own.
    - you cannot tell from the repository (the guard may live in another service):
      keep it with severity lowered by one level and say what to check in `fix`.
-5. Merge duplicates: two candidates with the same root cause become one finding.
+5. Check `line`: it must be a line that exists in `file`, inside or next to the
+   changed code it is about. Read the file to confirm; never guess a number.
+6. Merge duplicates: two candidates with the same root cause become one finding.
 
 Do not add new findings of your own. If you notice one, it is out of scope for this
 pass.
