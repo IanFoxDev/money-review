@@ -6,7 +6,8 @@
 # Usage: triage.sh [--config FILE] [DIFF_FILE]   (diff from stdin if no file)
 #
 # A file is in scope when it passes paths.include/exclude and either matches
-# money_paths or its changed lines (with hunk context) match "signals".
+# money_paths or its changed lines (with hunk context) match "signals", in any
+# letter case (Go fields are Amount and Balance).
 # Categories are matched only in files that are in scope. Patterns are
 # extended regular expressions; in path globs "*" also matches "/".
 set -euo pipefail
@@ -81,7 +82,7 @@ while IFS= read -r path; do
 
     if matches_glob "$path" "$money_paths"; then
         why="money_paths"
-    elif [ -n "$signals" ] && grep -Eq -- "$signals" "$blob"; then
+    elif [ -n "$signals" ] && grep -Eiq -- "$signals" "$blob"; then
         why="signals"
     else
         continue

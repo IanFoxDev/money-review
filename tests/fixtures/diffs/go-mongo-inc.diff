@@ -1,0 +1,10 @@
+diff --git a/internal/payout/service.go b/internal/payout/service.go
+--- a/internal/payout/service.go
++++ b/internal/payout/service.go
+@@ -1,3 +1,8 @@
+ package payout
++
++func (s *Service) Credit(ctx context.Context, userID string, amount int64) error {
++	_, err := s.wallets.UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$inc": bson.M{"balance": amount}})
++	return err
++}

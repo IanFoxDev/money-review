@@ -1,0 +1,14 @@
+diff --git a/application/models/Wallet.php b/application/models/Wallet.php
+--- a/application/models/Wallet.php
++++ b/application/models/Wallet.php
+@@ -10,6 +10,14 @@ class WalletModel
+     public function charge(string $userId, int $amount): void
+     {
++        $wallet = $this->collection->findOne(['_id' => $userId]);
++        if ($wallet['balance'] < $amount) {
++            throw new InsufficientFunds();
++        }
++        $this->collection->updateOne(['_id' => $userId], ['$set' => ['balance' => $wallet['balance'] - $amount]]);
++        $this->producer->produce(RD_KAFKA_PARTITION_UA, 0, json_encode(['type' => 'charged', 'amount' => $amount]));
+     }
+ }

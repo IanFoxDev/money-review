@@ -1,15 +1,34 @@
 {
   "paths": {
-    "include": ["*.php"],
-    "exclude": ["tests/*", "*/tests/*", "vendor/*", "*.blade.php", "lang/*", "resources/*"]
+    "include": [
+      "*.php",
+      "*.go"
+    ],
+    "exclude": [
+      "tests/*",
+      "*/tests/*",
+      "test/*",
+      "*/test/*",
+      "vendor/*",
+      "*/vendor/*",
+      "*.blade.php",
+      "lang/*",
+      "resources/*",
+      "*_test.go",
+      "*/testdata/*",
+      "*/mocks/*",
+      "*_mock.go",
+      "*.pb.go",
+      "*_gen.go"
+    ]
   },
   "money_paths": [],
-  "signals": "amount|balance|payment|payout|refund|chargeback|wallet|ledger|invoice|price|fee|commission|currency|charge|capture|settle|credit|debit|money|Money|cents|deposit|withdraw|subscription|rebill",
+  "signals": "amount|balance|payment|payout|refund|chargeback|wallet|ledger|invoice|price|fee|commission|currency|charge|capture|settle|credit|debit|money|cents|deposit|withdraw|subscription|rebill|bonus|cashback|billing",
   "categories": {
-    "TX": "->save\\(|::create\\(|->create\\(|->delete\\(|->insert\\(|DB::transaction|beginTransaction|wrapInTransaction|->commit\\(|->rollBack\\(|afterCommit|Http::|->post\\(|->request\\(|dispatch|event\\(|Mail::|Notification::|->publish\\(|->send\\(",
-    "RACE": "lockForUpdate|sharedLock|FOR UPDATE|->save\\(|->update\\(|::find|->first\\(|->exists\\(|firstOr|updateOrCreate|->increment\\(|->decrement\\(|status|->state",
-    "IDEM": "webhook|Webhook|callback|Callback|ShouldQueue|function handle\\(|retry\\(|tries|backoff|idempoten|Idempoten|event_id|eventId|insertOrIgnore|upsert|schedule|Schedule|refund|payout|capture",
-    "MONEY": "float|floatval|round\\(|floor\\(|ceil\\(|intdiv|number_format|amount|balance|price|fee|commission|currency|bc(add|sub|mul|div)|Money::|->decimal\\(|->double\\(|->float\\(|percent|rate"
+    "TX": "->save\\(|::create\\(|->create\\(|->delete\\(|->insert\\(|DB::transaction|beginTransaction|wrapInTransaction|->commit\\(|->rollBack\\(|afterCommit|Http::|->post\\(|->request\\(|dispatch|event\\(|Mail::|Notification::|->publish\\(|->send\\(|insertOne|insertMany|updateOne|updateMany|replaceOne|deleteOne|deleteMany|findOneAndUpdate|findOneAndReplace|bulkWrite|InsertOne|InsertMany|UpdateOne|UpdateMany|UpdateByID|ReplaceOne|DeleteOne|FindOneAndUpdate|FindOneAndReplace|BulkWrite|startSession|startTransaction|commitTransaction|abortTransaction|withTransaction|StartSession|StartTransaction|CommitTransaction|AbortTransaction|WithTransaction|UseSession|produce\\(|Produce\\(|ProduceSync|WriteMessages|basic_publish|->publish\\(|Publish\\(|PublishWithContext|BeginTx|\\.Begin\\(|\\.Commit\\(|\\.Rollback\\(",
+    "RACE": "lockForUpdate|sharedLock|FOR UPDATE|->save\\(|->update\\(|::find|->first\\(|->exists\\(|firstOr|updateOrCreate|->increment\\(|->decrement\\(|status|->state|findOne|FindOne|findOneAndUpdate|FindOneAndUpdate|updateOne|UpdateOne|\\$inc|\\$set|\\$setOnInsert|upsert|Upsert|SetNX|SetNx|setnx|'NX'|\"NX\"|sync\\.Mutex|Status|version|Version",
+    "IDEM": "webhook|Webhook|callback|Callback|ShouldQueue|function handle\\(|retry\\(|tries|backoff|idempoten|Idempoten|event_id|eventId|insertOrIgnore|upsert|schedule|Schedule|refund|payout|capture|consume|Consume|FetchMessage|ReadMessage|CommitMessages|CommitOffsets|commitAsync|commitSync|->commit\\(|offset|Offset|basic_ack|basic_consume|basic_nack|Ack\\(|Nack\\(|Handle\\(|handler|Handler|message_id|MessageID|eventId|EventID|duplicate|Duplicate|unique|Unique",
+    "MONEY": "float|floatval|round\\(|floor\\(|ceil\\(|intdiv|number_format|amount|balance|price|fee|commission|currency|bc(add|sub|mul|div)|Money::|->decimal\\(|->double\\(|->float\\(|percent|rate|float64|float32|math\\.Round|math\\.Floor|math\\.Ceil|decimal\\.|Decimal128|NumberDecimal|bcmath|ParseFloat|strconv\\.FormatFloat"
   },
   "context": ""
 }

@@ -1,0 +1,13 @@
+diff --git a/application/services/Payout.php b/application/services/Payout.php
+--- a/application/services/Payout.php
++++ b/application/services/Payout.php
+@@ -20,6 +20,12 @@ class PayoutService
+     public function settle(array $payout): void
+     {
++        $session = $this->client->startSession();
++        $session->startTransaction();
++        $this->payouts->updateOne(['_id' => $payout['_id'], 'status' => 'pending'], ['$set' => ['status' => 'paid']], ['session' => $session]);
++        $this->ledger->insertOne(['payout_id' => $payout['_id'], 'amount' => -$payout['amount']], ['session' => $session]);
++        $session->commitTransaction();
+     }
+ }

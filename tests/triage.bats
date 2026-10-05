@@ -71,3 +71,35 @@ field() { jq -c "$1" <<< "$output"; }
     run "$triage" --nope
     [ "$status" -eq 2 ]
 }
+
+has() { [ "$(field ".categories | index(\"$1\") != null")" = "true" ]; }
+
+@test "php with mongodb: read then updateOne is a race, produce after it is a transaction boundary" {
+    run "$triage" "$diffs/php-mongo-kafka.diff"
+    [ "$(field .money)" = "true" ]
+    has RACE
+    has TX
+}
+
+@test "php with a mongodb session transaction is a transaction boundary" {
+    run "$triage" "$diffs/php-mongo-session.diff"
+    has TX
+}
+
+@test "go is reviewed, money words match in any case" {
+    run "$triage" "$diffs/go-mongo-inc.diff"
+    [ "$(field .money)" = "true" ]
+    has RACE
+    has TX
+}
+
+@test "go tests are excluded by default" {
+    run "$triage" "$diffs/go-test-only.diff"
+    [ "$(field .money)" = "false" ]
+}
+
+@test "a kafka consumer that commits before it applies is an idempotency candidate" {
+    run "$triage" "$diffs/go-kafka-consumer.diff"
+    [ "$(field .money)" = "true" ]
+    has IDEM
+}

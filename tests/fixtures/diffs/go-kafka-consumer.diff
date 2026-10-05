@@ -1,0 +1,15 @@
+diff --git a/internal/billing/consumer.go b/internal/billing/consumer.go
+--- a/internal/billing/consumer.go
++++ b/internal/billing/consumer.go
+@@ -12,6 +12,14 @@ func (c *Consumer) Run(ctx context.Context) error {
+ 	for {
++		msg, err := c.reader.FetchMessage(ctx)
++		if err != nil {
++			return err
++		}
++		if err := c.reader.CommitMessages(ctx, msg); err != nil {
++			return err
++		}
++		c.applyPayment(ctx, msg.Value)
+ 	}
+ }
