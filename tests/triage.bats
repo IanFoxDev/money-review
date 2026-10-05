@@ -103,3 +103,16 @@ has() { [ "$(field ".categories | index(\"$1\") != null")" = "true" ]; }
     [ "$(field .money)" = "true" ]
     has IDEM
 }
+
+@test "money words in the path put a file in scope" {
+    run "$triage" "$diffs/go-commit-before-apply.diff"
+    [ "$(field .money)" = "true" ]
+    has IDEM
+    [ "$(field '.reasons[0].scope')" = '"path"' ]
+}
+
+@test "producing to a broker loads the idempotency checklist" {
+    run "$triage" "$diffs/php-produce-without-key.diff"
+    has IDEM
+    has TX
+}

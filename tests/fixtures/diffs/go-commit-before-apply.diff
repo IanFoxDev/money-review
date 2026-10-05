@@ -1,0 +1,30 @@
+diff --git a/go/internal/credits/consumer.go b/go/internal/credits/consumer.go
+index 5fc92bb..55335d7 100644
+--- a/go/internal/credits/consumer.go
++++ b/go/internal/credits/consumer.go
+@@ -3,7 +3,7 @@ package credits
+ import (
+ 	"context"
+ 	"encoding/json"
+-	"fmt"
++	"log"
+ 
+ 	"github.com/segmentio/kafka-go"
+ )
+@@ -31,12 +31,13 @@ func (c *Consumer) Run(ctx context.Context) error {
+ 		if err != nil {
+ 			return err
+ 		}
+-		if err := c.apply(ctx, msg.Value); err != nil {
+-			return fmt.Errorf("offset %d: %w", msg.Offset, err) // no commit: redelivered after restart
+-		}
++		// Commit first so a poison message cannot block the partition.
+ 		if err := c.Reader.CommitMessages(ctx, msg); err != nil {
+ 			return err
+ 		}
++		if err := c.apply(ctx, msg.Value); err != nil {
++			log.Printf("offset %d: %v", msg.Offset, err)
++		}
+ 	}
+ }
+ 

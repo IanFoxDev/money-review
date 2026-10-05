@@ -1,0 +1,27 @@
+diff --git a/src/Events/OutboxRelay.php b/src/Events/OutboxRelay.php
+index 6ba0afb..13eb394 100644
+--- a/src/Events/OutboxRelay.php
++++ b/src/Events/OutboxRelay.php
+@@ -8,9 +8,9 @@ use MongoDB\Client;
+ use MongoDB\Collection;
+ 
+ /**
+- * Publishes unpublished outbox events of payment documents to Kafka, keyed by the
+- * user id, so the events of one user keep their order. At least once: an event can
+- * be published again if the process dies after the flush and before the mark.
++ * Publishes unpublished outbox events of payment documents to Kafka. At least once:
++ * an event can be published again if the process dies after the flush and before the
++ * mark.
+  */
+ final class OutboxRelay
+ {
+@@ -42,7 +42,8 @@ final class OutboxRelay
+                     'amount' => (int) $payment['amount'],
+                     'currency' => $payment['currency'],
+                 ], JSON_THROW_ON_ERROR);
+-                $topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, (string) $payment['user_id']);
++                // Spread the load evenly over partitions.
++                $topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload);
+                 $produced[] = $event['id'];
+             }
+ 

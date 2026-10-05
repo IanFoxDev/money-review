@@ -20,6 +20,10 @@ All notable changes to this project are documented here. The format follows
   followed by `updateOne` now loads the race checklist; before, such a file only got
   the arithmetic one, and Go files were never reviewed.
 - Money words in triage match in any letter case, so Go's `Amount` and `Balance` count.
+- Triage also looks for money words in the file path, so a Kafka consumer in
+  `credits/` is reviewed even when the changed lines only commit offsets.
+- Producing to Kafka or RabbitMQ loads the idempotency checklist too (message keys,
+  ordering, dedup).
 
 ### Added
 
