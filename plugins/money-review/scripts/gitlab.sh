@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # GitLab merge request helpers on top of glab. Run inside the repository.
 #
-#   gitlab.sh refs MR             JSON: iid, web_url, source/target branch, base/start/head sha
+#   gitlab.sh refs MR             JSON: iid, web_url, source/target branch, base/start/head sha,
+#                                 fetch_ref
 #   gitlab.sh last-reviewed MR    commit recorded by the last summary note, or nothing
 #   gitlab.sh post MR REPORT HEAD [SINCE]
 #                                 update the summary note and open one discussion
@@ -27,7 +28,8 @@ cmd_refs() {
         iid, web_url, source_branch, target_branch,
         base_sha: .diff_refs.base_sha,
         start_sha: .diff_refs.start_sha,
-        head_sha: .diff_refs.head_sha
+        head_sha: .diff_refs.head_sha,
+        fetch_ref: "refs/merge-requests/\(.iid)/head"
     }'
 }
 
