@@ -21,3 +21,7 @@ All notable changes to this project are documented here. The format follows
   commits added since the last review (`--full` to review everything again).
 - Eval: a billing app with 25 cases (20 bugs, 5 clean), a runner and scoring with
   precision and recall per category (`eval/`, `docs/eval.md`).
+- The verifier keeps a bug that only the current callers hide (an outer transaction
+  in every caller, another safety layer) as `low`, and says what protects it today.
+- A finding that points past the end of its file moves to the first added line of
+  that file.
