@@ -28,26 +28,30 @@ decided, without a model, which checklists apply:
 2. If `money` is `false`, reply with one line: `money-review: no money-related
    changes, nothing to review.` and stop. Do not open the diff.
 
-3. Run the `money-review:money-reviewer` agent with this prompt, filled from the JSON:
+3. Run the `money-review:money-reviewer` agent once for every entry of `groups`, all of
+   them in one message so they run in parallel. Fill each prompt from that group:
 
    ```
-   diff: <diff>
-   checklists: <checklists, one path per line>
-   files in scope: <files>
+   diff: <group diff>
+   checklists: <group checklists, one path per line>
+   files in scope: <group files>
    context: <context, or "none">
    ```
 
-   It returns `{"candidates": [...]}`.
+   When there is more than one group, add two lines: `part: group <i> of <n> of a
+   larger change` and `full diff: <diff>`, so the reviewer can look at the rest of the
+   change when a guard may sit in another group. Each agent returns
+   `{"candidates": [...]}`. Put all candidates into one list.
 
-4. If there are no candidates, the report is `{"findings": [], "rejected": []}`. Go to
-   step 6 without running the verifier.
+4. If there are no candidates at all, the report is `{"findings": [], "rejected": []}`.
+   Go to step 6 without running the verifier.
 
-5. Run the `money-review:money-verifier` agent with:
+5. Run the `money-review:money-verifier` agent once, for all candidates:
 
    ```
    diff: <diff>
    checklists: <checklists, one path per line>
-   candidates: <the JSON from step 3, unchanged>
+   candidates: {"candidates": <the combined list, unchanged>}
    ```
 
    It returns the report `{"findings": [...], "rejected": [...]}`.
@@ -57,7 +61,7 @@ decided, without a model, which checklists apply:
    `diff` from the JSON above. Then run, from the repository root:
 
    ```bash
-   "${CLAUDE_PLUGIN_ROOT}/scripts/fix-lines.sh" "<dir of diff>/report.json" "<diff>"
+   "${CLAUDE_PLUGIN_ROOT}/scripts/finish.sh" "<dir of diff>/report.json" "<diff>" "<dir of diff>/prepared.json"
    "${CLAUDE_PLUGIN_ROOT}/scripts/render.sh" "<dir of diff>/report.json"
    ```
 

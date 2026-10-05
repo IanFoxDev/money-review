@@ -95,3 +95,12 @@ setup() {
     run "$bin" --nope
     [ "$status" -eq 2 ]
 }
+
+@test "a change split into groups gets more turns" {
+    load helpers
+    make_diff "$BATS_TEST_TMPDIR/big.diff" a.php:50 b.php:50 c.php:50
+    printf '{"review": {"group_lines": 60}}' > "$BATS_TEST_TMPDIR/cfg.json"
+    run "$bin" --diff "$BATS_TEST_TMPDIR/big.diff" --config "$BATS_TEST_TMPDIR/cfg.json" --out "$out"
+    grep -qx -- "--max-turns" "$FAKE_LOG"
+    [ "$(grep -A1 -x -- '--max-turns' "$FAKE_LOG" | tail -1)" = "28" ]
+}

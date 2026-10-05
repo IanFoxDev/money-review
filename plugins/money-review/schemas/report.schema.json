@@ -5,23 +5,62 @@
   "description": "Result of one review: confirmed findings and the candidates the verifier dropped.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["findings", "rejected"],
+  "required": [
+    "findings",
+    "rejected"
+  ],
   "properties": {
     "findings": {
       "type": "array",
-      "items": { "$ref": "#/$defs/finding" }
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
     },
     "rejected": {
       "description": "Candidates dropped by the verifier. Kept for the eval and for debugging false positives.",
       "type": "array",
-      "items": { "$ref": "#/$defs/rejection" }
+      "items": {
+        "$ref": "#/$defs/rejection"
+      }
+    },
+    "coverage": {
+      "description": "What part of the change was reviewed. Added by scripts/finish.sh, not by the model.",
+      "type": "object",
+      "properties": {
+        "files_changed": {
+          "type": "integer"
+        },
+        "files_with_money": {
+          "type": "integer"
+        },
+        "files_reviewed": {
+          "type": "integer"
+        },
+        "groups": {
+          "type": "integer"
+        },
+        "not_reviewed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "$defs": {
     "finding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["rule", "severity", "file", "line", "title", "scenario", "fix"],
+      "required": [
+        "rule",
+        "severity",
+        "file",
+        "line",
+        "title",
+        "scenario",
+        "fix"
+      ],
       "properties": {
         "rule": {
           "description": "Checklist rule id, for example RACE-1.",
@@ -31,7 +70,11 @@
         "severity": {
           "description": "high: money is lost or duplicated in a realistic case. medium: needs an unusual timing or a second bug. low: makes a future bug likely or hides one.",
           "type": "string",
-          "enum": ["high", "medium", "low"]
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
         },
         "file": {
           "description": "Path relative to the repository root, as in the diff.",
@@ -64,11 +107,22 @@
     "rejection": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["rule", "file", "line", "reason"],
+      "required": [
+        "rule",
+        "file",
+        "line",
+        "reason"
+      ],
       "properties": {
-        "rule": { "type": "string" },
-        "file": { "type": "string" },
-        "line": { "type": "integer" },
+        "rule": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
         "reason": {
           "description": "Why the scenario cannot happen, pointing at the code that prevents it.",
           "type": "string",

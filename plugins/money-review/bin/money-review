@@ -17,7 +17,8 @@
 #   --fail-on LEVEL     exit 1 when a finding is at LEVEL or above:
 #                       high, medium, low or never (default)
 #   --model MODEL       model for the coordinator (default: sonnet)
-#   --max-turns N       turn limit for the coordinator (default: 20)
+#   --max-turns N       turn limit for the coordinator (default: 20, plus 4 for
+#                       every extra group of files in a large change)
 #   --allow-api-key     run even if ANTHROPIC_API_KEY is set (paid API billing)
 #
 # With --mr or --pr, the review runs in a temporary git worktree at its head, so your
@@ -39,7 +40,7 @@ format="markdown"
 out=""
 fail_on="never"
 model="sonnet"
-max_turns="20"
+max_turns=""
 allow_api_key=0
 mr=""
 pr=""
@@ -166,7 +167,11 @@ if [ "$(printf '%s\n%s\n' "$min_version" "$version" | sort -t. -k1,1n -k2,2n -k3
     die 2 "Claude Code $min_version or newer is required, found ${version:-unknown}"
 fi
 
-# The coordinator gets the two plugin scripts and Write for report.json, not a
+if [ -z "$max_turns" ]; then
+    max_turns=$(( 20 + 4 * ($(jq '.groups | length' <<< "$prepared") - 1) ))
+fi
+
+# The coordinator gets the plugin scripts and Write for report.json, not a
 # general shell: the diff is untrusted input, and the agents that read it are
 # read-only. File rules are Edit(...) rules (they cover Write too), and an
 # absolute path needs a double slash: Write(/abs/path) never matches.
@@ -179,7 +184,7 @@ started=$(date +%s)
     --model "$model" \
     --max-turns "$max_turns" \
     --output-format json \
-    --allowedTools "Bash($plugin/scripts/prepare.sh:*)" "Bash($plugin/scripts/render.sh:*)" "Bash($plugin/scripts/fix-lines.sh:*)" \
+    --allowedTools "Bash($plugin/scripts/prepare.sh:*)" "Bash($plugin/scripts/render.sh:*)" "Bash($plugin/scripts/fix-lines.sh:*)" "Bash($plugin/scripts/finish.sh:*)" \
         "Read" "Grep" "Glob" "Agent" "Edit(/$out/report.json)" \
     < /dev/null > "$out/claude.json" || true
 elapsed=$(( $(date +%s) - started ))
@@ -190,7 +195,7 @@ if ! jq -e '(.findings | type) == "array" and (.rejected | type) == "array"' "$o
     die 4 "files are in $out"
 fi
 
-"$plugin/scripts/fix-lines.sh" "$out/report.json" "$out/change.diff"
+"$plugin/scripts/finish.sh" "$out/report.json" "$out/change.diff" "$out/prepared.json"
 
 jq -r --arg s "$elapsed" '"money-review: \(.num_turns // "?") turns, \($s) s, API-equivalent \(.total_cost_usd // 0 | . * 100 | round / 100) USD (not billed on a subscription)"' \
     "$out/claude.json" >&2 2>/dev/null || true

@@ -26,6 +26,18 @@ jq -r '
         "",
         "**Fix:** \(.fix)",
         ""),
+      (if .coverage then
+        "\(.coverage.files_with_money) of \(.coverage.files_changed) changed file(s) touch money; "
+        + (if .coverage.files_reviewed == .coverage.files_with_money then "all of them" else "\(.coverage.files_reviewed)" end)
+        + " reviewed"
+        + (if .coverage.groups > 1 then " in \(.coverage.groups) groups of files." else "." end),
+        "",
+        (if (.coverage.not_reviewed | length) > 0 then
+          "**Not reviewed** (over the group limit, review them by hand or raise review.max_groups): "
+          + (.coverage.not_reviewed | map("`\(.)`") | join(", ")),
+          ""
+         else empty end)
+       else empty end),
       (if ($r | length) > 0 then
         "<details><summary>\($r | length) candidate(s) dropped by the verifier</summary>",
         "",

@@ -56,3 +56,13 @@ report() { # line
     run "$fix" report.json change.diff
     [ "$(jq '.findings[0].line' report.json)" = "500" ]
 }
+
+@test "finish attaches the coverage from prepare" {
+    finish="$BATS_TEST_DIRNAME/../plugins/money-review/scripts/finish.sh"
+    report 4
+    echo '{"coverage": {"files_changed": 3, "files_with_money": 1, "files_reviewed": 1, "groups": 1, "not_reviewed": []}}' > prepared.json
+    run "$finish" report.json change.diff prepared.json
+    [ "$status" -eq 0 ]
+    [ "$(jq -c '.coverage.files_changed' report.json)" = "3" ]
+    [ "$(jq '.findings[0].line' report.json)" = "4" ]
+}
