@@ -21,7 +21,8 @@ All notable changes to this project are documented here. The format follows
   doubles. New rules: TX-7 (a call inside a transaction without the session), TX-8
   (side effects in a retried transaction callback), RACE-7 (Redis locks that do not
   hold), RACE-8 (money decisions read from a secondary or a cache), IDEM-7 (offset
-  commit or ack before the work), IDEM-8 (events of one account out of order).
+  commit or ack before the work), IDEM-8 (events of one account out of order), IDEM-9
+  (a duplicate key error caught inside a MongoDB transaction, which aborts it).
 
 ## [0.2.0] - 2026-10-05
 

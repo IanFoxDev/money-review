@@ -193,3 +193,34 @@ lost.
 
 Good: key money events by account or payment id, and keep a state guard in the
 consumer (RACE-3), so an early event is parked or retried, not dropped.
+
+## IDEM-9. Duplicate key caught inside a MongoDB transaction
+
+Look for: inside `startTransaction` / `withTransaction`, an insert of an idempotency
+key (a processed event, a ledger entry with the key as `_id`) wrapped in a catch for
+the duplicate key error (E11000, `isDuplicateKey`, `mongo.IsDuplicateKeyError`) that
+returns as if the work were already done.
+
+Failure scenario: the provider retries `payment.succeeded`. The insert of
+`psp:evt1` fails with E11000 and the server aborts the transaction. The catch returns
+normally, the commit then fails, and the driver runs the callback again with the same
+result until its 120 s limit. The retry never becomes a no-op: the webhook times out
+and the provider keeps retrying; in a consumer, the partition stalls.
+
+```php
+// bad
+try {
+    $this->processed->insertOne(['_id' => $eventId], ['session' => $session]);
+} catch (BulkWriteException $e) {
+    return; // the transaction is already aborted here
+}
+
+// good: check with a read in the session, let a real conflict fail and retry
+if ($this->processed->findOne(['_id' => $eventId], ['session' => $session]) !== null) {
+    return;
+}
+$this->processed->insertOne(['_id' => $eventId], ['session' => $session]);
+```
+
+Do not report: the same pattern outside a transaction, where a duplicate key error
+affects only that one write.
