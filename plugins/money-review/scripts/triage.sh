@@ -93,7 +93,10 @@ while IFS= read -r path; do
     for cat in $categories; do
         pattern="$(jq -r --arg c "$cat" '.categories[$c]' <<< "$cfg")"
         if [ "$why" = "money_paths" ] || grep -Eq -- "$pattern" "$blob"; then
-            hit="$(grep -Eo -- "$pattern" "$blob" | head -n 1 || true)"
+            # No pipe into head: where SIGPIPE is ignored (CI runners, some
+            # containers) grep then prints "Broken pipe" to stderr.
+            hit="$(grep -Eo -m 1 -- "$pattern" "$blob" || true)"
+            hit="${hit%%$'\n'*}"
             reasons="$(jq -c --arg f "$path" --arg c "$cat" --arg w "$why" --arg h "$hit" \
                 '. + [{file: $f, category: $c, scope: $w, match: $h}]' <<< "$reasons")"
             found_cats="$found_cats $cat"

@@ -16,12 +16,12 @@ for c in "$@"; do
         bug="$(jq -c ".bugs[$i]" <<< "$spec")"
         file="$(jq -r .file <<< "$bug")"
         anchor="$(jq -r .anchor <<< "$bug")"
-        line="$(grep -nE -- "$anchor" "$dir/files/$file" | head -n 1 | cut -d: -f1 || true)"
+        line="$(grep -nE -m 1 -- "$anchor" "$dir/files/$file" | cut -d: -f1 || true)"
         [ -n "$line" ] || { echo "expected: $c: anchor /$anchor/ not found in $file" >&2; exit 2; }
         end="$line"
         anchor_end="$(jq -r '.anchor_end // empty' <<< "$bug")"
         if [ -n "$anchor_end" ]; then
-            end="$(grep -nE -- "$anchor_end" "$dir/files/$file" | head -n 1 | cut -d: -f1 || true)"
+            end="$(grep -nE -m 1 -- "$anchor_end" "$dir/files/$file" | cut -d: -f1 || true)"
             [ -n "$end" ] || { echo "expected: $c: anchor_end /$anchor_end/ not found in $file" >&2; exit 2; }
         fi
         bugs="$(jq -c --argjson b "$bug" --argjson l "$line" --argjson e "$end" '. + [$b + {line: $l, end_line: $e}]' <<< "$bugs")"

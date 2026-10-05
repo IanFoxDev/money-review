@@ -36,6 +36,12 @@ All notable changes to this project are documented here. The format follows
 - Producing to Kafka or RabbitMQ loads the idempotency checklist too (message keys,
   ordering, dedup).
 
+### Fixed
+
+- Triage no longer prints "grep: write error: Broken pipe" where SIGPIPE is ignored
+  (CI runners, some containers). The lines went to stderr, which the skill reads
+  together with the JSON from `prepare.sh`.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added
