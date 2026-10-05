@@ -93,6 +93,7 @@ field() { jq -c "$1" <<< "$output"; }
     load helpers
     make_diff "$BATS_TEST_TMPDIR/big.diff" app/Wallet/A.php:500 app/Wallet/B.php:500 docs/x.md:5
     run "$prepare" --diff "$BATS_TEST_TMPDIR/big.diff" --out "$BATS_TEST_TMPDIR/out"
+    echo "$output" | head -n 20 # shown by bats only when the test fails
     [ "$status" -eq 0 ]
     [ "$(field '.groups | length')" = "2" ]
     [ "$(field '.coverage')" = '{"files_changed":3,"files_with_money":2,"files_reviewed":2,"groups":2,"not_reviewed":[]}' ]
