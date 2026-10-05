@@ -162,7 +162,7 @@ started=$(date +%s)
     --model "$model" \
     --max-turns "$max_turns" \
     --output-format json \
-    --allowedTools "Bash($plugin/scripts/prepare.sh:*)" "Bash($plugin/scripts/render.sh:*)" \
+    --allowedTools "Bash($plugin/scripts/prepare.sh:*)" "Bash($plugin/scripts/render.sh:*)" "Bash($plugin/scripts/fix-lines.sh:*)" \
         "Read" "Grep" "Glob" "Agent" "Edit(/$out/report.json)" \
     < /dev/null > "$out/claude.json" || true
 elapsed=$(( $(date +%s) - started ))
@@ -172,6 +172,8 @@ if ! jq -e '(.findings | type) == "array" and (.rejected | type) == "array"' "$o
     jq -r '.result // .' "$out/claude.json" >&2 2>/dev/null || cat "$out/claude.json" >&2
     die 4 "files are in $out"
 fi
+
+"$plugin/scripts/fix-lines.sh" "$out/report.json" "$out/change.diff"
 
 jq -r --arg s "$elapsed" '"money-review: \(.num_turns // "?") turns, \($s) s, API-equivalent \(.total_cost_usd // 0 | . * 100 | round / 100) USD (not billed on a subscription)"' \
     "$out/claude.json" >&2 2>/dev/null || true

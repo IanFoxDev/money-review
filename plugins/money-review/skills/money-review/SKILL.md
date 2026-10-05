@@ -54,9 +54,10 @@ decided, without a model, which checklists apply:
 
 6. Save the report next to the diff and render it. Write the report exactly as the
    agent returned it, with the Write tool, to `report.json` in the directory of
-   `diff` from the JSON above. Then run:
+   `diff` from the JSON above. Then run, from the repository root:
 
    ```bash
+   "${CLAUDE_PLUGIN_ROOT}/scripts/fix-lines.sh" "<dir of diff>/report.json" "<diff>"
    "${CLAUDE_PLUGIN_ROOT}/scripts/render.sh" "<dir of diff>/report.json"
    ```
 
