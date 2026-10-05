@@ -6,12 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-05
+
 ### Added
 
+- Checklists for MongoDB, Redis and message brokers: conditional updates instead of
+  row locks, multi-document transactions, writes followed by a Kafka produce, BSON
+  doubles. New rules: TX-7 (a call inside a transaction without the session), TX-8
+  (side effects in a retried transaction callback), RACE-7 (Redis locks that do not
+  hold), RACE-8 (money decisions read from a secondary or a cache), IDEM-7 (offset
+  commit or ack before the work), IDEM-8 (events of one account out of order), IDEM-9
+  (a duplicate key error caught inside a MongoDB transaction, which aborts it).
 - Large changes are reviewed in groups of files: one reviewer pass per group, in
   parallel, then one verifier pass. Limits in `review.group_lines` (800) and
   `review.max_groups` (6). The report says how many files touch money, how many were
   reviewed, and lists the files over the limit.
+- A second eval app in PHP and Go on MongoDB, Kafka and Redis, with 18 cases; cases
+  can name the app they run on.
 
 ### Changed
 
@@ -24,16 +35,6 @@ All notable changes to this project are documented here. The format follows
   `credits/` is reviewed even when the changed lines only commit offsets.
 - Producing to Kafka or RabbitMQ loads the idempotency checklist too (message keys,
   ordering, dedup).
-
-### Added
-
-- Checklists for MongoDB, Redis and message brokers: conditional updates instead of
-  row locks, multi-document transactions, writes followed by a Kafka produce, BSON
-  doubles. New rules: TX-7 (a call inside a transaction without the session), TX-8
-  (side effects in a retried transaction callback), RACE-7 (Redis locks that do not
-  hold), RACE-8 (money decisions read from a secondary or a cache), IDEM-7 (offset
-  commit or ack before the work), IDEM-8 (events of one account out of order), IDEM-9
-  (a duplicate key error caught inside a MongoDB transaction, which aborts it).
 
 ## [0.2.0] - 2026-10-05
 
@@ -67,6 +68,7 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/IanFoxDev/money-review/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/IanFoxDev/money-review/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/IanFoxDev/money-review/releases/tag/v0.1.0
