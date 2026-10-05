@@ -30,5 +30,9 @@
     "IDEM": "webhook|Webhook|callback|Callback|ShouldQueue|function handle\\(|retry\\(|tries|backoff|idempoten|Idempoten|event_id|eventId|insertOrIgnore|upsert|schedule|Schedule|refund|payout|capture|consume|Consume|FetchMessage|ReadMessage|CommitMessages|CommitOffsets|commitAsync|commitSync|->commit\\(|offset|Offset|basic_ack|basic_consume|basic_nack|Ack\\(|Nack\\(|Handle\\(|handler|Handler|message_id|MessageID|eventId|EventID|duplicate|Duplicate|unique|Unique",
     "MONEY": "float|floatval|round\\(|floor\\(|ceil\\(|intdiv|number_format|amount|balance|price|fee|commission|currency|bc(add|sub|mul|div)|Money::|->decimal\\(|->double\\(|->float\\(|percent|rate|float64|float32|math\\.Round|math\\.Floor|math\\.Ceil|decimal\\.|Decimal128|NumberDecimal|bcmath|ParseFloat|strconv\\.FormatFloat"
   },
-  "context": ""
+  "context": "",
+  "review": {
+    "group_lines": 800,
+    "max_groups": 6
+  }
 }

@@ -88,3 +88,30 @@ field() { jq -c "$1" <<< "$output"; }
     [ "$status" -eq 0 ]
     [ "$(field .money)" = "true" ]
 }
+
+@test "a large change is split into groups with coverage" {
+    load helpers
+    make_diff "$BATS_TEST_TMPDIR/big.diff" app/Wallet/A.php:500 app/Wallet/B.php:500 docs/x.md:5
+    run "$prepare" --diff "$BATS_TEST_TMPDIR/big.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(field '.groups | length')" = "2" ]
+    [ "$(field '.coverage')" = '{"files_changed":3,"files_with_money":2,"files_reviewed":2,"groups":2,"not_reviewed":[]}' ]
+    [ -f "$BATS_TEST_TMPDIR/out/prepared.json" ]
+    [ -f "$(jq -r '.groups[1].diff' <<< "$output")" ]
+}
+
+@test "a small change is one group with the whole diff" {
+    run "$prepare" --diff "$diffs/withdrawal.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$(field '.groups | length')" = "1" ]
+    [ "$(field '.groups[0].diff')" = "\"$BATS_TEST_TMPDIR/out/change.diff\"" ]
+}
+
+@test "groups over max_groups are listed as not reviewed" {
+    load helpers
+    make_diff "$BATS_TEST_TMPDIR/big.diff" a.php:50 b.php:50 c.php:50
+    printf '{"review": {"group_lines": 60, "max_groups": 2}}' > "$BATS_TEST_TMPDIR/cfg.json"
+    run "$prepare" --diff "$BATS_TEST_TMPDIR/big.diff" --config "$BATS_TEST_TMPDIR/cfg.json" --out "$BATS_TEST_TMPDIR/out"
+    [ "$(field '.groups | length')" = "2" ]
+    [ "$(field '.coverage.files_reviewed')" = "2" ]
+    [ "$(field '.coverage.not_reviewed | length')" = "1" ]
+}
