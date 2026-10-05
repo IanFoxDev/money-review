@@ -104,3 +104,11 @@ setup() {
     grep -qx -- "--max-turns" "$FAKE_LOG"
     [ "$(grep -A1 -x -- '--max-turns' "$FAKE_LOG" | tail -1)" = "28" ]
 }
+
+@test "a finding ignored in the config does not fail the run" {
+    echo '{"ignore": [{"rule": "RACE-1", "reason": "one worker per wallet"}]}' > "$BATS_TEST_TMPDIR/cfg.json"
+    run "$bin" --diff "$diffs/withdrawal.diff" --config "$BATS_TEST_TMPDIR/cfg.json" --fail-on high --out "$out"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"1 finding(s) suppressed by the team"* ]]
+    [ "$(jq -r '.suppressed[0].reason' "$out/report.json")" = "one worker per wallet" ]
+}

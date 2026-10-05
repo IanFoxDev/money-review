@@ -38,6 +38,14 @@ jq -r '
           ""
          else empty end)
        else empty end),
+      (if ((.suppressed // []) | length) > 0 then
+        "<details><summary>\(.suppressed | length) finding(s) suppressed by the team</summary>",
+        "",
+        (.suppressed[] | "- \(.rule) `\(.file):\(.line)` \(.title). Ignored by \(.by): \(.reason)"),
+        "",
+        "</details>",
+        ""
+       else empty end),
       (if ($r | length) > 0 then
         "<details><summary>\($r | length) candidate(s) dropped by the verifier</summary>",
         "",
