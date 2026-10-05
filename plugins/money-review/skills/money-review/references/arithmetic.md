@@ -82,3 +82,23 @@ in the same transaction and a check recomputes the balance from entries.
 
 Do not report: a cached balance that is updated together with a ledger entry in the
 same transaction and verified against it.
+
+## MongoDB, Go and JSON
+
+### MONEY-1 in stored documents and decoded JSON
+
+Look for: amounts stored as BSON double (a PHP `float` or Go `float64` written to
+MongoDB, `$inc` with a float), `$sum` in aggregations over double fields, Go
+`encoding/json` decoding a provider amount into `float64` or `interface{}` (numbers
+become `float64`), `strconv.ParseFloat` on amounts.
+
+Failure scenario: `$inc: {balance: 0.1}` ten times leaves 0.9999999999999999 in the
+document; the daily `$sum` of 40 000 payments differs from the provider report by
+cents, and the period does not reconcile.
+
+Good: integers in minor units (`int64`, `NumberLong`) or `Decimal128`; in Go decode
+with `json.Number` or into a decimal type; PHP `bcmath` or a money library for
+division and percentages.
+
+Do not report: a float used for a rate or a weight that is converted to an integer
+amount in one place with an explicit rounding rule (MONEY-3).

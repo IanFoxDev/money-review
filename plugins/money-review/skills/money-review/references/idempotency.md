@@ -100,3 +100,96 @@ Failure scenario: credit succeeded, the following notification call threw, the j
 is retried, the credit runs again.
 
 Good: retry only the idempotent part, or make the whole unit idempotent first.
+
+## Message brokers, MongoDB and Redis
+
+Kafka, Redpanda and RabbitMQ deliver at least once. A consumer that changes money
+must survive the same message twice: after a crash between the work and the offset
+commit or ack, after a rebalance, after a requeue.
+
+### IDEM-1 with a broker: consumer without a dedup key
+
+Look for: a Kafka or RabbitMQ handler that credits, debits or changes a payment
+status and does not record the event id (or another stable key from the message)
+together with the change.
+
+Good with MongoDB: the event id goes into the same document update, or into a
+`processed_events` collection with a unique index, inside the same transaction as
+the money change.
+
+```go
+// good: the dedup key and the credit are one atomic update
+res, err := wallets.UpdateOne(ctx,
+    bson.M{"_id": userID, "applied_events": bson.M{"$ne": eventID}},
+    bson.M{"$inc": bson.M{"balance": amount}, "$push": bson.M{"applied_events": eventID}},
+)
+if err == nil && res.ModifiedCount == 0 {
+    return nil // already applied
+}
+```
+
+Do not report: the handler only moves a state forward with the current state in the
+update filter (RACE-3) and has no other side effects.
+
+### IDEM-2 with MongoDB or Redis: dedup outside the money write
+
+Look for: a dedup check against Redis (`SET event:{id} NX`) or a separate collection,
+done before the money update and not in the same transaction; a Redis dedup key with
+a TTL shorter than the broker's redelivery window.
+
+Failure scenario: the consumer sets `event:77` in Redis, credits the wallet in
+MongoDB, crashes before the ack. The redelivery sees the key and skips: fine. But if
+it crashed after setting the key and before the credit, the redelivery skips and the
+credit is lost. With a 1 h TTL, a message redelivered after a day-long outage is
+applied twice.
+
+Good: the dedup record lives in the same database write as the money change.
+
+## IDEM-7. Offset commit or ack in the wrong place
+
+Look for:
+
+- the Kafka offset committed (`CommitMessages`, `commitSync`, `commit`) or the
+  RabbitMQ message acked (`basic_ack`, `Ack`) **before** the money change is applied;
+- `enable.auto.commit=true` (or a library default that auto-commits) on a consumer
+  that changes money;
+- a failure path that acks or commits anyway (`catch` that logs and acks), or that
+  nacks with requeue forever without a dead-letter queue.
+
+Failure scenario: the consumer commits the offset of `payment.succeeded`, then the pod
+is killed before the wallet is credited. The message is never delivered again; the
+user paid and got nothing. The reverse order without dedup (IDEM-1) credits twice.
+
+```go
+// bad
+msg, _ := reader.FetchMessage(ctx)
+reader.CommitMessages(ctx, msg)
+applyPayment(ctx, msg.Value)
+
+// good: apply idempotently, then commit
+msg, err := reader.FetchMessage(ctx)
+if err != nil {
+    return err
+}
+if err := applyPaymentOnce(ctx, msg); err != nil { // dedup by event id inside
+    return err // no commit: the message comes back
+}
+return reader.CommitMessages(ctx, msg)
+```
+
+Do not report: a consumer whose work is a pure cache or metrics update.
+
+## IDEM-8. Events of one account processed out of order
+
+Look for: money events of one account or payment produced with a partition key that
+is not the account or payment id (random, empty, event id), or consumed by several
+workers in parallel without per-key ordering; a consumer that applies `refunded`
+without checking that `paid` was applied.
+
+Failure scenario: `payment.refunded` reaches the consumer before `payment.paid`
+because they went to different partitions. The refund is applied to a pending
+payment and ignored or rejected; `paid` then credits the wallet, and the refund is
+lost.
+
+Good: key money events by account or payment id, and keep a state guard in the
+consumer (RACE-3), so an early event is parked or retried, not dropped.
