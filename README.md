@@ -151,9 +151,29 @@ The repository has an eval: a small Laravel billing app with no known money bugs
 25 merge requests on top of it, 20 with one bug each and 5 clean ones (some of them
 touch money code correctly). See [docs/eval.md](docs/eval.md).
 
-A first run on 5 of the cases, once each, found 3 of 3 bugs with no false alarm and
-no alarm on the clean money code. That is a smoke test, not a benchmark. Numbers for
-all cases, three runs each, will replace this paragraph.
+Results of the full run (2026-10-05, Claude Code 2.1.289, every case three times, 75
+runs):
+
+| | |
+|---|---|
+| Precision | 98% (52 true positives, 1 false) |
+| Recall | 87% (52 of 60 planted bugs found) |
+| False alarms on the 5 clean cases | 0 in 15 runs |
+| Time per review | 50 s |
+| API-equivalent cost per review | 0.28 USD, not billed on a subscription |
+
+| Checklist | Recall |
+|---|---|
+| RACE | 100% |
+| MONEY | 92% |
+| IDEM | 83% |
+| TX | 73% |
+
+Five of the eight misses are bugs that the verifier dropped because other code in
+the app hides them today: every caller of the ledger already opens an outer
+transaction, a state guard stops a duplicate event before the missing dedup matters.
+The verifier said so and pointed at that code. Two misses are findings on a line that
+does not exist in the file. One bug was not seen at all.
 
 ## Limits
 
