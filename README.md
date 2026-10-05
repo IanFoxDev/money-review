@@ -154,20 +154,26 @@ Every field is described in [docs/config.md](docs/config.md).
 
 ## How good is it
 
-The repository has an eval: a small Laravel billing app with no known money bugs and
-25 merge requests on top of it, 20 with one bug each and 5 clean ones (some of them
-touch money code correctly). See [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/) for full reports.
+The repository has an eval with two apps and 43 merge requests on top of them, each
+with one planted bug or none (clean cases, some of them touching money code
+correctly). See [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/)
+for full reports. Every case ran three times (2026-10-05, Claude Code 2.1.289).
 
-Results of the full run (2026-10-05, Claude Code 2.1.289, every case three times, 75
-runs):
+| | Laravel app on SQL | PHP and Go on MongoDB, Kafka, Redis |
+|---|---|---|
+| Cases | 25 (20 bugs, 5 clean) | 18 (14 bugs, 4 clean) |
+| Precision | 100% (56 of 56) | 100% (42 of 42) |
+| Recall | 93% (56 of 60) | 100% (42 of 42) |
+| False alarms on clean cases | 0 in 15 runs | 0 in 12 runs |
+| Time per review | 48 s | 52 s |
+| API-equivalent cost per review | 0.28 USD | 0.31 USD |
 
-| | |
-|---|---|
-| Precision | 100% (56 true positives, 0 false) |
-| Recall | 93% (56 of 60 planted bugs found) |
-| False alarms on the 5 clean cases | 0 in 15 runs |
-| Time per review | 48 s |
-| API-equivalent cost per review | 0.28 USD, not billed on a subscription |
+The SQL numbers were measured with the rules of 0.1 and 0.2; the MongoDB numbers with the rules
+and triage of 0.3. The checklists and the cases were written by the same person, so
+these numbers show that the rules work as intended, not how the tool does on someone
+else's code.
+
+On the SQL app, recall by checklist:
 
 | Checklist | Recall |
 |---|---|
@@ -176,7 +182,7 @@ runs):
 | MONEY | 100% |
 | IDEM | 78% |
 
-All four misses are in two cases where the change removes one of two safety layers
+On the SQL app, all four misses are in two cases where the change removes one of two safety layers
 and the other one still holds: a webhook moves its dedup out of the transaction, but
 a state guard and an idempotent ledger key still stop the double credit. Whether that
 is a bug is arguable; the reviewer stayed silent or the verifier pointed at the
