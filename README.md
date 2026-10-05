@@ -95,7 +95,7 @@ is not touched. `--post` leaves one comment per finding on the line it is about 
 keeps one summary comment up to date. The summary records the reviewed commit: the
 next run looks only at commits pushed after it, and does not start Claude at all if
 there are none. A finding that is already there (same rule, same file) is not posted
-twice.
+twice. How a team can share this without a CI token: [docs/team.md](docs/team.md).
 
 Exit codes: 0 done, 1 findings at the `--fail-on` level, 2 usage error, 3 refused to
 run because `ANTHROPIC_API_KEY` is set (it would bill the API instead of your
@@ -211,7 +211,7 @@ every caller opens an outer transaction, and breaks with the first one that does
   invisible to it; the verifier lowers the severity when it cannot tell.
 - Running it in CI needs a token tied to one person's subscription
   (`claude setup-token`). Check that your plan allows that before you set it up for a
-  team.
+  team. Until then, the reviewer runs it by hand ([docs/team.md](docs/team.md)).
 
 ## License
 

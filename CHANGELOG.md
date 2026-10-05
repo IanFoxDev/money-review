@@ -12,6 +12,7 @@ All notable changes to this project are documented here. The format follows
   line of a finding or the line above, and `ignore` entries in `.money-review.json`
   (rule or checklist, path glob, reason). A reason is required. Suppressed findings
   move to `suppressed` in the report, do not count for `--fail-on` and are not posted.
+- `docs/team.md`: how a team runs it by hand on pull requests, without a CI token.
 
 ## [0.3.0] - 2026-10-05
 
