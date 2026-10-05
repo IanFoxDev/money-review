@@ -13,16 +13,17 @@ Pass another file with `--config FILE` (both the skill and the shell command acc
 
 Globs for files that triage looks at. `*` matches any characters, including `/`.
 
-Defaults: include `*.php`; exclude `tests/*`, `*/tests/*`, `vendor/*`, `*.blade.php`,
-`lang/*`, `resources/*`.
+Defaults: include `*.php` and `*.go`; exclude test directories (`tests/`, `test/`),
+`vendor/`, `*_test.go`, `testdata/`, `mocks/`, generated Go files (`*.pb.go`,
+`*_gen.go`, `*_mock.go`), Blade templates, `lang/` and `resources/`.
 
-For a Go service:
+For a repository with only Go code:
 
 ```json
 {
   "paths": {
     "include": ["*.go"],
-    "exclude": ["*_test.go", "vendor/*", "*/mocks/*"]
+    "exclude": ["*_test.go", "vendor/*", "*/mocks/*", "*.pb.go"]
   }
 }
 ```
@@ -39,17 +40,21 @@ gets every checklist. Use it for the billing module, the ledger, provider adapte
 ### `signals`
 
 An extended regular expression. A file that is not in `money_paths` is reviewed only
-if its changed lines (with the hunk's context lines) match it. The default lists words
-like `amount`, `balance`, `payout`, `refund`, `wallet`, `ledger`, `invoice`, `fee`,
-`currency`. Add your domain words, for example `credits|tokens|coins`, by writing the
+if its changed lines (with the hunk's context lines) match it, in any letter case, so
+`amount` also finds Go's `Amount`. The default lists words like `amount`, `balance`,
+`payout`, `refund`, `wallet`, `ledger`, `invoice`, `fee`, `currency`, `bonus`. Add your domain words, for example `credits|tokens|coins`, by writing the
 whole expression: a string replaces the default.
 
 ### `categories`
 
 An object from checklist prefix to an extended regular expression: `TX`, `RACE`,
 `IDEM`, `MONEY`. A checklist is loaded when a file in scope matches its expression.
-The defaults are Laravel-flavored (`DB::transaction`, `lockForUpdate`, `ShouldQueue`).
-Override one category without touching the others:
+The defaults cover Laravel (`DB::transaction`, `lockForUpdate`, `ShouldQueue`), the
+MongoDB drivers for PHP and Go (`updateOne`, `findOneAndUpdate`, `$inc`, sessions and
+`withTransaction`), Kafka and RabbitMQ clients (`produce`, `WriteMessages`,
+`CommitMessages`, `basic_publish`, `basic_ack`), Redis locks (`SET NX`) and Go floats.
+These patterns are case-sensitive, because they name API calls. Override one category
+without touching the others:
 
 ```json
 {

@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Triage covers Go (`*.go`, without tests, mocks and generated files), MongoDB drivers
+  for PHP and Go, Kafka and RabbitMQ clients and Redis locks. A read with `findOne`
+  followed by `updateOne` now loads the race checklist; before, such a file only got
+  the arithmetic one, and Go files were never reviewed.
+- Money words in triage match in any letter case, so Go's `Amount` and `Balance` count.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added

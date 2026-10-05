@@ -14,8 +14,10 @@ bill per merge request, and a change that does not touch money never reaches the
 [![ci](https://github.com/IanFoxDev/money-review/actions/workflows/ci.yml/badge.svg)](https://github.com/IanFoxDev/money-review/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Status: 0.x. Default patterns are tuned for PHP and Laravel; the checklists are not
-tied to a language. Works on GitLab merge requests and GitHub pull requests.
+Status: 0.x. Triage knows PHP (Laravel and plain PHP) and Go, SQL and MongoDB
+drivers, Kafka and RabbitMQ clients; the checklists are not tied to a language, but
+their examples are still SQL-flavored. Works on GitLab merge requests and GitHub pull
+requests.
 
 ## What a finding looks like
 
