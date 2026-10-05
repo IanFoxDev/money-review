@@ -4,6 +4,9 @@
 diff --> prepare.sh --> triage.sh --> no money? stop, Claude is never started
                              |
                              v
+              large change? split.sh: groups of files
+                             |
+                             v
                    checklists that apply
                              |
                              v
@@ -32,7 +35,15 @@ the config (see [config.md](config.md)). A file is in scope when it matches
 `lockForUpdate()` is a reason to look for races. Checklists are chosen only from files
 in scope.
 
-**money-reviewer** gets the diff path, the checklists and the context. It reads the
+**Groups.** When the money files of a change have more than `review.group_lines`
+changed lines (800 by default), `scripts/split.sh` splits them into groups of files in
+path order, and triage picks the checklists for each group. A single reviewer over
+dozens of files spreads its attention: it finds some bugs and walks past others. A
+reviewer per group looks at fewer files at a time. The report says how many files
+were reviewed and lists any that were not.
+
+**money-reviewer** gets the diff path, the checklists and the context. With groups,
+one reviewer runs per group, in parallel, and also gets the path of the full diff. It reads the
 diff once, then the code around each suspicious hunk: the whole function, its callers,
 the transaction wrapper, the migration for the table, the base class of a handler. It
 reports only what it can describe as a concrete failure scenario.

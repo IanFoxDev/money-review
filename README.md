@@ -190,6 +190,8 @@ every caller opens an outer transaction, and breaks with the first one that does
 
 - The model is not deterministic. Two runs on the same change can report 4 and 5
   findings. Treat it as a reviewer with good days and bad days, not as a linter.
+- A large change is reviewed in groups of files (800 changed lines each by default,
+  up to 6 groups). Past that limit the report lists the files it did not review.
 - Triage works on words and paths. A money change that uses none of the configured
   words is skipped; add its paths to `money_paths`.
 - It reads the repository it runs in. A guard that lives in another service is

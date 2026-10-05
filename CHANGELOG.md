@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Large changes are reviewed in groups of files: one reviewer pass per group, in
+  parallel, then one verifier pass. Limits in `review.group_lines` (800) and
+  `review.max_groups` (6). The report says how many files touch money, how many were
+  reviewed, and lists the files over the limit.
+
 ### Changed
 
 - Triage covers Go (`*.go`, without tests, mocks and generated files), MongoDB drivers

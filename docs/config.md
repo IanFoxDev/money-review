@@ -64,6 +64,21 @@ without touching the others:
 }
 ```
 
+### `review`
+
+How a large change is split. A change whose money files have more than
+`group_lines` changed lines is reviewed in groups of files, each by its own reviewer
+pass; one verifier pass then checks all candidates. Files go in path order, so the
+files of one module stay together.
+
+```json
+{ "review": { "group_lines": 800, "max_groups": 6 } }
+```
+
+When there are more groups than `max_groups`, the groups that match the most
+checklists are reviewed and the rest are listed in the report as not reviewed. Each
+extra group adds about one reviewer pass to the time and the subscription use.
+
 ### `context`
 
 Free text passed to the reviewer as is. This is the cheapest way to cut false alarms.
