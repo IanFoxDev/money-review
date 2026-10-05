@@ -1,0 +1,46 @@
+name: Missed bug
+description: A change lost or duplicated money and money-review did not report it
+labels: ["missed-bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please strip anything confidential from the code. A small made-up diff that
+        reproduces it is best: it can become an eval case.
+  - type: textarea
+    id: bug
+    attributes:
+      label: The bug
+      description: The failure scenario. Who does what, in which order, and what happens to the money.
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: Code
+      description: The diff that introduced it.
+      render: diff
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: What the review said
+      options:
+        - "No money-related changes (triage skipped it)"
+        - "Reviewed, no findings"
+        - "Reviewed, findings about something else"
+        - "Found, but the verifier rejected it"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Report
+      description: report.json from the run (use --out DIR to keep it), if you have it.
+      render: json
+  - type: input
+    id: version
+    attributes:
+      label: money-review version and Claude Code version

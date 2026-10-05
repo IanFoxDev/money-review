@@ -1,0 +1,18 @@
+name: Feature request
+description: Something money-review should check or do
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you are trying to do
+      description: The code you review and where money-review gets in the way or stays silent.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like
+      description: A new rule (with a failure scenario), an option, an integration.
+    validations:
+      required: true

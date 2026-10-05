@@ -1,0 +1,40 @@
+name: False alarm
+description: money-review reported a money bug that cannot happen
+labels: ["false-alarm"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please strip anything confidential from the code. A small made-up diff that
+        reproduces the alarm is best: it can become a clean eval case.
+  - type: input
+    id: rule
+    attributes:
+      label: Rule
+      description: The rule id from the finding, for example RACE-1.
+    validations:
+      required: true
+  - type: textarea
+    id: finding
+    attributes:
+      label: The finding
+      description: Paste it as reported (title, scenario, fix).
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it cannot happen
+      description: What prevents the scenario, and where it is (a lock, an index, middleware, another service).
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: Code
+      description: The diff, or the relevant code around the finding.
+      render: diff
+  - type: input
+    id: version
+    attributes:
+      label: money-review version and Claude Code version

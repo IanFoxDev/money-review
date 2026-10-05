@@ -1,0 +1,37 @@
+name: Bug report
+description: The command, the skill or the GitLab integration does not behave as documented
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: part
+    attributes:
+      label: Which part
+      options:
+        - Skill in Claude Code
+        - money-review command
+        - GitLab (--mr, --post)
+        - Triage or config
+        - Eval
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      description: money-review version or commit, Claude Code version (claude --version), OS.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The command you ran and your .money-review.json, if any.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+      description: Output and exit code. claude.json from --out DIR helps when the review itself failed.
+    validations:
+      required: true
