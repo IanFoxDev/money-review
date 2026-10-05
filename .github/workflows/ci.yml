@@ -1,0 +1,57 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  scripts:
+    name: scripts on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - name: install bats and shellcheck
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            brew install bats-core shellcheck
+          else
+            sudo apt-get update -q
+            sudo apt-get install -y -q bats shellcheck
+          fi
+      - name: lint
+        run: make lint
+      # On macOS the scripts run under /bin/bash 3.2, the oldest Bash they support.
+      - name: test
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            export PATH="/bin:$PATH"
+          fi
+          bash --version | head -n 1
+          make test
+
+  plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: npm install -g @anthropic-ai/claude-code
+      - run: claude --version
+      - run: make validate
+
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+      - name: eval app and cases parse, anchors resolve
+        run: make eval-check
