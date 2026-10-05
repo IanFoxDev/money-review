@@ -25,7 +25,7 @@ summary() { jq -c "$1" "$out/summary.json"; }
 @test "true positive, wrong rule, acceptable extra and false alarm are told apart" {
     w=app/Services/WithdrawalService.php
     tp="$(finding RACE-1 $w 19)"
-    acceptable="$(finding MONEY-6 $w 27)"
+    acceptable="$(finding MONEY-6 $w 40)"
     fp="$(finding IDEM-3 app/Services/Ledger.php 10)"
     result race-withdraw-no-lock 1 0 "{\"findings\": [$tp, $acceptable, $fp], \"rejected\": []}" '{"total_cost_usd": 0.4, "num_turns": 5}'
 
@@ -51,7 +51,7 @@ summary() { jq -c "$1" "$out/summary.json"; }
 }
 
 @test "a finding outside the range misses the bug" {
-    result race-withdraw-no-lock 1 0 "{\"findings\": [$(finding RACE-1 app/Services/WithdrawalService.php 30)], \"rejected\": []}" '{}'
+    result race-withdraw-no-lock 1 0 "{\"findings\": [$(finding RACE-1 app/Services/WithdrawalService.php 40)], \"rejected\": []}" '{}'
     "$eval_dir/expected.sh" race-withdraw-no-lock > "$out/expected.json"
     run "$eval_dir/score.sh" "$out"
     [ "$(summary '[.true_positives, .false_positives, .missed]')" = "[0,1,1]" ]
