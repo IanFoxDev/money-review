@@ -1,0 +1,27 @@
+{
+  "app": "app-mongo",
+  "title": "One payout per period is checked with findOne instead of the _id",
+  "bugs": [
+    {
+      "rules": [
+        "RACE-5",
+        "IDEM-5",
+        "RACE-1"
+      ],
+      "file": "src/Payouts/PayoutService.php",
+      "anchor": "\\$existing = \\$this->payouts->findOne",
+      "anchor_end": "\\$payoutId = 'payout:' \\. bin2hex"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "RACE-5",
+        "IDEM-5",
+        "RACE-1",
+        "IDEM-1"
+      ],
+      "file": "src/Payouts/PayoutService.php"
+    }
+  ]
+}

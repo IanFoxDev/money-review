@@ -1,0 +1,23 @@
+{
+  "app": "app-mongo",
+  "title": "Go consumer commits the offset before the cashback credit",
+  "bugs": [
+    {
+      "rules": [
+        "IDEM-7"
+      ],
+      "file": "go/internal/credits/consumer.go",
+      "anchor": "Commit first so a poison message",
+      "anchor_end": "log\\.Printf\\(\"offset"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-7",
+        "TX-4"
+      ],
+      "file": "go/internal/credits/consumer.go"
+    }
+  ]
+}

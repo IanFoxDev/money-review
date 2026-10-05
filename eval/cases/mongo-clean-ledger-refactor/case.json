@@ -1,0 +1,6 @@
+{
+  "app": "app-mongo",
+  "title": "Ledger entry building moved to a helper, every write still in the session",
+  "bugs": [],
+  "acceptable": []
+}

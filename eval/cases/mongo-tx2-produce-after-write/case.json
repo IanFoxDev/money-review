@@ -1,0 +1,24 @@
+{
+  "app": "app-mongo",
+  "title": "payment.paid is produced to Kafka after the transaction instead of the outbox",
+  "bugs": [
+    {
+      "rules": [
+        "TX-2"
+      ],
+      "file": "src/Payments/PaymentService.php",
+      "anchor": "newTopic\\('billing\\.payments'\\)->produce",
+      "anchor_end": "flush\\(1_000\\)"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-8",
+        "IDEM-1",
+        "TX-2"
+      ],
+      "file": "src/Payments/PaymentService.php"
+    }
+  ]
+}

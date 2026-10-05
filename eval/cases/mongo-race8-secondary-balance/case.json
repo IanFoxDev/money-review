@@ -1,0 +1,28 @@
+{
+  "app": "app-mongo",
+  "title": "Instant withdrawal checks the balance on a secondary and reserves without a condition",
+  "bugs": [
+    {
+      "rules": [
+        "RACE-8",
+        "RACE-1"
+      ],
+      "file": "src/Payouts/InstantWithdrawal.php",
+      "anchor": "SECONDARY_PREFERRED",
+      "anchor_end": "'\\$inc' => \\['balance' => -\\$amount\\]"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "RACE-8",
+        "RACE-1",
+        "MONEY-6",
+        "TX-3",
+        "IDEM-1",
+        "TX-2"
+      ],
+      "file": "src/Payouts/InstantWithdrawal.php"
+    }
+  ]
+}

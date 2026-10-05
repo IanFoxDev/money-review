@@ -1,0 +1,27 @@
+{
+  "app": "app-mongo",
+  "title": "Payout is sent to the provider inside the retried transaction callback",
+  "bugs": [
+    {
+      "rules": [
+        "TX-8",
+        "TX-1",
+        "IDEM-3"
+      ],
+      "file": "src/Payouts/PayoutService.php",
+      "anchor": "Instant payouts: send in the same step",
+      "anchor_end": "\\['\\$set' => \\['status' => 'sent'\\]\\], \\['session'"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "TX-1",
+        "TX-8",
+        "IDEM-3",
+        "IDEM-4"
+      ],
+      "file": "src/Payouts/PayoutService.php"
+    }
+  ]
+}

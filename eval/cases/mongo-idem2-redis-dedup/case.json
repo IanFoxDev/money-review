@@ -1,0 +1,27 @@
+{
+  "app": "app-mongo",
+  "title": "Cashback dedup moved from the transaction to a Redis key with a TTL",
+  "bugs": [
+    {
+      "rules": [
+        "IDEM-2",
+        "IDEM-1"
+      ],
+      "file": "go/internal/credits/store.go",
+      "anchor": "The ledger lookup was slow under load",
+      "anchor_end": "if !first"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-2",
+        "IDEM-1",
+        "RACE-7",
+        "IDEM-7",
+        "IDEM-3"
+      ],
+      "file": "go/internal/credits/store.go"
+    }
+  ]
+}

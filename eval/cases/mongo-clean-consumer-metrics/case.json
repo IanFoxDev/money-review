@@ -1,0 +1,6 @@
+{
+  "app": "app-mongo",
+  "title": "Go cashback consumer counts processed and skipped events",
+  "bugs": [],
+  "acceptable": []
+}

@@ -1,0 +1,24 @@
+{
+  "app": "app-mongo",
+  "title": "Ledger entry is written outside the session of the transfer",
+  "bugs": [
+    {
+      "rules": [
+        "TX-7",
+        "TX-3"
+      ],
+      "file": "src/Money/Ledger.php",
+      "anchor": "\\$this->entries->insertOne\\(\\[",
+      "anchor_end": "'created_at' => new"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-2",
+        "IDEM-1"
+      ],
+      "file": "src/Money/Ledger.php"
+    }
+  ]
+}

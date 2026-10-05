@@ -1,0 +1,6 @@
+{
+  "app": "app-mongo",
+  "title": "Outbox relay batch size from config and a log line per batch",
+  "bugs": [],
+  "acceptable": []
+}

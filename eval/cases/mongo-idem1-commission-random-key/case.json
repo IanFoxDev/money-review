@@ -1,0 +1,24 @@
+{
+  "app": "app-mongo",
+  "title": "Commission consumer uses a fresh ledger key per delivery",
+  "bugs": [
+    {
+      "rules": [
+        "IDEM-1",
+        "IDEM-3"
+      ],
+      "file": "src/Events/CommissionConsumer.php",
+      "anchor": "'commission:' \\. bin2hex\\(random_bytes\\(8\\)\\)"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-1",
+        "IDEM-3",
+        "IDEM-7"
+      ],
+      "file": "src/Events/CommissionConsumer.php"
+    }
+  ]
+}

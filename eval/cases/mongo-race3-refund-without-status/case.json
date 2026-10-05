@@ -1,0 +1,24 @@
+{
+  "app": "app-mongo",
+  "title": "Refund moves any payment to refunded, not only a paid one",
+  "bugs": [
+    {
+      "rules": [
+        "RACE-3"
+      ],
+      "file": "src/Payments/PaymentService.php",
+      "anchor": "\\['_id' => \\$paymentId\\],$",
+      "anchor_end": "\\['\\$set' => \\['status' => 'refunded'\\]\\]"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "RACE-3",
+        "TX-1",
+        "IDEM-1"
+      ],
+      "file": "src/Payments/PaymentService.php"
+    }
+  ]
+}

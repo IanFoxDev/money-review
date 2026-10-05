@@ -1,0 +1,15 @@
+{
+  "app": "app-mongo",
+  "title": "Outbox relay produces without a partition key",
+  "bugs": [
+    {
+      "rules": [
+        "IDEM-8"
+      ],
+      "file": "src/Events/OutboxRelay.php",
+      "anchor": "Spread the load evenly over partitions",
+      "anchor_end": "produce\\(RD_KAFKA_PARTITION_UA, 0, \\$payload\\);"
+    }
+  ],
+  "acceptable": []
+}

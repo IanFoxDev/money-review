@@ -1,0 +1,25 @@
+{
+  "app": "app-mongo",
+  "title": "Fee charge reads the wallet and writes a computed balance",
+  "bugs": [
+    {
+      "rules": [
+        "RACE-1",
+        "RACE-2"
+      ],
+      "file": "src/Money/FeeCharger.php",
+      "anchor": "\\$wallet = \\$this->wallets->findOne",
+      "anchor_end": "'\\$set' => \\['balance' =>"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-6",
+        "TX-3",
+        "IDEM-1"
+      ],
+      "file": "src/Money/FeeCharger.php"
+    }
+  ]
+}

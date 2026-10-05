@@ -1,0 +1,24 @@
+{
+  "app": "app-mongo",
+  "title": "Cashback is decoded and computed as float64",
+  "bugs": [
+    {
+      "rules": [
+        "MONEY-1",
+        "MONEY-3"
+      ],
+      "file": "go/internal/credits/consumer.go",
+      "anchor": "Amount +float64",
+      "anchor_end": "int64\\(cashback\\)"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-1",
+        "MONEY-3"
+      ],
+      "file": "go/internal/credits/consumer.go"
+    }
+  ]
+}

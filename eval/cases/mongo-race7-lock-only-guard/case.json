@@ -1,0 +1,27 @@
+{
+  "app": "app-mongo",
+  "title": "Payout send relies on a short Redis lock instead of the status claim",
+  "bugs": [
+    {
+      "rules": [
+        "RACE-7",
+        "RACE-1",
+        "RACE-3"
+      ],
+      "file": "src/Payouts/PayoutService.php",
+      "anchor": "acquire\\(\"payout:\\{\\$payoutId\\}\", 5_000\\)",
+      "anchor_end": "\\$payout = \\$this->payouts->findOne\\(\\['_id' => \\$payoutId, 'status' => 'pending'\\]\\)"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "RACE-7",
+        "RACE-1",
+        "RACE-3",
+        "IDEM-3"
+      ],
+      "file": "src/Payouts/PayoutService.php"
+    }
+  ]
+}

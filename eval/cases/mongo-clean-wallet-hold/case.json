@@ -1,0 +1,6 @@
+{
+  "app": "app-mongo",
+  "title": "New hold method: a ledger transfer to the holds wallet in one transaction",
+  "bugs": [],
+  "acceptable": []
+}

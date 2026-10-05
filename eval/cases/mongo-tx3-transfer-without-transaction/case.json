@@ -1,0 +1,24 @@
+{
+  "app": "app-mongo",
+  "title": "Ledger transfer runs its writes without a transaction",
+  "bugs": [
+    {
+      "rules": [
+        "TX-3"
+      ],
+      "file": "src/Money/Ledger.php",
+      "anchor": "Transactions need a replica set",
+      "anchor_end": "\\['\\$inc' => \\['balance' => \\$amount\\]\\]\\);"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-2",
+        "TX-3",
+        "TX-4"
+      ],
+      "file": "src/Money/Ledger.php"
+    }
+  ]
+}
