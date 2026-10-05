@@ -1,5 +1,5 @@
 name: Bug report
-description: The command, the skill or the GitLab integration does not behave as documented
+description: The command, the skill or the GitLab or GitHub integration does not behave as documented
 labels: ["bug"]
 body:
   - type: dropdown
@@ -9,7 +9,7 @@ body:
       options:
         - Skill in Claude Code
         - money-review command
-        - GitLab (--mr, --post)
+        - GitLab or GitHub (--mr, --pr, --post)
         - Triage or config
         - Eval
     validations:

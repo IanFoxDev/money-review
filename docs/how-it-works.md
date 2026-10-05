@@ -77,16 +77,22 @@ and a comment in the code can try to give the model instructions.
 - In the shell command the coordinator gets the two plugin scripts (`prepare.sh`,
   `render.sh`), the agents, read tools, and write access to exactly one file,
   `report.json` in the output directory. It has no general shell.
-- Posting to GitLab is done by `scripts/gitlab.sh` after the model has finished, from
-  the JSON report, not by the model.
+- Posting is done by `scripts/gitlab.sh` or `scripts/github.sh` after the model has
+  finished, from the JSON report, not by the model.
 
-## GitLab state
+## Merge request state
 
-The tool keeps no database. Its state lives in the merge request:
+The tool keeps no database. Its state lives in the merge request or pull request:
 
-- the summary note ends with `<!-- money-review:summary sha=<commit> -->`, the last
+- the summary comment ends with `<!-- money-review:summary sha=<commit> -->`, the last
   reviewed commit;
-- each discussion ends with `<!-- money-review:finding rule=<rule> file=<path> -->`.
+- each comment on a line ends with `<!-- money-review:finding rule=<rule> file=<path> -->`.
+
+On GitLab these are a note and discussions on the diff (`glab api`). On GitHub they are
+a conversation comment and review comments on the right side of the diff (`gh api`).
+The diff starts at the merge base of the head and the target branch: GitLab reports it,
+GitHub reports the tip of the base branch, so the tool computes it from the fetched
+commits (`refs/merge-requests/N/head` or `refs/pull/N/head`).
 
 On the next run, if the recorded commit is an ancestor of the merge request head, only
 the commits after it are reviewed. After a force push it is not an ancestor any more
@@ -103,4 +109,4 @@ differently from run to run and line numbers move.
 | `change.diff` | the diff that was reviewed |
 | `report.json` | findings and rejected candidates |
 | `claude.json` | the CLI's JSON output: turns, duration, API-equivalent cost |
-| `worktree/` | with `--mr`, the checkout of the merge request head; removed at the end |
+| `worktree/` | with `--mr` or `--pr`, the checkout of the head; removed at the end |

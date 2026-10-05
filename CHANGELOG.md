@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- GitHub pull requests: `--pr N`, with `--post` and `--full` working as for GitLab.
+  Findings become review comments on the line, the summary is one conversation
+  comment that is edited in place.
+
 ## [0.1.0] - 2026-10-05
 
 First release.

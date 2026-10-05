@@ -15,7 +15,7 @@ bill per merge request, and a change that does not touch money never reaches the
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Status: 0.x. Default patterns are tuned for PHP and Laravel; the checklists are not
-tied to a language. GitLab merge requests are supported, GitHub pull requests are next.
+tied to a language. Works on GitLab merge requests and GitHub pull requests.
 
 ## What a finding looks like
 
@@ -43,8 +43,8 @@ transaction, the next run looked only at the new commit and reported exactly tha
 ## Install
 
 You need Claude Code 2.1 or newer, logged in with a Claude subscription, plus `git` and
-`jq`. For GitLab merge requests, also [`glab`](https://gitlab.com/gitlab-org/cli),
-logged in.
+`jq`. For GitLab merge requests, also [`glab`](https://gitlab.com/gitlab-org/cli);
+for GitHub pull requests, [`gh`](https://cli.github.com). Both logged in.
 
 In Claude Code:
 
@@ -79,20 +79,21 @@ money-review --format json                 # the report as JSON
 money-review --fail-on high                # exit 1 if there is a high finding
 ```
 
-On a GitLab merge request:
+On a GitLab merge request or a GitHub pull request:
 
 ```sh
-money-review --mr 42                       # review !42, print the report
+money-review --mr 42                       # review GitLab !42, print the report
 money-review --mr 42 --post                # and comment on the merge request
+money-review --pr 42 --post                # the same for GitHub #42
 money-review --mr 42 --full                # review the whole MR again
 ```
 
-`--mr` checks out the merge request head in a temporary git worktree, so your working
-copy is not touched. `--post` opens one discussion per finding on the line it is about
-and keeps one summary note up to date. The summary records the reviewed commit: the
+`--mr` and `--pr` check out the head in a temporary git worktree, so your working copy
+is not touched. `--post` leaves one comment per finding on the line it is about and
+keeps one summary comment up to date. The summary records the reviewed commit: the
 next run looks only at commits pushed after it, and does not start Claude at all if
-there are none. A finding that is already on the merge request (same rule, same file)
-is not posted twice.
+there are none. A finding that is already there (same rule, same file) is not posted
+twice.
 
 Exit codes: 0 done, 1 findings at the `--fail-on` level, 2 usage error, 3 refused to
 run because `ANTHROPIC_API_KEY` is set (it would bill the API instead of your
