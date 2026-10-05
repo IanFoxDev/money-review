@@ -1,6 +1,6 @@
 {
   "name": "money-review",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Reviews a diff for transaction boundaries, races, idempotency and money arithmetic. Every finding comes with a failure scenario.",
   "author": {
     "name": "Anatoly Pankratyev",
@@ -9,5 +9,11 @@
   "homepage": "https://github.com/IanFoxDev/money-review",
   "repository": "https://github.com/IanFoxDev/money-review",
   "license": "MIT",
-  "keywords": ["code-review", "payments", "billing", "idempotency", "transactions"]
+  "keywords": [
+    "code-review",
+    "payments",
+    "billing",
+    "idempotency",
+    "transactions"
+  ]
 }

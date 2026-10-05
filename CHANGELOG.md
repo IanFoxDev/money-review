@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-05
+
 ### Added
 
 - GitHub pull requests: `--pr N`, with `--post` and `--full` working as for GitLab.
@@ -36,5 +38,6 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/IanFoxDev/money-review/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/IanFoxDev/money-review/releases/tag/v0.1.0
