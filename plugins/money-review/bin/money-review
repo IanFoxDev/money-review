@@ -71,7 +71,9 @@ case "$format" in markdown|json) ;; *) die 2 "--format must be markdown or json"
 case "$fail_on" in high|medium|low|never) ;; *) die 2 "--fail-on must be high, medium, low or never" ;; esac
 if [ -n "$mr" ]; then
     case "$mr" in *[!0-9]*) die 2 "--mr takes a merge request number" ;; esac
-    [ -z "$diff_in" ] && [ -z "$base" ] || die 2 "--mr cannot be combined with --diff or --base"
+    if [ -n "$diff_in" ] || [ -n "$base" ]; then
+        die 2 "--mr cannot be combined with --diff or --base"
+    fi
 elif [ "$post" -eq 1 ] || [ "$full" -eq 1 ]; then
     die 2 "--post and --full need --mr"
 fi
