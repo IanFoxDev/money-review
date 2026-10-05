@@ -1,9 +1,23 @@
 {
   "title": "Debit and credit of one transfer committed in two transactions",
   "bugs": [
-    {"rules": ["TX-3"], "file": "app/Services/Ledger.php", "anchor": "Credit side in its own short transaction"}
+    {
+      "rules": [
+        "TX-3"
+      ],
+      "file": "app/Services/Ledger.php",
+      "anchor": "Credit side in its own short transaction"
+    }
   ],
   "acceptable": [
-    {"rules": ["IDEM-2", "IDEM-5", "TX-4"], "file": "app/Services/Ledger.php"}
+    {
+      "rules": [
+        "IDEM-2",
+        "IDEM-5",
+        "TX-4",
+        "RACE-4"
+      ],
+      "file": "app/Services/Ledger.php"
+    }
   ]
 }
