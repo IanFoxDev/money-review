@@ -75,7 +75,7 @@ Say where the things live that a reviewer would otherwise have to guess:
 Triage is a plain script, so you can see its decision without starting Claude:
 
 ```sh
-git diff master | ~/money-review/plugins/money-review/scripts/triage.sh | jq
+git diff master | ~/.claude/plugins/marketplaces/money-review/plugins/money-review/scripts/triage.sh | jq
 ```
 
 It prints whether the change touches money, the files in scope, the checklists it

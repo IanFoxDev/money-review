@@ -53,12 +53,14 @@ In Claude Code:
 /plugin install money-review@money-review
 ```
 
-For the shell command, clone the repository and put the script on your `PATH`:
+The plugin brings the shell command with it. Put it on your `PATH`:
 
 ```sh
-git clone https://github.com/IanFoxDev/money-review ~/money-review
-ln -s ~/money-review/plugins/money-review/bin/money-review ~/.local/bin/money-review
+ln -s ~/.claude/plugins/marketplaces/money-review/plugins/money-review/bin/money-review ~/.local/bin/money-review
 ```
+
+Without Claude Code plugins, clone the repository instead and link
+`plugins/money-review/bin/money-review` from there.
 
 ## Use
 
