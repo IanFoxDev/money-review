@@ -6,9 +6,10 @@
 # Usage: money-review [options]
 #   --base REF          compare against REF (default: origin/HEAD, master, main)
 #   --mr N              review GitLab merge request N (needs glab, run in the repo)
-#   --post              with --mr: comment on the merge request
-#   --full              with --mr: review the whole MR, not only new commits
-#   --remote NAME       with --mr: git remote of the GitLab project (default: origin)
+#   --pr N              review GitHub pull request N (needs gh, run in the repo)
+#   --post              with --mr or --pr: comment on it
+#   --full              with --mr or --pr: review all of it, not only new commits
+#   --remote NAME       with --mr or --pr: git remote of the project (default: origin)
 #   --diff FILE         review this unified diff instead of the git change
 #   --config FILE       project config (default: .money-review.json in the repo)
 #   --format FORMAT     markdown (default) or json
@@ -19,7 +20,7 @@
 #   --max-turns N       turn limit for the coordinator (default: 20)
 #   --allow-api-key     run even if ANTHROPIC_API_KEY is set (paid API billing)
 #
-# With --mr, the review runs in a temporary git worktree at the MR head, so your
+# With --mr or --pr, the review runs in a temporary git worktree at its head, so your
 # working tree is not touched. After a posted review only commits added since
 # the reviewed one are checked, unless --full is given.
 #
@@ -41,6 +42,7 @@ model="sonnet"
 max_turns="20"
 allow_api_key=0
 mr=""
+pr=""
 post=0
 full=0
 remote="origin"
@@ -59,23 +61,34 @@ while [ $# -gt 0 ]; do
         --max-turns) max_turns="${2:?}"; shift 2 ;;
         --allow-api-key) allow_api_key=1; shift ;;
         --mr) mr="${2:?}"; shift 2 ;;
+        --pr) pr="${2:?}"; shift 2 ;;
         --post) post=1; shift ;;
         --full) full=1; shift ;;
         --remote) remote="${2:?}"; shift 2 ;;
-        -h|--help) sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,32p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) die 2 "unknown argument $1 (see --help)" ;;
     esac
 done
 
 case "$format" in markdown|json) ;; *) die 2 "--format must be markdown or json" ;; esac
 case "$fail_on" in high|medium|low|never) ;; *) die 2 "--fail-on must be high, medium, low or never" ;; esac
-if [ -n "$mr" ]; then
-    case "$mr" in *[!0-9]*) die 2 "--mr takes a merge request number" ;; esac
+# A merge request or a pull request: the forge, its number and how to name it.
+forge=""
+number=""
+if [ -n "$mr" ] && [ -n "$pr" ]; then
+    die 2 "pass --mr or --pr, not both"
+elif [ -n "$mr" ]; then
+    forge=gitlab; number="$mr"; label="!$mr"; cli="${MONEY_REVIEW_GLAB:-glab}"
+elif [ -n "$pr" ]; then
+    forge=github; number="$pr"; label="#$pr"; cli="${MONEY_REVIEW_GH:-gh}"
+fi
+if [ -n "$forge" ]; then
+    case "$number" in ''|*[!0-9]*) die 2 "--mr and --pr take a number" ;; esac
     if [ -n "$diff_in" ] || [ -n "$base" ]; then
-        die 2 "--mr cannot be combined with --diff or --base"
+        die 2 "--mr and --pr cannot be combined with --diff or --base"
     fi
 elif [ "$post" -eq 1 ] || [ "$full" -eq 1 ]; then
-    die 2 "--post and --full need --mr"
+    die 2 "--post and --full need --mr or --pr"
 fi
 
 if [ -n "${ANTHROPIC_API_KEY:-}" ] && [ "$allow_api_key" -eq 0 ]; then
@@ -91,22 +104,26 @@ fi
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"
 
-gitlab="$plugin/scripts/gitlab.sh"
 head_sha=""
 since=""
-if [ -n "$mr" ]; then
-    command -v "${MONEY_REVIEW_GLAB:-glab}" >/dev/null || die 2 "glab is required for --mr (https://gitlab.com/gitlab-org/cli)"
-    refs="$("$gitlab" refs "$mr")" || die 2 "cannot read merge request !$mr with glab"
+if [ -n "$forge" ]; then
+    forge_sh="$plugin/scripts/$forge.sh"
+    command -v "$cli" >/dev/null || die 2 "$(basename "$cli") is required for --mr and --pr (glab for GitLab, gh for GitHub)"
+    refs="$("$forge_sh" refs "$number")" || die 2 "cannot read $label with $(basename "$cli")"
     head_sha="$(jq -r .head_sha <<< "$refs")"
     base_sha="$(jq -r .base_sha <<< "$refs")"
     target="$(jq -r .target_branch <<< "$refs")"
-    git fetch -q "$remote" "refs/merge-requests/$mr/head" "$target" ||
-        die 2 "cannot fetch merge request !$mr from $remote"
+    git fetch -q "$remote" "$(jq -r .fetch_ref <<< "$refs")" "$target" ||
+        die 2 "cannot fetch $label from $remote"
+    # GitLab reports the merge base, GitHub the tip of the base branch. The
+    # merge base of that and the head is the right start in both cases.
+    base_sha="$(git merge-base "$base_sha" "$head_sha")" ||
+        die 2 "no common commit between $label and its target branch $target"
 
     if [ "$full" -eq 0 ]; then
-        last="$("$gitlab" last-reviewed "$mr")"
+        last="$("$forge_sh" last-reviewed "$number")"
         if [ "$last" = "$head_sha" ]; then
-            echo "money-review: !$mr at ${head_sha:0:12} is already reviewed, nothing new. Use --full to review it again."
+            echo "money-review: $label at ${head_sha:0:12} is already reviewed, nothing new. Use --full to review it again."
             exit 0
         fi
         if [ -n "$last" ] && git merge-base --is-ancestor "$last" "$head_sha" 2>/dev/null; then
@@ -120,7 +137,7 @@ if [ -n "$mr" ]; then
     repo_dir="$(pwd)"
     trap 'git -C "$repo_dir" worktree remove --force "$out/worktree" >/dev/null 2>&1 || true' EXIT
     cd "$out/worktree"
-    [ -n "$since" ] && echo "money-review: !$mr, reviewing commits since ${since:0:12}" >&2
+    [ -n "$since" ] && echo "money-review: $label, reviewing commits since ${since:0:12}" >&2
 fi
 
 prep_args=(--out "$out")
@@ -181,7 +198,7 @@ jq -r --arg s "$elapsed" '"money-review: \(.num_turns // "?") turns, \($s) s, AP
 emit "$out/report.json"
 
 if [ "$post" -eq 1 ]; then
-    "$gitlab" post "$mr" "$out/report.json" "$head_sha" "$since"
+    "$forge_sh" post "$number" "$out/report.json" "$head_sha" "$since"
 fi
 
 case "$fail_on" in
