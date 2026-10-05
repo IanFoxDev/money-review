@@ -9,9 +9,163 @@ Every finding comes with a failure scenario: what happens, in which order, and w
 costs. A finding without one is dropped.
 
 It runs on your Claude subscription through the Claude Code CLI. No API key, no extra
-bill per merge request.
+bill per merge request, and a change that does not touch money never reaches the model.
 
-Status: early development, nothing to install yet.
+[![ci](https://github.com/IanFoxDev/money-review/actions/workflows/ci.yml/badge.svg)](https://github.com/IanFoxDev/money-review/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+Status: 0.x. Default patterns are tuned for PHP and Laravel; the checklists are not
+tied to a language. GitLab merge requests are supported, GitHub pull requests are next.
+
+## What a finding looks like
+
+From a real run on a merge request that adds wallet withdrawals (one new 27-line file):
+
+> ### HIGH RACE-1: Balance check and debit with no lock or transaction
+>
+> `app/Services/WithdrawalService.php:18`
+>
+> **What happens:** The wallet holds 10000 balance_cents (100.00). The user
+> double-clicks to withdraw 80.00. Both requests load the wallet at line 15 with no
+> lock and read 10000. Both pass the check at line 18. Both set balance_cents to 2000
+> and save. Both call gateway->payout(8000) at line 25. 160.00 is paid out against
+> 100.00, and the wallet shows 2000, so the 6000 overdraft is not recorded anywhere.
+>
+> **Fix:** Wrap the read, check and debit in DB::transaction and load the wallet with
+> lockForUpdate(), or run a conditional UPDATE ... WHERE balance_cents >= ? and treat 0
+> affected rows as insufficient funds. Keep the gateway call outside the transaction.
+
+The same run reported a float amount cast to cents (19.99 becomes 19.98), the payout
+sent after the debit with no record of the withdrawal, and a payout without an
+idempotency key. After the author pushed a fix that moved the payout inside the
+transaction, the next run looked only at the new commit and reported exactly that.
+
+## Install
+
+You need Claude Code 2.1 or newer, logged in with a Claude subscription, plus `git` and
+`jq`. For GitLab merge requests, also [`glab`](https://gitlab.com/gitlab-org/cli),
+logged in.
+
+In Claude Code:
+
+```
+/plugin marketplace add IanFoxDev/money-review
+/plugin install money-review@money-review
+```
+
+For the shell command, clone the repository and put the script on your `PATH`:
+
+```sh
+git clone https://github.com/IanFoxDev/money-review ~/money-review
+ln -s ~/money-review/plugins/money-review/bin/money-review ~/.local/bin/money-review
+```
+
+## Use
+
+Inside a Claude Code session, in the repository with your change:
+
+```
+/money-review:money-review                 # this branch against master or main
+/money-review:money-review --base develop
+```
+
+From a shell:
+
+```sh
+money-review                               # Markdown report
+money-review --format json                 # the report as JSON
+money-review --fail-on high                # exit 1 if there is a high finding
+```
+
+On a GitLab merge request:
+
+```sh
+money-review --mr 42                       # review !42, print the report
+money-review --mr 42 --post                # and comment on the merge request
+money-review --mr 42 --full                # review the whole MR again
+```
+
+`--mr` checks out the merge request head in a temporary git worktree, so your working
+copy is not touched. `--post` opens one discussion per finding on the line it is about
+and keeps one summary note up to date. The summary records the reviewed commit: the
+next run looks only at commits pushed after it, and does not start Claude at all if
+there are none. A finding that is already on the merge request (same rule, same file)
+is not posted twice.
+
+Exit codes: 0 done, 1 findings at the `--fail-on` level, 2 usage error, 3 refused to
+run because `ANTHROPIC_API_KEY` is set (it would bill the API instead of your
+subscription; pass `--allow-api-key` if that is what you want), 4 the review did not
+produce a report.
+
+## What it checks
+
+Four checklists, six rules each. Each rule has what to look for, a failure scenario,
+a bad and a good example, and a "do not report" section that keeps false alarms down.
+
+| Checklist | Covers |
+|---|---|
+| [Transaction boundaries (TX)](plugins/money-review/skills/money-review/references/transactions.md) | provider calls inside a transaction, side effects after commit with no record, debit and credit in separate transactions, swallowed exceptions, nested transactions, one transaction around a batch |
+| [Races (RACE)](plugins/money-review/skills/money-review/references/races.md) | check-then-act, lost updates, state transitions without a guard, lock order, uniqueness enforced only in code, limits checked under READ COMMITTED |
+| [Idempotency (IDEM)](plugins/money-review/skills/money-review/references/idempotency.md) | callbacks and consumers without a dedup key, dedup outside the transaction, outgoing calls without a stable idempotency key, timeouts treated as failures, batches that are not safe to re-run, retries around non-idempotent code |
+| [Money arithmetic (MONEY)](plugins/money-review/skills/money-review/references/arithmetic.md) | floats, amounts without a currency, rounding without a rule, splits that do not add up, signs of refunds and fees, balances changed without a ledger entry |
+
+Style, naming and general code quality are out of scope on purpose. Use it next to
+your usual review, not instead of it.
+
+## How it keeps usage low
+
+A review is a pipeline, and each stage can stop it:
+
+1. Triage without a model. A script decides from the diff and your config whether any
+   changed file touches money and which checklists apply. A merge request about
+   avatars ends here.
+2. One reviewer pass (Sonnet) with only the matched checklists.
+3. A verifier (Opus) tries to refute each candidate against the code around it: an
+   earlier lock, a unique index in a migration, an outer transaction. It runs only if
+   there are candidates.
+4. The coordinator never reads code. It passes file paths between stages.
+
+On the merge request above a full review took 88 seconds and 5 turns. The
+same run on the API would cost about 0.38 USD; on a subscription it uses your limits
+instead. More in [docs/how-it-works.md](docs/how-it-works.md).
+
+## Configure
+
+Put `.money-review.json` in the repository root. It is merged over the
+[defaults](plugins/money-review/defaults/config.json):
+
+```json
+{
+  "money_paths": ["app/Billing/*", "app/Wallet/*"],
+  "context": "Amounts are integer cents. Balances change only through App\\Ledger. Provider calls go through App\\Psp\\Gateway."
+}
+```
+
+`money_paths` always count as money code. `context` is passed to the reviewer: tell it
+where your transaction wrapper, ledger and dedup table are, and it stops guessing.
+Every field is described in [docs/config.md](docs/config.md).
+
+## How good is it
+
+The repository has an eval: a small Laravel billing app with no known money bugs and
+25 merge requests on top of it, 20 with one bug each and 5 clean ones (some of them
+touch money code correctly). See [docs/eval.md](docs/eval.md).
+
+A first run on 5 of the cases, once each, found 3 of 3 bugs with no false alarm and
+no alarm on the clean money code. That is a smoke test, not a benchmark. Numbers for
+all cases, three runs each, will replace this paragraph.
+
+## Limits
+
+- The model is not deterministic. Two runs on the same change can report 4 and 5
+  findings. Treat it as a reviewer with good days and bad days, not as a linter.
+- Triage works on words and paths. A money change that uses none of the configured
+  words is skipped; add its paths to `money_paths`.
+- It reads the repository it runs in. A guard that lives in another service is
+  invisible to it; the verifier lowers the severity when it cannot tell.
+- Running it in CI needs a token tied to one person's subscription
+  (`claude setup-token`). Check that your plan allows that before you set it up for a
+  team.
 
 ## License
 
