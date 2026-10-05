@@ -150,6 +150,13 @@ Put `.money-review.json` in the repository root. It is merged over the
 
 `money_paths` always count as money code. `context` is passed to the reviewer: tell it
 where your transaction wrapper, ledger and dedup table are, and it stops guessing.
+A finding the team has accepted can be silenced with a reason, in the code or in the
+config:
+
+```php
+// money-review: ignore RACE-1 the caller holds lockForUpdate on the wallet
+```
+
 Every field is described in [docs/config.md](docs/config.md).
 
 ## How good is it

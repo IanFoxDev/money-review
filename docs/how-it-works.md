@@ -55,6 +55,11 @@ dedup in a middleware, a guard on the current state. Every candidate ends up eit
 of its own. When the guard may live outside the repository it keeps the finding with
 a lower severity and says what to check.
 
+**finish.sh** makes the last changes to the report without a model: it moves a
+finding that points past the end of its file to a line that exists, and moves
+findings accepted with an `ignore` comment or config entry to `suppressed` (see
+[config.md](config.md#ignore)).
+
 **render.sh** turns `report.json` (see `plugins/money-review/schemas/report.schema.json`)
 into Markdown. The same JSON drives the merge request comments.
 

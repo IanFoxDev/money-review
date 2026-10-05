@@ -90,6 +90,37 @@ Say where the things live that a reviewer would otherwise have to guess:
 }
 ```
 
+### `ignore`
+
+Findings the team has looked at and accepted. Each entry names a rule (`RACE-1`) or a
+whole checklist (`RACE`), an optional `path` glob (default: every file) and a reason.
+The reason is required: an entry without one is not applied, and the run says so.
+
+```json
+{
+  "ignore": [
+    {"rule": "MONEY-2", "path": "src/Reports/*", "reason": "reports show amounts in one currency, never sum them"},
+    {"rule": "RACE-7", "reason": "the Redis lock is a throttle, the balance is guarded by $inc with a condition"}
+  ]
+}
+```
+
+For one place in the code, put a comment on the line of the finding or the line above
+it. It works in any comment style, and takes one rule, a list or a checklist:
+
+```php
+// money-review: ignore RACE-1 the caller holds lockForUpdate on the wallet
+$wallet->balance -= $amount;
+
+$total = $a + $b; # money-review: ignore MONEY-1,MONEY-4 display only, see BILL-412
+```
+
+Suppression is applied by `scripts/suppress.sh` after the verifier, without a model,
+so it does not change what the review costs. Suppressed findings do not count for
+`--fail-on`, are not posted as merge request comments, and are listed in a folded
+section of the report with their reason, so an ignore that hides a real bug can still
+be found.
+
 ## Checking what triage does
 
 Triage is a plain script, so you can see its decision without starting Claude:

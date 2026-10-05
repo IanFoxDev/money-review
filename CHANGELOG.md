@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Suppression of accepted findings: a `money-review: ignore RULE reason` comment on the
+  line of a finding or the line above, and `ignore` entries in `.money-review.json`
+  (rule or checklist, path glob, reason). A reason is required. Suppressed findings
+  move to `suppressed` in the report, do not count for `--fail-on` and are not posted.
+
 ## [0.3.0] - 2026-10-05
 
 ### Added
