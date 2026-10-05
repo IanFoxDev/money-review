@@ -116,3 +116,14 @@ field() { jq -c "$1" <<< "$output"; }
     [ "$(field '.coverage.files_reviewed')" = "2" ]
     [ "$(field '.coverage.not_reviewed | length')" = "1" ]
 }
+
+@test "ignore entries from the config are passed on" {
+    echo '{"ignore": [{"rule": "RACE-1", "reason": "one worker"}]}' > .money-review.json
+    run "$prepare" --diff "$diffs/withdrawal.diff"
+    [ "$(field '.ignore[0].rule')" = '"RACE-1"' ]
+}
+
+@test "no config means nothing is ignored" {
+    run "$prepare" --diff "$diffs/withdrawal.diff"
+    [ "$(field .ignore)" = '[]' ]
+}

@@ -3,7 +3,8 @@
 # for bin/money-review:
 #   {"base": "...", "diff": "/tmp/.../change.diff", "money": true,
 #    "categories": [...], "checklists": [...], "files": [...], "context": "...",
-#    "groups": [{"diff", "checklists", "files", "lines"}], "coverage": {...}}
+#    "groups": [{"diff", "checklists", "files", "lines"}], "coverage": {...},
+#    "ignore": [...]}
 # A change bigger than review.group_lines changed lines is split into groups of
 # files, each reviewed on its own (see split.sh); a copy goes to OUT/prepared.json.
 #
@@ -28,7 +29,7 @@ while [ $# -gt 0 ]; do
         --diff) diff_in="${2:?--diff needs a file}"; shift 2 ;;
         --config) config="${2:?--config needs a file}"; shift 2 ;;
         --out) out="${2:?--out needs a directory}"; shift 2 ;;
-        -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "prepare: unknown argument $1" >&2; exit 2 ;;
     esac
 done
@@ -79,8 +80,10 @@ checklists_of() { # categories JSON -> checklist paths JSON
 
 if [ -n "$config" ]; then
     review="$(jq -s '(.[0].review // {}) * (.[1].review // {})' "$here/../defaults/config.json" "$config")"
+    ignore="$(jq -c '.ignore // []' "$config")"
 else
     review="$(jq '.review // {}' "$here/../defaults/config.json")"
+    ignore="[]"
 fi
 group_lines="$(jq -r '.group_lines // 800' <<< "$review")"
 max_groups="$(jq -r '.max_groups // 6' <<< "$review")"
@@ -126,6 +129,7 @@ jq -n \
     --argjson groups "$groups" \
     --argjson not_reviewed "$not_reviewed" \
     --argjson files_changed "$files_changed" \
+    --argjson ignore "$ignore" \
     '{
         base: $base,
         diff: $diff,
@@ -141,5 +145,6 @@ jq -n \
             files_reviewed: ([$groups[].files[]] | length),
             groups: ($groups | length),
             not_reviewed: $not_reviewed
-        }
+        },
+        ignore: $ignore
     }' | tee "$out/prepared.json"
