@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Stand-in for gh in tests. State lives in $FAKE_GH_DIR:
+#   pr.json               answer for GET .../pulls/N
+#   issue_comments.json   existing PR conversation comments, a JSON array
+#   review_comments.json  existing review comments on lines, a JSON array
+#   calls                 every call, one per line: METHOD ENDPOINT
+#   bodies/               request bodies of POST and PATCH, numbered
+# A review comment whose line is 999 is refused, like a line outside the diff.
+set -euo pipefail
+dir="${FAKE_GH_DIR:?}"
+[ "${1:-}" = "api" ] || { echo "fake gh: only api is supported" >&2; exit 2; }
+shift
+method=GET
+endpoint=""
+input=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -X|--method) method="$2"; shift 2 ;;
+        --input) input="$2"; shift 2 ;;
+        -H|--header|--jq) shift 2 ;;
+        --paginate|--silent|--slurp) shift ;;
+        *) endpoint="$1"; shift ;;
+    esac
+done
+echo "$method $endpoint" >> "$dir/calls"
+if [ -n "$input" ]; then
+    mkdir -p "$dir/bodies"
+    n="$(find "$dir/bodies" -type f | wc -l | tr -d ' ')"
+    cp "$input" "$dir/bodies/$((n + 1)).json"
+fi
+case "$method $endpoint" in
+    "GET repos/{owner}/{repo}/issues/"*"/comments"*) cat "$dir/issue_comments.json" 2>/dev/null || echo '[]' ;;
+    "GET repos/{owner}/{repo}/pulls/"*"/comments"*) cat "$dir/review_comments.json" 2>/dev/null || echo '[]' ;;
+    "GET repos/{owner}/{repo}/pulls/"*) cat "$dir/pr.json" ;;
+    "POST repos/{owner}/{repo}/pulls/"*"/comments")
+        if [ "$(jq -r .line "$input")" = "999" ]; then
+            echo '{"message": "Validation Failed", "errors": [{"field": "line"}]}' >&2
+            exit 1
+        fi
+        echo '{"id": 10}' ;;
+    *) echo '{"id": 1}' ;;
+esac
