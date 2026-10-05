@@ -14,6 +14,15 @@ All notable changes to this project are documented here. The format follows
   the arithmetic one, and Go files were never reviewed.
 - Money words in triage match in any letter case, so Go's `Amount` and `Balance` count.
 
+### Added
+
+- Checklists for MongoDB, Redis and message brokers: conditional updates instead of
+  row locks, multi-document transactions, writes followed by a Kafka produce, BSON
+  doubles. New rules: TX-7 (a call inside a transaction without the session), TX-8
+  (side effects in a retried transaction callback), RACE-7 (Redis locks that do not
+  hold), RACE-8 (money decisions read from a secondary or a cache), IDEM-7 (offset
+  commit or ack before the work), IDEM-8 (events of one account out of order).
+
 ## [0.2.0] - 2026-10-05
 
 ### Added

@@ -13,7 +13,10 @@ Every rule has:
 
 | File | Prefix | Covers |
 |---|---|---|
-| `transactions.md` | TX | what runs inside and outside a database transaction |
-| `races.md` | RACE | concurrent requests, workers and callbacks on the same row |
-| `idempotency.md` | IDEM | retries, duplicate deliveries, re-runs of jobs |
-| `arithmetic.md` | MONEY | amounts, currencies, rounding, splitting |
+| `transactions.md` | TX | what runs inside and outside a database transaction; MongoDB sessions, writes plus broker publishes |
+| `races.md` | RACE | concurrent requests, workers and callbacks on the same row or document; Redis locks, stale reads |
+| `idempotency.md` | IDEM | retries, duplicate deliveries, re-runs of jobs; broker consumers, offsets and acks, ordering |
+| `arithmetic.md` | MONEY | amounts, currencies, rounding, splitting; amounts in BSON and decoded JSON |
+
+Each file starts with the rules in SQL terms, then a section that maps them to
+MongoDB, Redis and message brokers and adds the rules that only exist there.
