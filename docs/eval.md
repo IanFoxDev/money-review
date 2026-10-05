@@ -6,9 +6,15 @@ README come from here.
 
 ## What is in it
 
-- `eval/app/` is a small Laravel-shaped billing app: wallet accounts with a
+- `eval/app/` is a small Laravel-shaped billing app on SQL: wallet accounts with a
   double-entry ledger, payments, refunds, a provider webhook, monthly partner payouts.
-  It has no known money bugs. It is never run, only read by the reviewer.
+- `eval/app-mongo/` is the same kind of billing without a framework: PHP with the
+  MongoDB library, Kafka and Redis, plus a Go worker with the MongoDB driver and
+  `kafka-go`. Ledger transfers are MongoDB transactions with conditional `$inc`,
+  payment events go through an outbox, consumers commit after the work.
+- Both apps have no known money bugs. They are never run, only read by the reviewer.
+  Before an app is used for cases, money-review reviews the whole app as new code;
+  what it finds there is fixed in the app first.
 - `eval/cases/<name>/` is one merge request. `files/` holds the changed and new files,
   copied over the app. `case.json` lists the bugs the change introduces.
 - Cases named `clean-*` introduce no bug. Some of them touch money code on purpose
@@ -19,6 +25,7 @@ README come from here.
 
 ```json
 {
+  "app": "app-mongo",
   "title": "Withdrawal checks the balance outside the transaction and without a lock",
   "bugs": [
     {
@@ -34,7 +41,8 @@ README come from here.
 }
 ```
 
-`anchor` is an extended regular expression; its first match in the case's version of
+`app` is optional and names the app under `eval/` the case is built on; the default is
+`app`. `anchor` is an extended regular expression; its first match in the case's version of
 the file is the bug's line, so cases can be edited without counting lines.
 `acceptable` lists real but secondary issues that a reviewer may reasonably report.
 

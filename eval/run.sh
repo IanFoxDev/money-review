@@ -6,6 +6,7 @@
 # Every run uses your Claude subscription, about as much as one real review.
 # Without CASE arguments all cases in eval/cases run. Results go to
 # .eval-runs/<timestamp> unless --out is given; summary.md is printed at the end.
+# A case runs on eval/app unless its case.json names another app ("app": "app-mongo").
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -19,7 +20,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --runs) runs="${2:?}"; shift 2 ;;
         --out) out="${2:?}"; shift 2 ;;
-        -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         -*) echo "run: unknown option $1" >&2; exit 2 ;;
         *) cases+=("$1"); shift ;;
     esac
@@ -43,7 +44,8 @@ for c in "${cases[@]}"; do
         rm -rf "$work" "$result"
         mkdir -p "$work" "$result"
 
-        cp -R "$eval_dir/app/." "$work/"
+        app="$(jq -r '.app // "app"' "$eval_dir/cases/$c/case.json")"
+        cp -R "$eval_dir/$app/." "$work/"
         git -C "$work" init -q -b master
         git -C "$work" add .
         git -C "$work" -c user.name=eval -c user.email=eval@example.com commit -qm base
