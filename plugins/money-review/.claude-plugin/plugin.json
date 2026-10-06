@@ -1,6 +1,6 @@
 {
   "name": "money-review",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Reviews a diff for transaction boundaries, races, idempotency and money arithmetic. Every finding comes with a failure scenario.",
   "author": {
     "name": "Anatoly Pankratyev",
