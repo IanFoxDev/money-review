@@ -1,0 +1,10 @@
+{
+  "title": "Payout approval emails the partner after its own commit, but runs inside the batch transaction",
+  "bugs": [
+    {"rules": ["TX-5", "TX-2"], "file": "app/Services/PayoutApproval.php", "anchor": "notifier->payoutOnTheWay"}
+  ],
+  "acceptable": [
+    {"rules": ["TX-6", "TX-5", "TX-2", "RACE-1"], "file": "app/Jobs/ApproveEarlyPayouts.php"},
+    {"rules": ["TX-2", "TX-5"], "file": "app/Services/PayoutApproval.php"}
+  ]
+}

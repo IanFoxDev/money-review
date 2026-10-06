@@ -1,0 +1,9 @@
+{
+  "title": "Revenue report sums refunds, stored as positive amounts, together with payments",
+  "bugs": [
+    {"rules": ["MONEY-5"], "file": "app/Services/RevenueReport.php", "anchor": "'type' => 'refund'", "anchor_end": "\\+ \\$row\\['amount_cents'\\]"}
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-2", "MONEY-5"], "file": "app/Services/RevenueReport.php"}
+  ]
+}

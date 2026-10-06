@@ -1,0 +1,9 @@
+{
+  "title": "Commission rounded half up in the ledger and truncated in the partner statement",
+  "bugs": [
+    {"rules": ["MONEY-3"], "file": "app/Services/PartnerCommission.php", "anchor": "round\\(\\$payment->amount_cents", "anchor_end": "intdiv\\(\\(int\\) \\$row->amount_cents"}
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-1", "MONEY-2", "MONEY-4", "MONEY-3"], "file": "app/Services/PartnerCommission.php"}
+  ]
+}
