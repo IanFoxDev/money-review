@@ -44,6 +44,7 @@ setup() {
     [[ "$output" == *"### HIGH RACE-1"* ]]
     [[ "$output" == *"4 turns"* ]]
     [[ "$output" == *"API-equivalent 0.37 USD"* ]]
+    [[ "$output" == *"models: claude-opus-5-5, claude-sonnet-5-5"* ]]
 }
 
 @test "claude is called with the plugin, sonnet and narrow permissions" {

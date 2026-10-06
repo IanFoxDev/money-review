@@ -25,4 +25,4 @@ if [ "$calls" -le "${FAKE_FAIL:-0}" ]; then
 fi
 sleep "${FAKE_SLEEP:-0}"
 [ -n "${FAKE_REPORT:-}" ] && cp "$FAKE_REPORT" "$out/report.json"
-echo '{"type": "result", "num_turns": 4, "total_cost_usd": 0.3712, "result": "done"}'
+echo '{"type": "result", "num_turns": 4, "total_cost_usd": 0.3712, "result": "done", "modelUsage": {"claude-opus-5-5": {}, "claude-sonnet-5-5": {}}}'

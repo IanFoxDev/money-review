@@ -225,7 +225,7 @@ fi
 
 "$plugin/scripts/finish.sh" "$out/report.json" "$out/change.diff" "$out/prepared.json"
 
-jq -r --arg s "$elapsed" '"money-review: \(.num_turns // "?") turns, \($s) s, API-equivalent \(.total_cost_usd // 0 | . * 100 | round / 100) USD (not billed on a subscription)"' \
+jq -r --arg s "$elapsed" '"money-review: \(.num_turns // "?") turns, \($s) s, API-equivalent \(.total_cost_usd // 0 | . * 100 | round / 100) USD (not billed on a subscription)" + (if (.modelUsage // {}) != {} then ", models: \(.modelUsage | keys | join(", "))" else "" end)' \
     "$out/claude.json" >&2 2>/dev/null || true
 
 emit "$out/report.json"
