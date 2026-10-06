@@ -167,39 +167,29 @@ Every field is described in [docs/config.md](docs/config.md).
 The repository has an eval with two apps and 49 merge requests on top of them, each
 with one planted bug or none (clean cases, some of them touching money code
 correctly). See [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/)
-for full reports. The table is the run of 2026-10-05 over the 43 cases of that day, each
-three times (Claude Code 2.1.289); the cases added later are covered below it.
+for full reports. The table is one run of every case, three times each, on 2026-10-06
+with money-review 0.4.0, Claude Code 2.1.291, `claude-sonnet-5-5` as the reviewer and
+`claude-opus-5-5` as the verifier.
 
 | | Laravel app on SQL | PHP and Go on MongoDB, Kafka, Redis |
 |---|---|---|
-| Cases | 25 (20 bugs, 5 clean) | 18 (14 bugs, 4 clean) |
-| Precision | 100% (56 of 56) | 100% (42 of 42) |
-| Recall | 93% (56 of 60) | 100% (42 of 42) |
-| False alarms on clean cases | 0 in 15 runs | 0 in 12 runs |
-| Time per review | 48 s | 52 s |
-| API-equivalent cost per review | 0.28 USD | 0.31 USD |
+| Cases | 31 (23 bugs, 8 clean) | 18 (14 bugs, 4 clean) |
+| Precision | 99% (69 of 70) | 100% (42 of 42) |
+| Recall | 100% (69 of 69) | 100% (42 of 42) |
+| False alarms on clean cases | 0 in 24 runs | 0 in 12 runs |
+| Time per review | 50 s | 54 s |
+| API-equivalent cost per review | 0.31 USD | 0.33 USD |
 
-The SQL numbers were measured with the rules of 0.1 and 0.2; the MongoDB numbers with the rules
-and triage of 0.3. The checklists and the cases were written by the same person, so
-these numbers show that the rules work as intended, not how the tool does on someone
-else's code.
+Every checklist (TX, RACE, IDEM, MONEY) found all of its planted bugs. The one false
+alarm is a `low` finding on a case about nested transactions: it says a daily limit is
+counted per batch, which matters only if the job runs more than once a day.
 
-On the SQL app, recall by checklist:
-
-| Checklist | Recall |
-|---|---|
-| RACE | 100% |
-| TX | 100% |
-| MONEY | 100% |
-| IDEM | 78% |
-
-On the SQL app, all four misses were in two cases where the change removed one of two
-safety layers and the other one still held. Those two cases were rebuilt so that the
-removed layer is the only one, and cases were added for MONEY-3, MONEY-5 and TX-5
-with a clean pair for each. On these 8 cases (2026-10-06, 24 runs): 14 of 15 bugs
-found, 1 false alarm (low), 0 false alarms in 9 clean runs. The one miss is the right
-finding reported at line 1 of the file. Details in
-[docs/eval-results/2026-10-06-new-cases.md](docs/eval-results/2026-10-06-new-cases.md).
+The checklists and the cases were written by the same person, so these numbers show
+that the rules work as intended, not how the tool does on someone else's code. Earlier
+runs were lower: on 2026-10-05 the SQL app had 93% recall, all misses in two cases where
+the change removed one of two safety layers and the other still held. Those cases were
+rebuilt so that the removed layer is the only one. The eval runs again on every minor
+release and every model change, and is compared with this run (`eval/baseline/`).
 
 Bugs that only the current callers hide are reported as `low`, with the code that
 protects them today: a ledger transfer split over two transactions is safe while

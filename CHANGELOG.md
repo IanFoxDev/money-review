@@ -16,6 +16,9 @@ All notable changes to this project are documented here. The format follows
   and the model ids that ran; `eval/run.sh` warns when the models differ from the
   baseline.
 - The usage line of every review names the models it used.
+- `eval/baseline/summary.json`: a full run of all 49 cases, three times each, to
+  compare later runs with. 111 of 111 planted bugs found, one low false alarm, no
+  false alarm in 36 runs on clean code (`docs/eval-results/2026-10-06-baseline.md`).
 
 ## [0.4.0] - 2026-10-06
 
