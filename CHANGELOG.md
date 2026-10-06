@@ -14,11 +14,21 @@ All notable changes to this project are documented here. The format follows
   move to `suppressed` in the report, do not count for `--fail-on` and are not posted.
 - `docs/team.md`: how a team runs it by hand on pull requests, without a CI token.
 - Eval cases for MONEY-3, MONEY-5 and TX-5, each with a clean pair.
+- `--retries N` (default 1): when Claude ends without a report (an overloaded API, a
+  crash), the review runs again after 30 seconds. A usage or rate limit is not retried.
+- Findings carry `code`, the text of their line. `fix-lines.sh` moves a finding to the
+  line that holds that text when the model counted lines in the diff instead of the
+  file (seen as line 1 for a bug further down).
 
 ### Changed
 
 - Two IDEM eval cases rebuilt so the guard the change removes is the only one;
   `idem-payout-rerun` is replaced by `idem-cashback-rerun`.
+
+### Fixed
+
+- Paths with spaces in `--out`, `--diff` and `--config`: the shell command quotes
+  the arguments it passes to the skill (#8).
 
 ## [0.3.0] - 2026-10-05
 

@@ -46,7 +46,10 @@ transaction, the next run looked only at the new commit and reported exactly tha
 
 You need Claude Code 2.1 or newer, logged in with a Claude subscription, plus `git` and
 `jq`. For GitLab merge requests, also [`glab`](https://gitlab.com/gitlab-org/cli);
-for GitHub pull requests, [`gh`](https://cli.github.com). Both logged in.
+for GitHub pull requests, [`gh`](https://cli.github.com). Both logged in. They take the
+host from the git remote, so GitHub Enterprise Server and self-managed GitLab need only
+a login to that host (`gh auth login --hostname git.example.com`, `glab auth login
+--hostname git.example.com`); this path has not been tested on them yet.
 
 In Claude Code:
 
@@ -100,7 +103,7 @@ twice. How a team can share this without a CI token: [docs/team.md](docs/team.md
 Exit codes: 0 done, 1 findings at the `--fail-on` level, 2 usage error, 3 refused to
 run because `ANTHROPIC_API_KEY` is set (it would bill the API instead of your
 subscription; pass `--allow-api-key` if that is what you want), 4 the review did not
-produce a report.
+produce a report, also after one more try (`--retries N` to change that).
 
 ## What it checks
 
