@@ -44,12 +44,13 @@ transaction, the next run looked only at the new commit and reported exactly tha
 
 ## Install
 
-You need Claude Code 2.1 or newer, logged in with a Claude subscription, plus `git` and
-`jq`. For GitLab merge requests, also [`glab`](https://gitlab.com/gitlab-org/cli);
-for GitHub pull requests, [`gh`](https://cli.github.com). Both logged in. They take the
-host from the git remote, so GitHub Enterprise Server and self-managed GitLab need only
-a login to that host (`gh auth login --hostname git.example.com`, `glab auth login
---hostname git.example.com`); this path has not been tested on them yet.
+You need Claude Code 2.1 or newer, logged in with a Claude subscription (Pro, Max, or a
+seat on a Team or Enterprise plan), plus `git` and `jq`. For GitLab merge requests, also
+[`glab`](https://gitlab.com/gitlab-org/cli); for GitHub pull requests,
+[`gh`](https://cli.github.com). Both logged in. They take the host from the git remote,
+so GitHub Enterprise Server and self-managed GitLab need only a login to that host (`gh
+auth login --hostname git.example.com`, `glab auth login --hostname git.example.com`);
+this path has not been tested on them yet.
 
 In Claude Code:
 
@@ -64,7 +65,9 @@ The plugin brings the shell command with it. Put it on your `PATH`:
 ln -s ~/.claude/plugins/marketplaces/money-review/plugins/money-review/bin/money-review ~/.local/bin/money-review
 ```
 
-Without Claude Code plugins, clone the repository instead and link
+The marketplace installs the latest release, not the tip of `master`;
+`/plugin marketplace update money-review` moves you to a newer one. Without Claude Code
+plugins, or to try unreleased changes, clone the repository and link
 `plugins/money-review/bin/money-review` from there.
 
 ## Use
@@ -161,7 +164,12 @@ config:
 ```
 
 Files that may hold secrets (`.env`, keys, certificates) are cut from the diff and
-denied to the agents; the list is `secrets` in the config.
+denied to the agents; the list is `secrets` in the config. The shell command sets the
+deny rules itself. For `/money-review` inside Claude Code, add them to your settings:
+
+```json
+{ "permissions": { "deny": ["Read(**/.env)", "Read(**/.env.*)", "Read(**/*.pem)", "Read(**/*.key)"] } }
+```
 
 Every field is described in [docs/config.md](docs/config.md).
 
