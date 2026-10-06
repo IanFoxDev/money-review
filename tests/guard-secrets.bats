@@ -7,6 +7,9 @@ setup() {
     git -C "$repo" init -q
 }
 
+read_of() { jq -nc --arg f "$repo/$1" '{file_path: $f}'; }
+grep_in() { jq -nc --arg p "$1" --arg d "$repo/$2" '{pattern: $p, path: $d}'; }
+
 # agent tool tool_input-json -> prints the decision: deny or allow
 decide() {
     local out
@@ -16,31 +19,31 @@ decide() {
 }
 
 @test "the review agents cannot read .env or keys" {
-    [ "$(decide money-review:money-reviewer Read "{\"file_path\": \"$repo/.env\"}")" = deny ]
-    [ "$(decide money-review:money-verifier Read "{\"file_path\": \"$repo/config/server.pem\"}")" = deny ]
-    [ "$(decide money-review:money-reviewer Read "{\"file_path\": \"$repo/deploy/secrets/db.yml\"}")" = deny ]
+    [ "$(decide money-review:money-reviewer Read "$(read_of .env)")" = deny ]
+    [ "$(decide money-review:money-verifier Read "$(read_of config/server.pem)")" = deny ]
+    [ "$(decide money-review:money-reviewer Read "$(read_of deploy/secrets/db.yml)")" = deny ]
 }
 
 @test "the review agents can read code" {
-    [ "$(decide money-review:money-reviewer Read "{\"file_path\": \"$repo/app/KeyRing.php\"}")" = allow ]
+    [ "$(decide money-review:money-reviewer Read "$(read_of app/KeyRing.php)")" = allow ]
 }
 
 @test "searches aimed at secrets are denied, a regex is not a path" {
-    [ "$(decide money-review:money-reviewer Grep "{\"pattern\": \"FEE\", \"path\": \"$repo/.env\"}")" = deny ]
+    [ "$(decide money-review:money-reviewer Grep "$(grep_in FEE .env)")" = deny ]
     [ "$(decide money-review:money-reviewer Grep '{"pattern": "x", "glob": "*.pem"}')" = deny ]
     [ "$(decide money-review:money-verifier Glob '{"pattern": "**/.env.*"}')" = deny ]
     [ "$(decide money-review:money-reviewer Grep '{"pattern": ".env"}')" = allow ]
 }
 
 @test "other agents and the main session are not touched" {
-    [ "$(decide general-purpose Read "{\"file_path\": \"$repo/.env\"}")" = allow ]
-    [ "$(decide "" Read "{\"file_path\": \"$repo/.env\"}")" = allow ]
+    [ "$(decide general-purpose Read "$(read_of .env)")" = allow ]
+    [ "$(decide "" Read "$(read_of .env)")" = allow ]
 }
 
 @test "the project config replaces the patterns" {
     echo '{"secrets": ["*.vault"]}' > "$repo/.money-review.json"
-    [ "$(decide money-review:money-reviewer Read "{\"file_path\": \"$repo/prod.vault\"}")" = deny ]
-    [ "$(decide money-review:money-reviewer Read "{\"file_path\": \"$repo/.env\"}")" = allow ]
+    [ "$(decide money-review:money-reviewer Read "$(read_of prod.vault)")" = deny ]
+    [ "$(decide money-review:money-reviewer Read "$(read_of .env)")" = allow ]
 }
 
 @test "the reason names the file and the setting" {
