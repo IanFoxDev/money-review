@@ -58,3 +58,17 @@ is worth more than a description, and it can become an eval case.
 
 Open an issue first for anything bigger than a fix. Running only through the Claude
 Code CLI, read-only agents and no model in CI are deliberate (see `docs/adr/`).
+
+## Releasing
+
+The marketplace points at a tag (`ref` in `.claude-plugin/marketplace.json`), so what
+lands on `master` reaches users only with a release:
+
+1. Run the eval the schedule asks for ([docs/eval.md](docs/eval.md#when-to-run-it)).
+2. In one commit, `chore: release X.Y.Z`: the version in
+   `plugins/money-review/.claude-plugin/plugin.json`, the `ref` in the marketplace file
+   (`vX.Y.Z`) and the CHANGELOG section.
+3. Push, wait for CI, then tag `vX.Y.Z` on that commit and push the tag right away:
+   until the tag exists, a new install of the marketplace fails.
+4. A GitHub release with the CHANGELOG section; check a clean install
+   (`HOME=$(mktemp -d) claude plugin marketplace add IanFoxDev/money-review`).

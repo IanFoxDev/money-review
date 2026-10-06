@@ -6,12 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-06
+
 ### Added
 
 - Files that may hold secrets stay away from the model: `.env`, keys, certificates and
   the other `secrets` patterns in the config are cut from the diff, listed in the
   report, and denied to the agents' `Read` (which also covers `Grep` and subagents) in
   the shell command.
+
+### Changed
+
+- The marketplace installs the tagged release, not the tip of `master`: the plugin
+  source is the `plugins/money-review` directory at tag `v0.5.1`.
+- README: a seat on a Team or Enterprise plan works too; deny rules for
+  `/money-review` inside Claude Code.
 
 ## [0.5.0] - 2026-10-06
 
@@ -123,7 +132,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/IanFoxDev/money-review/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/IanFoxDev/money-review/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/IanFoxDev/money-review/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/IanFoxDev/money-review/compare/v0.2.0...v0.3.0

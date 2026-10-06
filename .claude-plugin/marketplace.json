@@ -8,7 +8,12 @@
   "plugins": [
     {
       "name": "money-review",
-      "source": "./plugins/money-review",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/IanFoxDev/money-review.git",
+        "path": "plugins/money-review",
+        "ref": "v0.5.1"
+      },
       "description": "Reviews a diff for transaction boundaries, races, idempotency and money arithmetic. Every finding comes with a failure scenario."
     }
   ]
