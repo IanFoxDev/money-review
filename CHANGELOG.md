@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- README: the shell command is a wrapper that runs the installed release. The link into
+  the marketplace clone it suggested before runs the tip of `master`, which is not the
+  release since the marketplace serves tags.
+
 ## [0.5.1] - 2026-10-06
 
 ### Added

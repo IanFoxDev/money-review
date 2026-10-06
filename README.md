@@ -59,10 +59,22 @@ In Claude Code:
 /plugin install money-review@money-review
 ```
 
-The plugin brings the shell command with it. Put it on your `PATH`:
+The plugin brings the shell command with it. Put a small wrapper on your `PATH` that
+runs the installed release (a link into `~/.claude/plugins/marketplaces/` would run the
+tip of `master` instead, and a link into the plugin cache breaks with every update):
 
 ```sh
-ln -s ~/.claude/plugins/marketplaces/money-review/plugins/money-review/bin/money-review ~/.local/bin/money-review
+cat > ~/.local/bin/money-review <<'EOF'
+#!/bin/sh
+# Runs the installed release of money-review, from this or the default Claude profile.
+for dir in "${CLAUDE_CONFIG_DIR:-$HOME/.claude}" "$HOME/.claude"; do
+    p="$(jq -r '.plugins["money-review@money-review"][0].installPath // empty' "$dir/plugins/installed_plugins.json" 2>/dev/null)"
+    [ -n "$p" ] && exec "$p/bin/money-review" "$@"
+done
+echo "money-review: the plugin is not installed (/plugin install money-review@money-review)" >&2
+exit 2
+EOF
+chmod +x ~/.local/bin/money-review
 ```
 
 The marketplace installs the latest release, not the tip of `master`;
