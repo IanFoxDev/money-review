@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-06
+
 ### Added
 
 - Eval schedule in `docs/eval.md`: when to run which cases (releases, checklist and
@@ -114,7 +116,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/IanFoxDev/money-review/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/IanFoxDev/money-review/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/IanFoxDev/money-review/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/IanFoxDev/money-review/compare/v0.1.0...v0.2.0
