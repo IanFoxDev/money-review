@@ -1,0 +1,9 @@
+{
+  "title": "Monthly cashback keyed by the run date, so a re-run on another day pays again",
+  "bugs": [
+    {"rules": ["IDEM-5", "IDEM-1"], "file": "app/Jobs/AccrueMonthlyCashback.php", "anchor": "now\\(\\)->format\\('Y-m-d'\\)"}
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-3", "MONEY-2", "TX-6", "IDEM-5"], "file": "app/Jobs/AccrueMonthlyCashback.php"}
+  ]
+}

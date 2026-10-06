@@ -1,9 +1,10 @@
 {
-  "title": "Event dedup moved out of the transaction: check, work, mark as three steps",
+  "title": "Bank transfer deposits added, event dedup moved out of the transaction: check, work, mark",
   "bugs": [
     {"rules": ["IDEM-2", "IDEM-1"], "file": "app/Http/Controllers/PspWebhookController.php", "anchor": "\\$seen = DB::table", "anchor_end": "insertOrIgnore\\(\\['source'"}
   ],
   "acceptable": [
-    {"rules": ["IDEM-1", "IDEM-2", "IDEM-3", "MONEY-2", "MONEY-3"], "file": "app/Http/Controllers/PspWebhookController.php"}
+    {"rules": ["IDEM-1", "IDEM-2", "IDEM-3", "RACE-5", "MONEY-2"], "file": "app/Http/Controllers/PspWebhookController.php"},
+    {"rules": ["IDEM-1", "IDEM-2", "RACE-5"], "file": "database/migrations/2026_10_06_000000_create_deposits.php"}
   ]
 }
