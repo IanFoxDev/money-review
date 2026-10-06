@@ -93,6 +93,10 @@
           "type": "integer",
           "minimum": 1
         },
+        "code": {
+          "description": "The text of the line, copied from the file without leading spaces. scripts/fix-lines.sh uses it to correct a wrong line number.",
+          "type": "string"
+        },
         "title": {
           "description": "One line, what is wrong. No more than 100 characters.",
           "type": "string",

@@ -66,3 +66,43 @@ report() { # line
     [ "$(jq -c '.coverage.files_changed' report.json)" = "3" ]
     [ "$(jq '.findings[0].line' report.json)" = "4" ]
 }
+
+with_code() { # line code
+    jq -n --argjson l "$1" --arg c "$2" '{findings: [{rule: "MONEY-1", severity: "high", file: "app/Fee.php", line: $l,
+        code: $c, title: "t", scenario: "s", fix: "f"}], rejected: []}' > report.json
+}
+
+@test "a finding moves to the line that holds its code" {
+    with_code 1 "public function x() {}"
+    run "$fix" report.json change.diff
+    [ "$status" -eq 0 ]
+    [ "$(jq '.findings[0].line' report.json)" = "4" ]
+    [[ "$output" == *"app/Fee.php:1 does not hold the code of the finding, moved it to line 4"* ]]
+}
+
+@test "a finding whose line holds its code stays" {
+    with_code 4 "    public function x() {}  "
+    run "$fix" report.json change.diff
+    [ "$(jq '.findings[0].line' report.json)" = "4" ]
+    [ -z "$output" ]
+}
+
+@test "of several matching lines the nearest wins" {
+    printf '%s\n' '<?php' '{' 'x' '{' 'y' '{' > app/Fee.php
+    with_code 5 "{"
+    run "$fix" report.json change.diff
+    [ "$(jq '.findings[0].line' report.json)" = "4" ]
+}
+
+@test "code that is not in the file leaves the line to the other checks" {
+    with_code 40 "removed()"
+    run "$fix" report.json change.diff
+    [ "$(jq '.findings[0].line' report.json)" = "3" ]
+}
+
+@test "code with backslashes is matched as plain text" {
+    printf '%s\n' '<?php' 'use App\Models\Account;' 'final class Fee {}' > app/Fee.php
+    with_code 1 'use App\Models\Account;'
+    run "$fix" report.json change.diff
+    [ "$(jq '.findings[0].line' report.json)" = "2" ]
+}

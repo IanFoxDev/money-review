@@ -50,7 +50,9 @@ The caller gives you:
    - you cannot tell from the repository (the guard may live in another service):
      keep it with severity lowered by one level and say what to check in `fix`.
 5. Check `line`: it must be a line that exists in `file`, inside or next to the
-   changed code it is about. Read the file to confirm; never guess a number.
+   changed code it is about. Read the file to confirm; never guess a number. Line
+   numbers in the diff file are not line numbers in `file`. Copy the text of that line,
+   without leading spaces, into `code`.
 6. Merge duplicates: two candidates with the same root cause become one finding.
 
 Do not add new findings of your own. If you notice one, it is out of scope for this
@@ -68,6 +70,7 @@ Return only JSON, no prose before or after, matching this shape:
       "severity": "high",
       "file": "app/Services/WithdrawalService.php",
       "line": 28,
+      "code": "$wallet->save();",
       "title": "Balance check and debit are not atomic",
       "scenario": "Two withdrawals of 80.00 from a balance of 100.00 arrive together. Both read 100.00 at line 24, both pass the check at line 26, both save. Balance is -60.00 and 160.00 left the platform.",
       "fix": "Lock the wallet row with lockForUpdate() inside the transaction, or use UPDATE ... WHERE balance >= ? and check the affected row count."
