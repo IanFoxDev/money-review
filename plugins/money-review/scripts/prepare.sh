@@ -4,7 +4,7 @@
 #   {"base": "...", "diff": "/tmp/.../change.diff", "money": true,
 #    "categories": [...], "checklists": [...], "files": [...], "context": "...",
 #    "groups": [{"diff", "checklists", "files", "lines"}], "coverage": {...},
-#    "ignore": [...]}
+#    "ignore": [...], "secrets": [...]}
 # A change bigger than review.group_lines changed lines is split into groups of
 # files, each reviewed on its own (see split.sh); a copy goes to OUT/prepared.json.
 #
@@ -66,6 +66,21 @@ if [ -z "$config" ]; then
     root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
     [ -f "$root/.money-review.json" ] && config="$root/.money-review.json"
 fi
+
+# Files that may hold secrets leave the diff here, before triage and before any
+# model; the same patterns are passed on as Read deny rules.
+if [ -n "$config" ]; then
+    secrets="$(jq -cs '.[1].secrets // .[0].secrets // []' "$here/../defaults/config.json" "$config")"
+else
+    secrets="$(jq -c '.secrets // []' "$here/../defaults/config.json")"
+fi
+secrets_excluded="$("$here/strip-secrets.sh" "$diff_file" "$secrets")"
+# bin/money-review prepares the change, then the skill prepares the same diff file
+# again; the files cut the first time must stay in the report.
+if [ -n "$diff_in" ] && [ "$diff_in" -ef "$diff_file" ] && [ -f "$out/secrets-excluded.json" ]; then
+    secrets_excluded="$(jq -c --slurpfile p "$out/secrets-excluded.json" '$p[0] + . | unique' <<< "$secrets_excluded")"
+fi
+echo "$secrets_excluded" > "$out/secrets-excluded.json"
 
 triage_args=()
 [ -n "$config" ] && triage_args=(--config "$config")
@@ -130,6 +145,8 @@ jq -n \
     --argjson not_reviewed "$not_reviewed" \
     --argjson files_changed "$files_changed" \
     --argjson ignore "$ignore" \
+    --argjson secrets "$secrets" \
+    --argjson secrets_excluded "$secrets_excluded" \
     '{
         base: $base,
         diff: $diff,
@@ -144,7 +161,9 @@ jq -n \
             files_with_money: ($t.files | length),
             files_reviewed: ([$groups[].files[]] | length),
             groups: ($groups | length),
-            not_reviewed: $not_reviewed
+            not_reviewed: $not_reviewed,
+            secrets_excluded: $secrets_excluded
         },
-        ignore: $ignore
+        ignore: $ignore,
+        secrets: $secrets
     }' | tee "$out/prepared.json"

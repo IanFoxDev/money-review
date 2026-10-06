@@ -32,6 +32,11 @@ jq -r '
         + " reviewed"
         + (if .coverage.groups > 1 then " in \(.coverage.groups) groups of files." else "." end),
         "",
+        (if ((.coverage.secrets_excluded // []) | length) > 0 then
+          "**Left out as possible secrets** (not sent to the model; see `secrets` in the config): "
+          + (.coverage.secrets_excluded | map("`\(.)`") | join(", ")),
+          ""
+         else empty end),
         (if (.coverage.not_reviewed | length) > 0 then
           "**Not reviewed** (over the group limit, review them by hand or raise review.max_groups): "
           + (.coverage.not_reviewed | map("`\(.)`") | join(", ")),

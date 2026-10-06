@@ -54,3 +54,9 @@ setup() {
     [[ "$output" == *"1 of 2 changed file(s) touch money; all of them reviewed."* ]]
     [[ "$output" != *"Not reviewed"* ]]
 }
+
+@test "files left out as secrets are named" {
+    jq '. + {coverage: {files_changed: 2, files_with_money: 1, files_reviewed: 1, groups: 1, not_reviewed: [], secrets_excluded: [".env"]}}' "$reports/mixed.json" > "$BATS_TEST_TMPDIR/r.json"
+    run "$render" "$BATS_TEST_TMPDIR/r.json"
+    [[ "$output" == *'**Left out as possible secrets** (not sent to the model; see `secrets` in the config): `.env`'* ]]
+}

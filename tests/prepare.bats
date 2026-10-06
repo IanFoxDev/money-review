@@ -96,7 +96,7 @@ field() { jq -c "$1" <<< "$output"; }
     echo "$output" | head -n 20 # shown by bats only when the test fails
     [ "$status" -eq 0 ]
     [ "$(field '.groups | length')" = "2" ]
-    [ "$(field '.coverage')" = '{"files_changed":3,"files_with_money":2,"files_reviewed":2,"groups":2,"not_reviewed":[]}' ]
+    [ "$(field '.coverage')" = '{"files_changed":3,"files_with_money":2,"files_reviewed":2,"groups":2,"not_reviewed":[],"secrets_excluded":[]}' ]
     [ -f "$BATS_TEST_TMPDIR/out/prepared.json" ]
     [ -f "$(jq -r '.groups[1].diff' <<< "$output")" ]
 }
@@ -126,4 +126,30 @@ field() { jq -c "$1" <<< "$output"; }
 @test "no config means nothing is ignored" {
     run "$prepare" --diff "$diffs/withdrawal.diff"
     [ "$(field .ignore)" = '[]' ]
+}
+
+@test "a changed .env is cut from the diff and listed" {
+    printf '<?php\nfinal class Wallet { public int $balance = 0; }\n' > app/Wallet.php
+    printf 'DB_PASSWORD=CANARY\n' > .env
+    run "$prepare" --out "$BATS_TEST_TMPDIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(field .coverage.secrets_excluded)" = '[".env"]' ]
+    ! grep -q CANARY "$BATS_TEST_TMPDIR/out/change.diff"
+    [ "$(field '.secrets | index(".env")')" = "0" ]
+}
+
+@test "the config can replace the secret patterns" {
+    echo '{"secrets": ["*.vault"]}' > .money-review.json
+    printf 'x\n' > prod.vault
+    run "$prepare"
+    [ "$(field .secrets)" = '["*.vault"]' ]
+    [ "$(field .coverage.secrets_excluded)" = '["prod.vault"]' ]
+}
+
+@test "files cut as secrets stay listed when the same diff is prepared again" {
+    printf '<?php\nfinal class Wallet { public int $balance = 0; }\n' > app/Wallet.php
+    printf 'DB_PASSWORD=CANARY\n' > .env
+    "$prepare" --out "$BATS_TEST_TMPDIR/out" > /dev/null
+    run "$prepare" --diff "$BATS_TEST_TMPDIR/out/change.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$(field .coverage.secrets_excluded)" = '[".env"]' ]
 }

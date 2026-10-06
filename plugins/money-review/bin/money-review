@@ -186,6 +186,20 @@ fi
 skill_args="$(printf '%q ' --diff "$out/change.diff" --out "$out")"
 [ -n "$config" ] && skill_args="$skill_args$(printf '%q ' --config "$config")"
 skill_args="${skill_args% }"
+# Files that may hold secrets are cut from the diff by prepare.sh; these rules keep
+# the agents from opening them (Read covers Grep and the subagents too).
+deny=()
+while IFS= read -r p; do
+    [ -n "$p" ] || continue
+    case "$p" in
+        */\*) p="${p%\*}**" ;; # a directory: everything below it, not only one level
+    esac
+    case "$p" in
+        /*|'**'*) deny+=("Read($p)") ;;
+        *) deny+=("Read(**/$p)") ;;
+    esac
+done < <(jq -r '.secrets[]?' <<< "$prepared")
+
 run_claude() {
     rm -f "$out/report.json"
     "$claude" -p "/money-review:money-review $skill_args" \
@@ -195,6 +209,7 @@ run_claude() {
         --output-format json \
         --allowedTools "Bash($plugin/scripts/prepare.sh:*)" "Bash($plugin/scripts/render.sh:*)" "Bash($plugin/scripts/fix-lines.sh:*)" "Bash($plugin/scripts/finish.sh:*)" \
             "Read" "Grep" "Glob" "Agent" "Edit(/$out/report.json)" \
+        ${deny[@]+--disallowedTools "${deny[@]}"} \
         < /dev/null > "$out/claude.json" || true
 }
 have_report() {

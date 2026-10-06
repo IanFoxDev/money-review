@@ -149,3 +149,12 @@ setup() {
     [ "$(cat "$FAKE_LOG.calls")" = "1" ]
     [[ "$output" == *"usage limit reached"* ]]
 }
+
+@test "files that may hold secrets are denied to the agents" {
+    run "$bin" --diff "$diffs/withdrawal.diff" --out "$out"
+    [ "$status" -eq 0 ]
+    grep -qx -- '--disallowedTools' "$FAKE_LOG"
+    grep -qx 'Read(\*\*/.env)' "$FAKE_LOG"
+    grep -qx 'Read(\*\*/\*.pem)' "$FAKE_LOG"
+    grep -qx 'Read(\*\*/secrets/\*\*)' "$FAKE_LOG"
+}

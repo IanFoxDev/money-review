@@ -51,6 +51,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "secrets_excluded": {
+          "description": "Changed files left out of the diff because they match the secrets patterns.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }
