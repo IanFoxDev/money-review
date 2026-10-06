@@ -161,10 +161,11 @@ Every field is described in [docs/config.md](docs/config.md).
 
 ## How good is it
 
-The repository has an eval with two apps and 43 merge requests on top of them, each
+The repository has an eval with two apps and 49 merge requests on top of them, each
 with one planted bug or none (clean cases, some of them touching money code
 correctly). See [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/)
-for full reports. Every case ran three times (2026-10-05, Claude Code 2.1.289).
+for full reports. The table is the run of 2026-10-05 over the 43 cases of that day, each
+three times (Claude Code 2.1.289); the cases added later are covered below it.
 
 | | Laravel app on SQL | PHP and Go on MongoDB, Kafka, Redis |
 |---|---|---|
@@ -189,11 +190,13 @@ On the SQL app, recall by checklist:
 | MONEY | 100% |
 | IDEM | 78% |
 
-On the SQL app, all four misses are in two cases where the change removes one of two safety layers
-and the other one still holds: a webhook moves its dedup out of the transaction, but
-a state guard and an idempotent ledger key still stop the double credit. Whether that
-is a bug is arguable; the reviewer stayed silent or the verifier pointed at the
-remaining guard.
+On the SQL app, all four misses were in two cases where the change removed one of two
+safety layers and the other one still held. Those two cases were rebuilt so that the
+removed layer is the only one, and cases were added for MONEY-3, MONEY-5 and TX-5
+with a clean pair for each. On these 8 cases (2026-10-06, 24 runs): 14 of 15 bugs
+found, 1 false alarm (low), 0 false alarms in 9 clean runs. The one miss is the right
+finding reported at line 1 of the file. Details in
+[docs/eval-results/2026-10-06-new-cases.md](docs/eval-results/2026-10-06-new-cases.md).
 
 Bugs that only the current callers hide are reported as `low`, with the code that
 protects them today: a ledger transfer split over two transactions is safe while

@@ -13,6 +13,12 @@ All notable changes to this project are documented here. The format follows
   (rule or checklist, path glob, reason). A reason is required. Suppressed findings
   move to `suppressed` in the report, do not count for `--fail-on` and are not posted.
 - `docs/team.md`: how a team runs it by hand on pull requests, without a CI token.
+- Eval cases for MONEY-3, MONEY-5 and TX-5, each with a clean pair.
+
+### Changed
+
+- Two IDEM eval cases rebuilt so the guard the change removes is the only one;
+  `idem-payout-rerun` is replaced by `idem-cashback-rerun`.
 
 ## [0.3.0] - 2026-10-05
 
