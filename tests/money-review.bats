@@ -7,6 +7,7 @@ setup() {
     export MONEY_REVIEW_CLAUDE="$BATS_TEST_DIRNAME/fake/claude"
     export FAKE_LOG="$BATS_TEST_TMPDIR/claude.args"
     export FAKE_REPORT="$reports/mixed.json"
+    export MONEY_REVIEW_RETRY_DELAY=0
     unset ANTHROPIC_API_KEY
     out="$BATS_TEST_TMPDIR/out"
 }
@@ -111,4 +112,39 @@ setup() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"1 finding(s) suppressed by the team"* ]]
     [ "$(jq -r '.suppressed[0].reason' "$out/report.json")" = "one worker per wallet" ]
+}
+
+@test "an output directory with a space works" {
+    run "$bin" --diff "$diffs/withdrawal.diff" --out "$BATS_TEST_TMPDIR/my out" --format json
+    [ "$status" -eq 0 ]
+    [ -f "$BATS_TEST_TMPDIR/my out/report.json" ]
+    [ "$(jq '.findings | length' "$BATS_TEST_TMPDIR/my out/report.json")" = "2" ]
+}
+
+@test "a run that ends without a report is tried again" {
+    FAKE_FAIL=1 run "$bin" --diff "$diffs/withdrawal.diff" --out "$out"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"trying again in 0 s (1 of 1)"* ]]
+    [ "$(cat "$FAKE_LOG.calls")" = "2" ]
+    [ -f "$out/report.json" ]
+}
+
+@test "retries stop at the limit" {
+    FAKE_FAIL=5 run "$bin" --diff "$diffs/withdrawal.diff" --out "$out" --retries 2
+    [ "$status" -eq 4 ]
+    [ "$(cat "$FAKE_LOG.calls")" = "3" ]
+    [[ "$output" == *"529 overloaded"* ]]
+}
+
+@test "--retries 0 runs claude once" {
+    FAKE_FAIL=1 run "$bin" --diff "$diffs/withdrawal.diff" --out "$out" --retries 0
+    [ "$status" -eq 4 ]
+    [ "$(cat "$FAKE_LOG.calls")" = "1" ]
+}
+
+@test "a usage limit is not retried" {
+    FAKE_FAIL=1 FAKE_FAIL_RESULT="Claude AI usage limit reached|1760000000" run "$bin" --diff "$diffs/withdrawal.diff" --out "$out"
+    [ "$status" -eq 4 ]
+    [ "$(cat "$FAKE_LOG.calls")" = "1" ]
+    [[ "$output" == *"usage limit reached"* ]]
 }

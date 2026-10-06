@@ -9,6 +9,20 @@ fi
 printf '%s\n' "$@" > "${FAKE_LOG:?}"
 pwd > "$FAKE_LOG.cwd"
 prompt="$2"
-out="$(sed -E 's/.*--out ([^ ]+).*/\1/' <<< "$prompt")"
+# The arguments after the skill name are shell-quoted, as the skill's shell reads them.
+eval "set -- ${prompt#* }"
+out=""
+while [ $# -gt 0 ]; do
+    if [ "$1" = "--out" ]; then out="$2"; fi
+    shift
+done
+# FAKE_FAIL=N: the first N calls end without a report, with FAKE_FAIL_RESULT as the result.
+calls=$(( $(cat "$FAKE_LOG.calls" 2>/dev/null || echo 0) + 1 ))
+echo "$calls" > "$FAKE_LOG.calls"
+if [ "$calls" -le "${FAKE_FAIL:-0}" ]; then
+    jq -n --arg r "${FAKE_FAIL_RESULT:-API Error: 529 overloaded}" '{type: "result", is_error: true, result: $r}'
+    exit 1
+fi
+sleep "${FAKE_SLEEP:-0}"
 [ -n "${FAKE_REPORT:-}" ] && cp "$FAKE_REPORT" "$out/report.json"
 echo '{"type": "result", "num_turns": 4, "total_cost_usd": 0.3712, "result": "done"}'
