@@ -87,3 +87,17 @@ write_pr() {
     run "$bin" --pr x
     [ "$status" -eq 2 ]
 }
+
+@test "parallel runs on one repository do not get in each other's way" {
+    pids=()
+    for i in 1 2 3 4; do
+        FAKE_SLEEP=1 "$bin" --pr 1 --full --out "$BATS_TEST_TMPDIR/par$i" > "$BATS_TEST_TMPDIR/par$i.log" 2>&1 &
+        pids+=("$!")
+    done
+    for p in "${pids[@]}"; do wait "$p"; done
+    for i in 1 2 3 4; do
+        [ -f "$BATS_TEST_TMPDIR/par$i/report.json" ]
+        [ ! -d "$BATS_TEST_TMPDIR/par$i/worktree" ]
+    done
+    [ "$(git worktree list | wc -l | tr -d ' ')" = "1" ]
+}
