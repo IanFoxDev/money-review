@@ -45,8 +45,9 @@ A new rule or a reworded one changes what the model reports, so it needs evidenc
    "do not report" section.
 2. Add an eval case that the rule is meant to catch, and if the rule could fire on
    correct code, a clean case for that too (see [docs/eval.md](docs/eval.md)).
-3. Run the affected cases a few times and put the before and after numbers in the
-   pull request.
+3. Run the cases of that checklist and every clean case three times, compare with the
+   baseline (`eval/compare.sh`), and put the comparison in the pull request. The
+   schedule for releases and model changes is in [docs/eval.md](docs/eval.md#when-to-run-it).
 
 ## Reporting a false alarm or a missed bug
 

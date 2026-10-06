@@ -72,6 +72,48 @@ Each reviewed run uses your Claude subscription about as much as one real review
 changes that triage skips cost nothing. Results, reports and the working copies of
 the app are kept in `.eval-runs/<timestamp>/`, with `summary.md` on top.
 
+## When to run it
+
+The reviewer and the verifier are named by alias (`sonnet`, `opus`), and an alias moves
+to a new model without notice. A checklist change can also fix one case and break
+another. So the eval runs on a schedule, not when someone remembers:
+
+| When | What | Runs |
+|---|---|---|
+| Before a minor release (0.x.0) and before 1.0 | every case | 3 |
+| Before a patch release | the cases of the checklists the change touches, and every clean case | 3 |
+| A change to a checklist or an agent prompt | the cases of that checklist and every clean case, before it is merged | 3 |
+| The models change | every case | 3 |
+
+Every review prints the models it used (`money-review: 5 turns, ..., models: ...`), and
+`eval/run.sh` warns when a run used other models than the baseline. When that line shows
+a model id that is not in `eval/baseline/summary.json`, run the full eval before you
+trust the reviews.
+
+Each run writes the money-review version, the commit, the Claude Code version and the
+model ids into `summary.json` and `summary.md`. A results file in `docs/eval-results/`
+keeps that header.
+
+### Baseline and comparison
+
+`eval/baseline/summary.json` is the last accepted full run. Compare a new run with it:
+
+```bash
+eval/compare.sh eval/baseline/summary.json .eval-runs/<dir>
+```
+
+It prints both sides with their models, the cases that scored differently, and the
+regressions; it exits with 1 when there is one. A regression is:
+
+- a case that lost more than a third of its runs (one run in three is noise);
+- a case with more than a third of a false alarm per run added;
+- any case newly skipped by triage (triage has no model, so this is never noise);
+- precision or recall down by more than 5 points over the same cases.
+
+A regression blocks the release until it is fixed or explained in the results file.
+When a full run is accepted, its `summary.json` replaces the baseline in the same commit
+as its results file.
+
 ## Adding a case
 
 1. Copy the files you change from `eval/app/` into `eval/cases/<name>/files/`, keeping

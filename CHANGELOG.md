@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Eval schedule in `docs/eval.md`: when to run which cases (releases, checklist and
+  prompt changes, model changes) and what counts as a regression.
+- `eval/compare.sh BASE NEW`: compares two eval runs case by case, calls out a model
+  change and exits with 1 on a regression.
+- Eval summaries record the money-review version, the commit, the Claude Code version
+  and the model ids that ran; `eval/run.sh` warns when the models differ from the
+  baseline.
+- The usage line of every review names the models it used.
+
 ## [0.4.0] - 2026-10-06
 
 ### Added
