@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-10-06
+
 ### Added
 
 - `/money-review:setup` puts the shell command on the `PATH`: a wrapper in
@@ -148,7 +150,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/IanFoxDev/money-review/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/IanFoxDev/money-review/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/IanFoxDev/money-review/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/IanFoxDev/money-review/compare/v0.3.0...v0.4.0
