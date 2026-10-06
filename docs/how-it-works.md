@@ -95,6 +95,11 @@ and a comment in the code can try to give the model instructions.
   `report.json` in the output directory. It has no general shell.
 - Posting is done by `scripts/gitlab.sh` or `scripts/github.sh` after the model has
   finished, from the JSON report, not by the model.
+- Files that may hold secrets (`.env`, keys, certificates; the `secrets` list in the
+  config) never reach the model. `prepare.sh` cuts them from the diff and the report
+  names them, and the shell command passes the same patterns as `Read` deny rules, which
+  also cover `Grep` and the subagents. Checked with a canary value in `.env`: neither a
+  direct read, nor a search, nor a subagent returned it.
 
 ## Merge request state
 

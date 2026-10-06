@@ -90,6 +90,32 @@ Say where the things live that a reviewer would otherwise have to guess:
 }
 ```
 
+### `secrets`
+
+Globs for files that may hold secrets. A changed file that matches is cut from the diff
+before triage, so no model sees it, and the report lists it. The shell command also
+turns every pattern into a `Read` deny rule for the review, so the agents cannot open
+such a file while they read the code around a change.
+
+A pattern without a slash matches the file name at any depth (`.env`, `*.pem`); one with
+a slash matches a path (`secrets/*` is everything below any `secrets/` directory). The
+default covers `.env` and `.env.*`, private keys and certificates (`*.pem`, `*.key`,
+`*.p12`, `*.pfx`, `*.jks`, `id_rsa*`, `id_ed25519*`), `*.tfvars`, Composer `auth.json`,
+`.npmrc`, `.netrc`, `credentials*` and `secrets/`. A list in the project config replaces
+the default, so copy it and add your own:
+
+```json
+{ "secrets": [".env", ".env.*", "*.pem", "*.key", "config/vault/*", "*.sops.yaml"] }
+```
+
+The `/money-review` command inside Claude Code also cuts these files from the diff, but
+it cannot set deny rules for the session it runs in. Put them into your settings
+(`~/.claude/settings.json` or the project's `.claude/settings.json`):
+
+```json
+{ "permissions": { "deny": ["Read(**/.env)", "Read(**/.env.*)", "Read(**/*.pem)", "Read(**/*.key)"] } }
+```
+
 ### `ignore`
 
 Findings the team has looked at and accepted. Each entry names a rule (`RACE-1`) or a

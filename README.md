@@ -160,6 +160,9 @@ config:
 // money-review: ignore RACE-1 the caller holds lockForUpdate on the wallet
 ```
 
+Files that may hold secrets (`.env`, keys, certificates) are cut from the diff and
+denied to the agents; the list is `secrets` in the config.
+
 Every field is described in [docs/config.md](docs/config.md).
 
 ## How good is it

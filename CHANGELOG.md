@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Files that may hold secrets stay away from the model: `.env`, keys, certificates and
+  the other `secrets` patterns in the config are cut from the diff, listed in the
+  report, and denied to the agents' `Read` (which also covers `Grep` and subagents) in
+  the shell command.
+
 ## [0.5.0] - 2026-10-06
 
 ### Added
