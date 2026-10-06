@@ -35,6 +35,18 @@ out="$(cd "$out" && pwd)"
 
 "$eval_dir/expected.sh" "${cases[@]}" > "$out/expected.json"
 
+# What the numbers were measured with. The models themselves come from each run's
+# claude.json, because the aliases in the agents (sonnet, opus) move without notice.
+commit="$(git -C "$root" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+git -C "$root" diff --quiet HEAD -- plugins eval 2>/dev/null || commit="$commit+dirty"
+jq -n \
+    --arg date "$(date +%Y-%m-%d)" \
+    --arg claude "$("${MONEY_REVIEW_CLAUDE:-claude}" --version 2>/dev/null | awk '{print $1}')" \
+    --arg version "$(jq -r .version "$root/plugins/money-review/.claude-plugin/plugin.json")" \
+    --arg commit "$commit" \
+    --argjson runs "$runs" \
+    '{date: $date, claude_code: $claude, money_review: $version, commit: $commit, runs_per_case: $runs}' > "$out/env.json"
+
 for c in "${cases[@]}"; do
     [ -d "$eval_dir/cases/$c" ] || { echo "run: no case $c" >&2; exit 2; }
     n=1
@@ -64,3 +76,9 @@ for c in "${cases[@]}"; do
 done
 
 "$eval_dir/score.sh" "$out"
+
+baseline="$eval_dir/baseline/summary.json"
+if [ -f "$baseline" ] && [ "$(jq -c '.models // []' "$baseline")" != "$(jq -c '.models // []' "$out/summary.json")" ]; then
+    echo "" >&2
+    echo "run: the models differ from the baseline ($(jq -r '.models | join(", ")' "$baseline")). Compare with eval/compare.sh $baseline $out" >&2
+fi

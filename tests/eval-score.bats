@@ -72,3 +72,17 @@ summary() { jq -c "$1" "$out/summary.json"; }
     [ "$(summary '.clean_runs_with_findings')" = "1" ]
     [ "$(summary '.precision')" = "0" ]
 }
+
+@test "the summary records the models and the environment" {
+    echo '{"date": "2026-10-06", "claude_code": "2.1.289", "money_review": "0.4.0", "commit": "abc1234", "runs_per_case": 1}' > "$out/env.json"
+    w=app/Services/WithdrawalService.php
+    result race-withdraw-no-lock 1 0 "{\"findings\": [$(finding RACE-1 $w 19)], \"rejected\": []}" \
+        '{"total_cost_usd": 0.4, "modelUsage": {"claude-sonnet-5-5": {}, "claude-opus-5-5": {}}}'
+    result clean-installments 1 0 '{"findings": [], "rejected": []}' '{"total_cost_usd": 0.2, "modelUsage": {"claude-sonnet-5-5": {}}}'
+    run "$eval_dir/score.sh" "$out"
+    [ "$status" -eq 0 ]
+    [ "$(summary .models)" = '["claude-opus-5-5","claude-sonnet-5-5"]' ]
+    [ "$(summary .env.commit)" = '"abc1234"' ]
+    [[ "$output" == *"Measured 2026-10-06 with money-review 0.4.0 (abc1234), Claude Code 2.1.289."* ]]
+    [[ "$output" == *"Models: claude-opus-5-5, claude-sonnet-5-5."* ]]
+}

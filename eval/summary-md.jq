@@ -5,6 +5,11 @@ def n: if . == null then "n/a" else tostring end;
   "",
   "\(.cases) cases, \(.runs) runs.",
   "",
+  (if .env.date then
+    "Measured \(.env.date) with money-review \(.env.money_review) (\(.env.commit)), Claude Code \(.env.claude_code)."
+   else empty end),
+  (if (.models // []) != [] then "Models: \(.models | join(", "))." else empty end),
+  "",
   "| Metric | Value |",
   "|---|---|",
   "| Precision | \(.precision | pct) (\(.true_positives) true, \(.false_positives) false) |",

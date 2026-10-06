@@ -15,7 +15,10 @@ runs="$(for meta in "$out"/results/*/*/meta.json; do
         '$m[0] + {report: $r, claude: $c}'
 done | jq -s .)"
 
+env="$(cat "$out/env.json" 2>/dev/null || echo '{}')"
 jq -n --argjson expected "$(cat "$out/expected.json")" --argjson runs "$runs" \
-    -f "$eval_dir/score.jq" > "$out/summary.json"
+    -f "$eval_dir/score.jq" |
+    jq --argjson env "$env" --argjson runs "$runs" \
+        '. + {env: $env, models: ([$runs[].claude.modelUsage // {} | keys[]] | unique)}' > "$out/summary.json"
 jq -r -f "$eval_dir/summary-md.jq" "$out/summary.json" > "$out/summary.md"
 cat "$out/summary.md"
