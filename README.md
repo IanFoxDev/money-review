@@ -59,9 +59,16 @@ In Claude Code:
 /plugin install money-review@money-review
 ```
 
-The plugin brings the shell command with it. Put a small wrapper on your `PATH` that
-runs the installed release (a link into `~/.claude/plugins/marketplaces/` would run the
-tip of `master` instead, and a link into the plugin cache breaks with every update):
+The plugin brings the shell command with it. To put it on your `PATH`, run once in
+Claude Code:
+
+```
+/money-review:setup
+```
+
+It writes a small wrapper to `~/.local/bin/money-review` that runs the installed release
+(from the Claude profile in `CLAUDE_CONFIG_DIR`, or the default one), so it keeps
+working after updates. The same by hand:
 
 ```sh
 cat > ~/.local/bin/money-review <<'EOF'
@@ -176,12 +183,8 @@ config:
 ```
 
 Files that may hold secrets (`.env`, keys, certificates) are cut from the diff and
-denied to the agents; the list is `secrets` in the config. The shell command sets the
-deny rules itself. For `/money-review` inside Claude Code, add them to your settings:
-
-```json
-{ "permissions": { "deny": ["Read(**/.env)", "Read(**/.env.*)", "Read(**/*.pem)", "Read(**/*.key)"] } }
-```
+denied to the review agents, in the shell command and inside Claude Code alike; the
+list is `secrets` in the config.
 
 Every field is described in [docs/config.md](docs/config.md).
 

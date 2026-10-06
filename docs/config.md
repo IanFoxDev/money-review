@@ -108,9 +108,14 @@ the default, so copy it and add your own:
 { "secrets": [".env", ".env.*", "*.pem", "*.key", "config/vault/*", "*.sops.yaml"] }
 ```
 
-The `/money-review` command inside Claude Code also cuts these files from the diff, but
-it cannot set deny rules for the session it runs in. Put them into your settings
-(`~/.claude/settings.json` or the project's `.claude/settings.json`):
+Inside Claude Code (`/money-review`) the plugin cannot set deny rules for the session,
+so a plugin hook (`hooks/hooks.json`, `scripts/guard-secrets.sh`) does it instead: it
+refuses `Read`, `Grep` and `Glob` calls of the two review agents that point at a
+matching path. Other agents and your own session are not affected. One gap is left
+there: a search over the whole repository can still return lines from a matching file
+that is committed and not in `.gitignore`; the shell command has no such gap. To close
+it for every session, add deny rules to your settings (`~/.claude/settings.json` or the
+project's `.claude/settings.json`):
 
 ```json
 { "permissions": { "deny": ["Read(**/.env)", "Read(**/.env.*)", "Read(**/*.pem)", "Read(**/*.key)"] } }

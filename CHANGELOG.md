@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `/money-review:setup` puts the shell command on the `PATH`: a wrapper in
+  `~/.local/bin` that runs the installed release, in the Claude profile of
+  `CLAUDE_CONFIG_DIR` or the default one.
+- Inside Claude Code the review agents cannot open files that may hold secrets either:
+  a plugin hook refuses their `Read`, `Grep` and `Glob` calls on paths that match
+  `secrets`. Before, only the shell command set deny rules, and `/money-review` needed
+  them in the user's settings.
+
 ### Fixed
 
 - README: the shell command is a wrapper that runs the installed release. The link into
