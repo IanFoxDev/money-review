@@ -86,3 +86,14 @@ summary() { jq -c "$1" "$out/summary.json"; }
     [[ "$output" == *"Measured 2026-10-06 with money-review 0.4.0 (abc1234), Claude Code 2.1.289."* ]]
     [[ "$output" == *"Models: claude-opus-5-5, claude-sonnet-5-5."* ]]
 }
+
+@test "a finding without a rule matches a bug by file and line" {
+    "$eval_dir/expected.sh" race-withdraw-no-lock > "$out/expected.json"
+    w=app/Services/WithdrawalService.php
+    near="$(jq -nc --arg f $w '{file: $f, line: 21, title: "t"}')"
+    extra="$(jq -nc --arg f $w '{file: $f, line: 60, title: "t"}')"
+    other="$(jq -nc '{file: "app/Models/User.php", line: 3, title: "t"}')"
+    result race-withdraw-no-lock 1 0 "{\"findings\": [$near, $extra, $other]}" '{}'
+    run "$eval_dir/score.sh" "$out"
+    [ "$(summary '[.true_positives, .acceptable_extras, .false_positives, .missed]')" = "[1,1,1,0]" ]
+}

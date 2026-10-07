@@ -36,7 +36,7 @@ def n: if . == null then "n/a" else tostring end;
   "",
   (if ([.cases_detail[] | .fps[]] | length) > 0 then
      "## False alarms", "",
-     (.cases_detail[] | .case as $c | .fps[] | "- \($c): \(.rule) `\(.file):\(.line)` \(.title)"),
+     (.cases_detail[] | .case as $c | .fps[] | "- \($c): \(.rule // "-") `\(.file):\(.line)` \(.title)"),
      ""
    else empty end),
   (if ([.cases_detail[] | .missed[]] | length) > 0 then

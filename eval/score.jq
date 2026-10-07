@@ -8,9 +8,12 @@
 # "acceptable" entry (a real but secondary issue) is neither TP nor FP. Anything
 # else is a false positive. A second finding for an already matched bug is a
 # duplicate.
+#
+# A finding without a rule (eval/bare.sh: a plain review prompt knows no rules)
+# matches a bug by file and line, and an "acceptable" entry by file.
 
 def near($b; $f): $f.file == $b.file and $f.line >= $b.line - 5 and $f.line <= ($b.end_line // $b.line) + 5;
-def rule_ok($b; $f): ($b.rules | index($f.rule)) != null;
+def rule_ok($b; $f): $f.rule == null or ($b.rules | index($f.rule)) != null;
 def ratio($a; $b): if $b == 0 then null else ($a / $b * 1000 | round / 1000) end;
 def category: split("-")[0];
 
@@ -24,7 +27,7 @@ def score_run($exp; $r):
       | if $i != null then
           (if (.matched | index($i)) != null then .duplicate += 1 else .matched += [$i] | .tp += 1 end)
         elif $j != null then .wrong_rule += 1 | .loose += [$j]
-        elif ($exp.acceptable | any(.file == $f.file and (.rules | index($f.rule)) != null)) then .acceptable += 1
+        elif ($exp.acceptable | any(.file == $f.file and ($f.rule == null or (.rules | index($f.rule)) != null))) then .acceptable += 1
         else .fp += 1 | .fps += [{rule: $f.rule, file: $f.file, line: $f.line, title: $f.title}]
         end
     )) as $s
