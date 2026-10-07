@@ -119,6 +119,24 @@
           "description": "What to change, short. A code snippet is allowed.",
           "type": "string",
           "minLength": 1
+        },
+        "excerpt": {
+          "description": "The code around the line, read from the file after the review. Added by scripts/excerpt.sh, not by the model.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "text"
+          ],
+          "properties": {
+            "start": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "text": {
+              "type": "string"
+            }
+          }
         }
       }
     },
