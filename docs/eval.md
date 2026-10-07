@@ -41,7 +41,10 @@ README come from here.
 }
 ```
 
-`app` is optional and names the app under `eval/` the case is built on; the default is
+`note` is optional and says in a few words what the bug is. A case can have more than
+one bug: the planted one and a quieter one next to it. A bug can be in an app file the
+case does not change, when the change makes that code wrong; its anchor is then found in
+the app. `app` is optional and names the app under `eval/` the case is built on; the default is
 `app`. `anchor` is an extended regular expression; its first match in the case's version of
 the file is the bug's line, so cases can be edited without counting lines.
 `acceptable` lists real but secondary issues that a reviewer may reasonably report.

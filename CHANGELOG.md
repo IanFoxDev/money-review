@@ -6,6 +6,27 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Rules: MONEY-7 (an amount from the wrong source, such as the full amount after a
+  partial refund), TX-9 (an event that stops carrying what money consumers read, or is
+  published when the state did not change), IDEM-10 (a provider decline or business
+  error with no path). MONEY-5 also covers negative input amounts and reversals booked
+  in the wrong direction.
+- `MONEY-0`: a money bug no rule covers, reported when there is a concrete failure
+  scenario. Before, the reviewer could only report what the checklists named.
+
+### Changed
+
+- The verifier moves a real finding to the rule that fits (or `MONEY-0`) instead of
+  rejecting it for the wrong rule.
+
+### Eval
+
+- Ten cases have a second, quieter bug that a plain review prompt found next to the
+  planted one; a new case books a chargeback for the full amount in the wrong direction.
+  `clean-chargeback-webhook` and `clean-commission-rounding` had real bugs and are fixed.
+
 ## [0.6.0] - 2026-10-07
 
 ### Added

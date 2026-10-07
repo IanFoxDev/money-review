@@ -174,19 +174,21 @@ produce a report, also after one more try (`--retries N` to change that).
 
 ## What it checks
 
-Four checklists, 31 rules. Each rule has what to look for, a failure scenario, a bad
+Four checklists, 34 rules. Each rule has what to look for, a failure scenario, a bad
 and a good example, and a "do not report" section that keeps false alarms down. Every
 checklist covers SQL databases and MongoDB; transactions and idempotency also cover
 Kafka, Redpanda and RabbitMQ consumers and producers.
 
 | Checklist | Covers |
 |---|---|
-| [Transaction boundaries (TX)](plugins/money-review/skills/money-review/references/transactions.md) | provider calls inside a transaction, side effects after commit with no record (including a database write followed by a Kafka produce), debit and credit in separate transactions, swallowed exceptions, nested transactions, one transaction around a batch, MongoDB calls that miss the session, side effects in a retried transaction callback |
+| [Transaction boundaries (TX)](plugins/money-review/skills/money-review/references/transactions.md) | provider calls inside a transaction, side effects after commit with no record (including a database write followed by a Kafka produce), debit and credit in separate transactions, swallowed exceptions, nested transactions, one transaction around a batch, MongoDB calls that miss the session, side effects in a retried transaction callback, events that stop carrying what money consumers read |
 | [Races (RACE)](plugins/money-review/skills/money-review/references/races.md) | check-then-act (including `findOne` then `updateOne`), lost updates, state transitions without a guard, lock order, uniqueness enforced only in code, limits checked under READ COMMITTED, Redis locks that do not hold, money decisions read from a secondary or a cache |
-| [Idempotency (IDEM)](plugins/money-review/skills/money-review/references/idempotency.md) | callbacks and consumers without a dedup key, dedup outside the transaction, outgoing calls without a stable idempotency key, timeouts treated as failures, batches that are not safe to re-run, retries around non-idempotent code, offset commits and acks before the work, events of one account out of order, a duplicate key caught inside a MongoDB transaction |
-| [Money arithmetic (MONEY)](plugins/money-review/skills/money-review/references/arithmetic.md) | floats, amounts without a currency, rounding without a rule, splits that do not add up, signs of refunds and fees, balances changed without a ledger entry |
+| [Idempotency (IDEM)](plugins/money-review/skills/money-review/references/idempotency.md) | callbacks and consumers without a dedup key, dedup outside the transaction, outgoing calls without a stable idempotency key, timeouts treated as failures, batches that are not safe to re-run, retries around non-idempotent code, offset commits and acks before the work, events of one account out of order, a duplicate key caught inside a MongoDB transaction, provider declines and business errors with no path |
+| [Money arithmetic (MONEY)](plugins/money-review/skills/money-review/references/arithmetic.md) | floats, amounts without a currency, rounding without a rule, splits that do not add up, signs of refunds and fees, negative input amounts, reversals booked in the wrong direction, balances changed without a ledger entry, an amount taken from the wrong source (the full amount after a partial refund) |
 
-Style, naming and general code quality are out of scope on purpose. Use it next to
+A money bug that no rule covers is still reported, as `MONEY-0`, when the reviewer can
+write a concrete failure scenario for it. Style, naming and general code quality are out
+of scope on purpose. Use it next to
 your usual review, not instead of it.
 
 ## How it keeps usage low

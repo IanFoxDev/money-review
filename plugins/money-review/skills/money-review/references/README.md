@@ -19,4 +19,8 @@ Every rule has:
 | `arithmetic.md` | MONEY | amounts, currencies, rounding, splitting; amounts in BSON and decoded JSON |
 
 Each file starts with the rules in SQL terms, then a section that maps them to
-MongoDB, Redis and message brokers and adds the rules that only exist there.
+MongoDB, Redis and message brokers and adds the rules that only exist there. Rules
+added later (TX-9, IDEM-10, MONEY-7) come at the end of their file.
+
+`MONEY-0` has no entry: it is a money bug that no rule covers, reported only with a
+concrete failure scenario (see `agents/money-reviewer.md`).
