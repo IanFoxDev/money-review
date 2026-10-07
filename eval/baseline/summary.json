@@ -1,14 +1,14 @@
 {
   "runs": 147,
   "cases": 49,
-  "precision": 0.991,
+  "precision": 0.982,
   "recall": 1,
   "loose_recall": 1,
   "true_positives": 111,
-  "false_positives": 1,
+  "false_positives": 2,
   "missed": 0,
-  "wrong_rule": 18,
-  "duplicates": 7,
+  "wrong_rule": 15,
+  "duplicates": 8,
   "acceptable_extras": 5,
   "clean_runs_with_findings": 0,
   "clean_runs": 36,
@@ -41,10 +41,10 @@
     }
   ],
   "cost_usd": {
-    "total": 44.39,
-    "per_reviewed_run": 0.315
+    "total": 37.92,
+    "per_reviewed_run": 0.269
   },
-  "seconds_per_reviewed_run": 51.574,
+  "seconds_per_reviewed_run": 54.213,
   "cases_detail": [
     {
       "case": "clean-avatar-upload",
@@ -71,8 +71,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 38,
-      "cost": 0.19,
+      "seconds": 24,
+      "cost": 0.16,
       "missed": [],
       "fps": []
     },
@@ -86,8 +86,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 36,
-      "cost": 0.2,
+      "seconds": 25,
+      "cost": 0.15,
       "missed": [],
       "fps": []
     },
@@ -101,8 +101,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 17,
-      "cost": 0.13,
+      "seconds": 19,
+      "cost": 0.11,
       "missed": [],
       "fps": []
     },
@@ -116,8 +116,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 25,
-      "cost": 0.18,
+      "seconds": 22,
+      "cost": 0.15,
       "missed": [],
       "fps": []
     },
@@ -131,8 +131,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 21,
-      "cost": 0.16,
+      "seconds": 27,
+      "cost": 0.12,
       "missed": [],
       "fps": []
     },
@@ -146,8 +146,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 28,
-      "cost": 0.19,
+      "seconds": 23,
+      "cost": 0.16,
       "missed": [],
       "fps": []
     },
@@ -162,7 +162,7 @@
       "triage_skipped": 0,
       "errors": 0,
       "seconds": 23,
-      "cost": 0.17,
+      "cost": 0.13,
       "missed": [],
       "fps": []
     },
@@ -177,7 +177,7 @@
       "triage_skipped": 0,
       "errors": 0,
       "seconds": 54,
-      "cost": 0.32,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -191,8 +191,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 52,
-      "cost": 0.35,
+      "seconds": 56,
+      "cost": 0.29,
       "missed": [],
       "fps": []
     },
@@ -206,8 +206,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 59,
-      "cost": 0.37,
+      "seconds": 57,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -221,8 +221,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 52,
-      "cost": 0.3,
+      "seconds": 51,
+      "cost": 0.26,
       "missed": [],
       "fps": []
     },
@@ -236,8 +236,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 64,
-      "cost": 0.37,
+      "seconds": 71,
+      "cost": 0.34,
       "missed": [],
       "fps": []
     },
@@ -251,8 +251,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 50,
-      "cost": 0.33,
+      "seconds": 51,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -266,8 +266,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 53,
-      "cost": 0.35,
+      "seconds": 73,
+      "cost": 0.33,
       "missed": [],
       "fps": []
     },
@@ -281,8 +281,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 50,
-      "cost": 0.31,
+      "seconds": 49,
+      "cost": 0.24,
       "missed": [],
       "fps": []
     },
@@ -296,8 +296,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 69,
-      "cost": 0.35,
+      "seconds": 68,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -311,8 +311,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 37,
-      "cost": 0.27,
+      "seconds": 42,
+      "cost": 0.21,
       "missed": [],
       "fps": []
     },
@@ -326,8 +326,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 52,
-      "cost": 0.32,
+      "seconds": 57,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -341,8 +341,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 50,
-      "cost": 0.29,
+      "seconds": 54,
+      "cost": 0.24,
       "missed": [],
       "fps": []
     },
@@ -356,8 +356,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 15,
-      "cost": 0.15,
+      "seconds": 26,
+      "cost": 0.13,
       "missed": [],
       "fps": []
     },
@@ -371,8 +371,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 23,
-      "cost": 0.19,
+      "seconds": 22,
+      "cost": 0.15,
       "missed": [],
       "fps": []
     },
@@ -401,8 +401,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 19,
-      "cost": 0.17,
+      "seconds": 29,
+      "cost": 0.16,
       "missed": [],
       "fps": []
     },
@@ -416,8 +416,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 46,
-      "cost": 0.29,
+      "seconds": 56,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -431,8 +431,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 71,
-      "cost": 0.41,
+      "seconds": 78,
+      "cost": 0.37,
       "missed": [],
       "fps": []
     },
@@ -447,7 +447,7 @@
       "triage_skipped": 0,
       "errors": 0,
       "seconds": 48,
-      "cost": 0.3,
+      "cost": 0.23,
       "missed": [],
       "fps": []
     },
@@ -461,8 +461,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 52,
-      "cost": 0.32,
+      "seconds": 56,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -476,8 +476,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 64,
-      "cost": 0.35,
+      "seconds": 77,
+      "cost": 0.3,
       "missed": [],
       "fps": []
     },
@@ -491,8 +491,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 73,
-      "cost": 0.45,
+      "seconds": 79,
+      "cost": 0.38,
       "missed": [],
       "fps": []
     },
@@ -506,8 +506,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 62,
-      "cost": 0.4,
+      "seconds": 61,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -521,8 +521,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 69,
-      "cost": 0.38,
+      "seconds": 60,
+      "cost": 0.32,
       "missed": [],
       "fps": []
     },
@@ -536,8 +536,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 56,
-      "cost": 0.35,
+      "seconds": 58,
+      "cost": 0.29,
       "missed": [],
       "fps": []
     },
@@ -551,8 +551,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 75,
-      "cost": 0.46,
+      "seconds": 82,
+      "cost": 0.4,
       "missed": [],
       "fps": []
     },
@@ -566,8 +566,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 67,
-      "cost": 0.38,
+      "seconds": 64,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -581,8 +581,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 63,
-      "cost": 0.38,
+      "seconds": 71,
+      "cost": 0.36,
       "missed": [],
       "fps": []
     },
@@ -597,7 +597,7 @@
       "triage_skipped": 0,
       "errors": 0,
       "seconds": 51,
-      "cost": 0.3,
+      "cost": 0.26,
       "missed": [],
       "fps": []
     },
@@ -611,8 +611,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 69,
-      "cost": 0.38,
+      "seconds": 68,
+      "cost": 0.34,
       "missed": [],
       "fps": []
     },
@@ -626,8 +626,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 51,
-      "cost": 0.31,
+      "seconds": 59,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -641,8 +641,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 55,
-      "cost": 0.35,
+      "seconds": 60,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -656,8 +656,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 45,
-      "cost": 0.33,
+      "seconds": 51,
+      "cost": 0.26,
       "missed": [],
       "fps": []
     },
@@ -671,8 +671,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 52,
-      "cost": 0.31,
+      "seconds": 45,
+      "cost": 0.24,
       "missed": [],
       "fps": []
     },
@@ -686,8 +686,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 79,
-      "cost": 0.45,
+      "seconds": 82,
+      "cost": 0.4,
       "missed": [],
       "fps": []
     },
@@ -698,18 +698,24 @@
       "bugs": 1,
       "found": 3,
       "loose_found": 3,
-      "false_positives": 1,
+      "false_positives": 2,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 72,
-      "cost": 0.4,
+      "seconds": 79,
+      "cost": 0.38,
       "missed": [],
       "fps": [
         {
           "rule": "RACE-6",
           "file": "app/Jobs/ApproveEarlyPayouts.php",
-          "line": 35,
-          "title": "The daily limit counts only the current batch, not what was already approved today"
+          "line": 30,
+          "title": "Daily limit counts only the requests in the current run, not what was already approved today"
+        },
+        {
+          "rule": "RACE-6",
+          "file": "app/Jobs/ApproveEarlyPayouts.php",
+          "line": 30,
+          "title": "Daily limit counts only the current batch, not payouts already approved today"
         }
       ]
     },
@@ -723,7 +729,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 73,
+      "seconds": 89,
       "cost": 0.39,
       "missed": [],
       "fps": []
@@ -738,8 +744,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 45,
-      "cost": 0.31,
+      "seconds": 55,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -753,8 +759,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 68,
-      "cost": 0.39,
+      "seconds": 71,
+      "cost": 0.33,
       "missed": [],
       "fps": []
     },
@@ -768,8 +774,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 75,
-      "cost": 0.42,
+      "seconds": 61,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -783,17 +789,17 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 54,
-      "cost": 0.34,
+      "seconds": 63,
+      "cost": 0.3,
       "missed": [],
       "fps": []
     }
   ],
   "env": {
-    "date": "2026-10-06",
-    "claude_code": "2.1.291",
-    "money_review": "0.4.0",
-    "commit": "bfbfd75",
+    "date": "2026-10-07",
+    "claude_code": "2.1.292",
+    "money_review": "0.5.2",
+    "commit": "0144576",
     "runs_per_case": 3
   },
   "models": [

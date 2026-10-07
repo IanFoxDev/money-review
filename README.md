@@ -238,21 +238,21 @@ Every field is described in [docs/config.md](docs/config.md).
 The repository has an eval with two apps and 49 merge requests on top of them, each
 with one planted bug or none (clean cases, some of them touching money code
 correctly). See [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/)
-for full reports. The table is one run of every case, three times each, on 2026-10-06
-with money-review 0.4.0, Claude Code 2.1.291, `claude-sonnet-5-5` as the reviewer and
+for full reports. The table is one run of every case, three times each, on 2026-10-07
+with the review of 0.6.0, Claude Code 2.1.292, `claude-sonnet-5-5` as the reviewer and
 `claude-opus-5-5` as the verifier.
 
 | | Laravel app on SQL | PHP and Go on MongoDB, Kafka, Redis |
 |---|---|---|
 | Cases | 31 (23 bugs, 8 clean) | 18 (14 bugs, 4 clean) |
-| Precision | 99% (69 of 70) | 100% (42 of 42) |
+| Precision | 97% (69 of 71) | 100% (42 of 42) |
 | Recall | 100% (69 of 69) | 100% (42 of 42) |
 | False alarms on clean cases | 0 in 24 runs | 0 in 12 runs |
-| Time per review | 50 s | 54 s |
-| API-equivalent cost per review | 0.31 USD | 0.33 USD |
+| Time per review | 52 s | 58 s |
+| API-equivalent cost per review | 0.26 USD | 0.29 USD |
 
-Every checklist (TX, RACE, IDEM, MONEY) found all of its planted bugs. The one false
-alarm is a `low` finding on a case about nested transactions: it says a daily limit is
+Every checklist (TX, RACE, IDEM, MONEY) found all of its planted bugs. The false alarms
+(2 in 3 runs of one case) are a `low` finding on a case about nested transactions: it says a daily limit is
 counted per batch, which matters only if the job runs more than once a day.
 
 The checklists and the cases were written by the same person, so these numbers show
