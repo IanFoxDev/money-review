@@ -39,12 +39,13 @@ summary() { jq -c "$1" "$out/summary.json"; }
 
     run "$eval_dir/score.sh" "$out"
     [ "$status" -eq 0 ]
-    [ "$(summary '[.true_positives, .false_positives, .missed]')" = "[2,1,0]" ]
+    # race-withdraw-no-lock has two more bugs (no ledger entry, negative amount) left unfound.
+    [ "$(summary '[.true_positives, .false_positives, .missed]')" = "[2,1,2]" ]
     [ "$(summary '.wrong_rule')" = "1" ]
     [ "$(summary '.duplicates')" = "1" ]
     [ "$(summary '.acceptable_extras')" = "1" ]
     [ "$(summary '.precision')" = "0.667" ]
-    [ "$(summary '.recall')" = "1" ]
+    [ "$(summary '.recall')" = "0.5" ]
     [ "$(summary '.clean_runs_with_findings')" = "0" ]
     [ "$(summary '.cost_usd.total')" = "0.7" ]
     [[ "$output" == *"- race-withdraw-no-lock: IDEM-3 \`app/Services/Ledger.php:10\` t"* ]]
@@ -54,7 +55,7 @@ summary() { jq -c "$1" "$out/summary.json"; }
     result race-withdraw-no-lock 1 0 "{\"findings\": [$(finding RACE-1 app/Services/WithdrawalService.php 40)], \"rejected\": []}" '{}'
     "$eval_dir/expected.sh" race-withdraw-no-lock > "$out/expected.json"
     run "$eval_dir/score.sh" "$out"
-    [ "$(summary '[.true_positives, .false_positives, .missed]')" = "[0,1,1]" ]
+    [ "$(summary '[.true_positives, .false_positives, .missed]')" = "[0,1,3]" ]
 }
 
 @test "a bug case that triage skipped is counted" {
@@ -95,5 +96,13 @@ summary() { jq -c "$1" "$out/summary.json"; }
     other="$(jq -nc '{file: "app/Models/User.php", line: 3, title: "t"}')"
     result race-withdraw-no-lock 1 0 "{\"findings\": [$near, $extra, $other]}" '{}'
     run "$eval_dir/score.sh" "$out"
-    [ "$(summary '[.true_positives, .acceptable_extras, .false_positives, .missed]')" = "[1,1,1,0]" ]
+    [ "$(summary '[.true_positives, .acceptable_extras, .false_positives, .missed]')" = "[1,1,1,2]" ]
+}
+
+@test "a second finding goes to a bug that is not found yet" {
+    "$eval_dir/expected.sh" money-chargeback-wrong-amount > "$out/expected.json"
+    c=app/Http/Controllers/ChargebackWebhookController.php
+    result money-chargeback-wrong-amount 1 0 "{\"findings\": [$(finding MONEY-0 $c 42), $(finding MONEY-0 $c 41)], \"rejected\": []}" '{}'
+    run "$eval_dir/score.sh" "$out"
+    [ "$(summary '[.true_positives, .duplicates, .missed]')" = "[2,0,0]" ]
 }

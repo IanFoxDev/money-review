@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Prints the expected findings of the given cases as one JSON object, with each
-# bug's anchor regex resolved to a line number in the case's version of the file.
+# bug's anchor regex resolved to a line number in the case's version of the file
+# (or in the app, for a file the case does not change).
 # An optional anchor_end turns the bug into a range of lines.
 set -euo pipefail
 
@@ -16,12 +17,15 @@ for c in "$@"; do
         bug="$(jq -c ".bugs[$i]" <<< "$spec")"
         file="$(jq -r .file <<< "$bug")"
         anchor="$(jq -r .anchor <<< "$bug")"
-        line="$(grep -nE -m 1 -- "$anchor" "$dir/files/$file" | cut -d: -f1 || true)"
+        # A bug can sit in app code that the change leaves as it is but makes wrong.
+        src="$dir/files/$file"
+        [ -f "$src" ] || src="$eval_dir/$(jq -r '.app // "app"' "$dir/case.json")/$file"
+        line="$(grep -nE -m 1 -- "$anchor" "$src" | cut -d: -f1 || true)"
         [ -n "$line" ] || { echo "expected: $c: anchor /$anchor/ not found in $file" >&2; exit 2; }
         end="$line"
         anchor_end="$(jq -r '.anchor_end // empty' <<< "$bug")"
         if [ -n "$anchor_end" ]; then
-            end="$(grep -nE -m 1 -- "$anchor_end" "$dir/files/$file" | cut -d: -f1 || true)"
+            end="$(grep -nE -m 1 -- "$anchor_end" "$src" | cut -d: -f1 || true)"
             [ -n "$end" ] || { echo "expected: $c: anchor_end /$anchor_end/ not found in $file" >&2; exit 2; }
         fi
         bugs="$(jq -c --argjson b "$bug" --argjson l "$line" --argjson e "$end" '. + [$b + {line: $l, end_line: $e}]' <<< "$bugs")"

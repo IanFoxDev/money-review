@@ -23,7 +23,10 @@ def score_run($exp; $r):
   | (($r.report // {}).findings // []) as $fs
   | (reduce $fs[] as $f (
       {matched: [], loose: [], tp: 0, fp: 0, duplicate: 0, acceptable: 0, wrong_rule: 0, fps: []};
-      ([range(0; $bugs | length) | select(near($bugs[.]; $f) and rule_ok($bugs[.]; $f))] | first) as $i
+      . as $s0
+      # A bug not found yet wins over one already found, when several fit.
+      | ([range(0; $bugs | length) | select(near($bugs[.]; $f) and rule_ok($bugs[.]; $f))]) as $fit
+      | (([$fit[] | select(. as $k | $s0.matched | index($k) | not)] | first) // ($fit | first)) as $i
       | ([range(0; $bugs | length) | select(near($bugs[.]; $f))] | first) as $j
       | if $i != null then
           (if (.matched | index($i)) != null then .duplicate += 1 else .matched += [$i] | .tp += 1 end)
