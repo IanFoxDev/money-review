@@ -21,26 +21,39 @@ requests.
 
 ## What a finding looks like
 
-From a real run on a merge request that adds wallet withdrawals (one new 27-line file):
+From a run on one of the eval cases, a new withdrawal service (one changed file):
 
-> ### HIGH RACE-1: Balance check and debit with no lock or transaction
+> ### 1. HIGH RACE-1: Balance check and absolute balance write are not protected by a lock, so concurrent withdrawals both pass and updates are lost
 >
 > `app/Services/WithdrawalService.php:18`
 >
-> **What happens:** The wallet holds 10000 balance_cents (100.00). The user
-> double-clicks to withdraw 80.00. Both requests load the wallet at line 15 with no
-> lock and read 10000. Both pass the check at line 18. Both set balance_cents to 2000
-> and save. Both call gateway->payout(8000) at line 25. 160.00 is paid out against
-> 100.00, and the wallet shows 2000, so the 6000 overdraft is not recorded anywhere.
+> ```php
+>   16 |     {
+>   17 |         $account = Account::forUser($userId, $currency);
+> > 18 |         if ($account->balance_cents < $amountCents) {
+>   19 |             throw new \DomainException('Insufficient funds');
+>   20 |         }
+> ```
 >
-> **Fix:** Wrap the read, check and debit in DB::transaction and load the wallet with
-> lockForUpdate(), or run a conditional UPDATE ... WHERE balance_cents >= ? and treat 0
-> affected rows as insufficient funds. Keep the gateway call outside the transaction.
+> **What happens:** A user has 100.00 EUR (balance_cents=10000). Two withdrawals of
+> 80.00 arrive together with different requestIds. Both load the Account at line 17 with
+> no lock and outside any transaction, and both pass the check at line 18. [...] Each
+> then runs `$account->balance_cents -= 8000` and `save()` (lines 27-28). That writes
+> the absolute value 2000 from its own stale copy. The user ends at 20.00 while
+> withdrawals_pending is incremented twice (+16000, line 29). 160.00 is now pending
+> against a 100.00 balance, and 60.00 has been created from nothing.
+>
+> **How to fix:** Call Ledger::transfer(...). It locks both rows in id order
+> (Ledger.php:38), re-checks the balance under the lock (Ledger.php:42) and updates
+> balances with relative SQL (Ledger.php:50-51). If the service keeps its own flow, read
+> the account with lockForUpdate() inside DB::transaction, do the check after the lock,
+> and use a relative update instead of save().
 
-The same run reported a float amount cast to cents (19.99 becomes 19.98), the payout
-sent after the debit with no record of the withdrawal, and a payout without an
-idempotency key. After the author pushed a fix that moved the payout inside the
-transaction, the next run looked only at the new commit and reported exactly that.
+The code is cut from the file after the review, not written by the model, so it is the
+code as it is. The same run found two more problems: balances changed with no ledger
+entries (MONEY-6) and no check that the amount is positive (MONEY-5). When there is more
+than one finding, the report starts with a table of them: severity, rule, file and line,
+and the problem in one line.
 
 ## Install
 

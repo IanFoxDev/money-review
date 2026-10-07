@@ -11,6 +11,16 @@ All notable changes to this project are documented here. The format follows
 - `--commits` reviews one commit or a range of commits (`abc1234`, `HEAD~3..`,
   `master..feature`) before there is a pull or merge request. Uncommitted edits stay
   out; from a shell the review runs in a temporary worktree at the end of the range.
+- Each finding in the report shows the code around its line, numbered, with the line
+  marked. The code is read from the file after the review (only files in the diff),
+  and is kept in the JSON report as `excerpt`.
+- A report with more than one finding starts with a table: severity, rule, file and
+  line, problem.
+
+### Changed
+
+- Findings are numbered, and "Fix" is now "How to fix", also in pull and merge
+  request comments.
 
 ## [0.5.2] - 2026-10-06
 
