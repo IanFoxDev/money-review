@@ -7,6 +7,8 @@
 # Without CASE arguments all cases in eval/cases run. Results go to
 # .eval-runs/<timestamp> unless --out is given; summary.md is printed at the end.
 # A case runs on eval/app unless its case.json names another app ("app": "app-mongo").
+# The working copies go to a temporary directory (EVAL_WORK to choose another), so
+# that no CLAUDE.md from the directories above the repository gets into the review.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -32,6 +34,8 @@ fi
 [ -n "$out" ] || out="$root/.eval-runs/$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"
+work_root="${EVAL_WORK:-$(mktemp -d "${TMPDIR:-/tmp}/money-review-eval.XXXXXX")}"
+echo "eval: working copies in $work_root" >&2
 
 "$eval_dir/expected.sh" "${cases[@]}" > "$out/expected.json"
 
@@ -48,20 +52,13 @@ jq -n \
     '{date: $date, claude_code: $claude, money_review: $version, commit: $commit, runs_per_case: $runs}' > "$out/env.json"
 
 for c in "${cases[@]}"; do
-    [ -d "$eval_dir/cases/$c" ] || { echo "run: no case $c" >&2; exit 2; }
     n=1
     while [ "$n" -le "$runs" ]; do
-        work="$out/work/$c-$n"
+        work="$work_root/$c-$n"
         result="$out/results/$c/$n"
-        rm -rf "$work" "$result"
-        mkdir -p "$work" "$result"
-
-        app="$(jq -r '.app // "app"' "$eval_dir/cases/$c/case.json")"
-        cp -R "$eval_dir/$app/." "$work/"
-        git -C "$work" init -q -b master
-        git -C "$work" add .
-        git -C "$work" -c user.name=eval -c user.email=eval@example.com commit -qm base
-        cp -R "$eval_dir/cases/$c/files/." "$work/"
+        rm -rf "$result"
+        mkdir -p "$result"
+        "$eval_dir/workdir.sh" "$c" "$work"
 
         started=$(date +%s)
         status=0
