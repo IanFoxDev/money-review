@@ -64,10 +64,21 @@ $share = round($pool * $weight / $totalWeight, 2);
 
 Look for: refunds, chargebacks and fees stored with an implicit sign; code that uses
 `abs()`; a mix of "positive amount plus type" and "signed amount" conventions in one
-calculation.
+calculation. An amount from a request, an event or a job argument that moves money
+without a check that it is positive. A reversal (refund, chargeback, cancellation,
+returned payout) that moves money in the same direction as the operation it reverses.
 
 Failure scenario: a refund of 10 stored as `+10` with type `refund` is summed with
-payments as `+10`. Revenue is overstated by twice the refund.
+payments as `+10`. Revenue is overstated by twice the refund. `withdraw(-50)` passes
+the balance check and credits the wallet with 50. A top-up moves money from
+`psp_clearing` to the wallet; the chargeback for it moves money out of `psp_clearing`
+again, so the clearing account shows 200 owed by the provider instead of 0.
+
+Good: every function that moves money rejects an amount of zero or less, or goes
+through a ledger that does; a reversal swaps the two sides of the original posting.
+
+Do not report: a missing sign check when the amount goes straight into a ledger call
+that rejects it (name the check).
 
 ## MONEY-6. Balance stored and changed in place
 
@@ -82,6 +93,23 @@ in the same transaction and a check recomputes the balance from entries.
 
 Do not report: a cached balance that is updated together with a ledger entry in the
 same transaction and verified against it.
+
+## MONEY-7. Amount from the wrong source
+
+Look for: a stored full amount (the payment amount, the order total) used where an
+event or the provider reports its own amount; partial refunds, partial captures or an
+earlier chargeback not subtracted; a cap computed from one record while the operations
+it limits update another.
+
+Failure scenario: a payment of 100.00 has 40.00 refunded. The chargeback handler books
+`$payment->amount_cents`, 100.00, while the provider took back 60.00. The ledger and the
+provider's settlement differ by 40.00 every time this happens.
+
+Good: book the amount the provider reports and check it against what is left of the
+payment; a cap reads the same records that the later operations change.
+
+Do not report: an operation that the domain defines as full (a void before capture
+always covers the whole authorization).
 
 ## MongoDB, Go and JSON
 

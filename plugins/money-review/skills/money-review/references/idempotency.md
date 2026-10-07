@@ -224,3 +224,22 @@ $this->processed->insertOne(['_id' => $eventId], ['session' => $session]);
 
 Do not report: the same pattern outside a transaction, where a duplicate key error
 affects only that one write.
+
+## IDEM-10. Provider or business outcome not handled
+
+Look for: a call to a provider or to the ledger that can end in a decline, insufficient
+funds or another expected business error, where the code handles success and maybe a
+timeout but not that; an expected business error thrown out of a webhook or consumer,
+so the transaction rolls back and the sender retries forever.
+
+Failure scenario: a payout retry catches `GatewayTimeout` only. The provider declines,
+`GatewayDeclined` escapes, the payout stays `pending` and its 500.00 stay in
+`payouts_in_flight` with nothing to release them. A chargeback handler debits the
+user's wallet; the user has already spent the money, the ledger throws
+`InsufficientFunds`, the handler returns 500, the provider retries every hour and the
+chargeback is never booked, although the provider has taken the money.
+
+Good: every outcome has a path. Success: mark it done. Decline: mark it failed and
+release the funds. Timeout: keep it pending and resolve it later (IDEM-4). Money that
+has already left (a chargeback, a fee the provider took): book it to an account that may
+go negative and alert, do not refuse it.

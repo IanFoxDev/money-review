@@ -207,3 +207,25 @@ called twice; with no idempotency key the user is paid twice.
 
 Good: keep the callback to database writes only. Record the intent in the
 transaction (an outbox or a status), act after it returns.
+
+## TX-9. Event that no longer carries what its consumers need
+
+Look for: a change to the payload, the message key or the condition for publishing an
+event that a money consumer reads (commission, cashback, ledger projection, payout): a
+field removed or renamed, an amount or currency dropped, a key that changes the order
+per account, an event published when the state change did not happen (no row matched,
+an early return).
+
+Failure scenario: `payment.paid` no longer carries `partner_id`. The commission consumer
+reads it as "no partner" and skips the event: no partner gets a commission until the
+monthly report shows zero. Or: a late `payment.succeeded` for a failed payment matches
+no row, yet `payment.paid` is published, and the partner is paid commission on money
+that never arrived.
+
+Good: before changing a payload, find every consumer of the topic in the repository and
+keep what they read; publish only when the update matched, from the same transaction
+through an outbox (TX-2).
+
+Do not report: a field that no consumer in the repository reads. Say which consumers you
+checked.
+
