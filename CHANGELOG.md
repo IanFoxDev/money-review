@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `--commits` reviews one commit or a range of commits (`abc1234`, `HEAD~3..`,
+  `master..feature`) before there is a pull or merge request. Uncommitted edits stay
+  out; from a shell the review runs in a temporary worktree at the end of the range.
+
 ## [0.5.2] - 2026-10-06
 
 ### Added

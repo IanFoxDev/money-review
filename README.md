@@ -114,6 +114,7 @@ Inside a Claude Code session, in the repository with your change:
 ```
 /money-review:money-review                 # this branch against master or main
 /money-review:money-review --base develop
+/money-review:money-review --commits HEAD~3..   # only the last three commits
 ```
 
 From a shell:
@@ -123,6 +124,19 @@ money-review                               # Markdown report
 money-review --format json                 # the report as JSON
 money-review --fail-on high                # exit 1 if there is a high finding
 ```
+
+Before there is a merge request, or for a part of one, review commits instead of the
+working tree:
+
+```sh
+money-review --commits abc1234             # one commit
+money-review --commits HEAD~3..            # the last three commits
+money-review --commits master..feature     # what feature adds since it left master
+```
+
+`--commits` leaves uncommitted edits out. From a shell it reads the code as it is at the
+last commit of the range, in a temporary worktree; inside Claude Code the agents read
+your working tree, so review a range that ends at `HEAD` there.
 
 On a GitLab merge request or a GitHub pull request:
 
