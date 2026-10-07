@@ -91,15 +91,21 @@ it was reported under.
 **One clean case is not clean.** `clean-chargeback-webhook` books a chargeback for the
 full payment amount, also after a partial refund: 100.00 paid, 40.00 refunded, a
 chargeback of 100.00 is booked. Opus reported it in all three runs, money-review never.
-The case will be fixed; until then the "no false alarms on clean changes" number of
-money-review includes this miss.
+The "no false alarms on clean changes" number of money-review above includes this miss.
+
+Fixed the same day. Checking the fix with opus turned up a second bug in the old version:
+the chargeback moved money out of `psp_clearing` again instead of back into it, the same
+direction as the top-up. The case now books the amount the provider reports, in the right
+direction, and rejects one that does not fit what is left of the payment. On the new
+version money-review and a plain prompt on opus said nothing in three runs each.
 
 **Cost.** money-review costs more and takes longer per review than a plain prompt, for
 the coordinator and the verifier. It costs nothing on a change without money.
 
 ## What changes
 
-- `clean-chargeback-webhook` gets a correct chargeback amount, or becomes a bug case.
+- The old `clean-chargeback-webhook` becomes a bug case (full amount, wrong direction),
+  together with the checklist rules for it.
 - The checklists get rules for the gaps above, measured with this eval.
 - The verifier keeps a real problem under the right rule instead of dropping it.
 - Harder cases: changes with a planted bug and a second, quieter one, where recall can
