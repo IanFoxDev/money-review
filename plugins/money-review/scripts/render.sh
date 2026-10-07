@@ -7,6 +7,21 @@ if [ $# -gt 0 ]; then report="$(cat "$1")"; else report="$(cat)"; fi
 
 jq -r '
   def sev: {high: 0, medium: 1, low: 2}[.severity];
+  def cell: gsub("\\|"; "\\|");
+  def lang: (.file | capture("\\.(?<x>[A-Za-z0-9]+)$").x // "" | ascii_downcase)
+    | {php: "php", go: "go", js: "javascript", ts: "typescript", py: "python", rb: "ruby",
+       java: "java", kt: "kotlin", cs: "csharp", sql: "sql", rs: "rust"}[.] // "";
+  # The code around the finding, numbered, with ">" on its line.
+  def excerpt: . as $f
+    | ($f.excerpt.text | split("\n")) as $lines
+    | (($f.excerpt.start + ($lines | length) - 1) | tostring | length) as $w
+    | (if ($f.excerpt.text | contains("```")) then "~~~~" else "```" end) as $fence
+    | "\($fence)\($f | lang)",
+      ($lines | to_entries[] | (.key + $f.excerpt.start) as $n
+        | (if $n == $f.line then "> " else "  " end)
+          + ((" " * ($w - ($n | tostring | length))) // "") + ($n | tostring) + " | " + .value),
+      $fence,
+      "";
   (.findings | sort_by(sev, .file, .line)) as $f
   | (.rejected // []) as $r
   | [
@@ -17,14 +32,21 @@ jq -r '
        else "\($f | length) finding(s): \([$f[] | select(.severity == "high")] | length) high, \([$f[] | select(.severity == "medium")] | length) medium, \([$f[] | select(.severity == "low")] | length) low."
        end),
       "",
-      ($f[] |
-        "### \(.severity | ascii_upcase) \(.rule): \(.title)",
+      (if ($f | length) > 1 then
+        "| # | Severity | Rule | Where | Problem |",
+        "|---|---|---|---|---|",
+        ($f | to_entries[] | "| \(.key + 1) | \(.value.severity) | \(.value.rule) | `\(.value.file):\(.value.line)` | \(.value.title | cell) |"),
+        ""
+       else empty end),
+      ($f | to_entries[] | .key as $k | .value |
+        "### \($k + 1). \(.severity | ascii_upcase) \(.rule): \(.title)",
         "",
         "`\(.file):\(.line)`",
         "",
+        (if .excerpt then excerpt else empty end),
         "**What happens:** \(.scenario)",
         "",
-        "**Fix:** \(.fix)",
+        "**How to fix:** \(.fix)",
         ""),
       (if .coverage then
         "\(.coverage.files_with_money) of \(.coverage.files_changed) changed file(s) touch money; "

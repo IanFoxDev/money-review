@@ -70,7 +70,7 @@ cmd_post() {
         fi
         payload="$(jq -n --argjson f "$finding" --argjson r "$refs" '{
             body: ("**money-review \($f.severity | ascii_upcase) \($f.rule): \($f.title)**\n\n"
-                + "**What happens:** \($f.scenario)\n\n**Fix:** \($f.fix)\n\n"
+                + "**What happens:** \($f.scenario)\n\n**How to fix:** \($f.fix)\n\n"
                 + "<!-- money-review:finding rule=\($f.rule) file=\($f.file) -->"),
             position: {
                 position_type: "text",

@@ -41,7 +41,7 @@ setup() {
 @test "a money change is reviewed and rendered" {
     run "$bin" --diff "$diffs/withdrawal.diff" --out "$out"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"### HIGH RACE-1"* ]]
+    [[ "$output" == *"### 1. HIGH RACE-1"* ]]
     [[ "$output" == *"4 turns"* ]]
     [[ "$output" == *"API-equivalent 0.37 USD"* ]]
     [[ "$output" == *"models: claude-opus-5-5, claude-sonnet-5-5"* ]]
