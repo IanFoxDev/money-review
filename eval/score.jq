@@ -1,6 +1,7 @@
-# Scores eval runs. Input variables:
+# Scores eval runs. Input variables, each read with --slurpfile:
 #   $expected  {case: {title, bugs: [{rules, file, line, ...}], acceptable: [{rules, file}]}}
 #   $runs      [{case, run, exit, seconds, report, claude}]
+#   $env       what the run was measured with (eval/run.sh writes it)
 #
 # A finding is a true positive when file, rule and line (within 5 lines of the
 # anchor, or of the anchor_end range) match an expected bug. A finding on the right lines with another rule
@@ -46,7 +47,9 @@ def score_run($exp; $r):
     }
   | del(.matched, .loose);
 
-[ $runs[] | score_run($expected[.case]; .) ] as $scored
+$expected[0] as $expected
+| $runs[0] as $runs
+| [ $runs[] | score_run($expected[.case]; .) ] as $scored
 | ($scored | map(.tp) | add // 0) as $tp
 | ($scored | map(.fp) | add // 0) as $fp
 | ($scored | map(.fn) | add // 0) as $fn
@@ -97,3 +100,4 @@ def score_run($exp; $r):
       fps: (map(.fps[]))
     }))
   }
+  + {env: $env[0], models: ([$runs[].claude.modelUsage // {} | keys[]] | unique)}
