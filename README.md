@@ -84,10 +84,28 @@ EOF
 chmod +x ~/.local/bin/money-review
 ```
 
-The marketplace installs the latest release, not the tip of `master`;
-`/plugin marketplace update money-review` moves you to a newer one. Without Claude Code
-plugins, or to try unreleased changes, clone the repository and link
+The marketplace installs the latest release, not the tip of `master`. Without Claude
+Code plugins, or to try unreleased changes, clone the repository and link
 `plugins/money-review/bin/money-review` from there.
+
+## Updating
+
+A new release does not reach you by itself. Claude Code keeps auto-update off for
+marketplaces outside Anthropic's own, so the version you installed stays until you
+update. From a terminal:
+
+```sh
+claude plugin marketplace update money-review
+claude plugin update money-review@money-review
+```
+
+Or in Claude Code: `/plugin marketplace update money-review`, then update the plugin
+from the `/plugin` menu. Restart Claude Code after either. The shell command from
+`/money-review:setup` follows the installed release, so it needs nothing.
+
+To get releases without doing this, turn on auto-update for the `money-review`
+marketplace in the `/plugin` menu; Claude Code then updates it at startup. What changed
+in each release is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Use
 
