@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-07
+
 ### Added
 
 - `--commits` reviews one commit or a range of commits (`abc1234`, `HEAD~3..`,
@@ -21,6 +23,15 @@ All notable changes to this project are documented here. The format follows
 
 - Findings are numbered, and "Fix" is now "How to fix", also in pull and merge
   request comments.
+
+### Eval
+
+- The working copies of the eval cases are built in a temporary directory, so no
+  CLAUDE.md from the directories above the repository gets into a review.
+- `eval/bare.sh` runs the same cases through a plain "review this change" prompt, for
+  comparison.
+- New baseline, 2026-10-07: every case three times, recall 100%, precision 98%, no
+  false alarm in 36 runs of clean cases. No regression against 2026-10-06.
 
 ## [0.5.2] - 2026-10-06
 
@@ -166,7 +177,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/IanFoxDev/money-review/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/IanFoxDev/money-review/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/IanFoxDev/money-review/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/IanFoxDev/money-review/compare/v0.4.0...v0.5.0
