@@ -262,6 +262,15 @@ the change removed one of two safety layers and the other still held. Those case
 rebuilt so that the removed layer is the only one. The eval runs again on every minor
 release and every model change, and is compared with this run (`eval/baseline/`).
 
+Against a plain "review this change" prompt on the same cases
+([2026-10-07-plain-prompt.md](docs/eval-results/2026-10-07-plain-prompt.md)), all three
+found every planted bug. money-review raised 141 findings in 147 runs against 317 for a
+plain prompt on opus, none of them wrong, and nothing on clean changes; opus flagged 11
+of 36 clean runs. The plain
+prompt also found more real money problems next to the planted bug (12 against 7) and a
+real bug in one case that was meant to be clean. Those gaps are the next work on the
+checklists.
+
 Bugs that only the current callers hide are reported as `low`, with the code that
 protects them today: a ledger transfer split over two transactions is safe while
 every caller opens an outer transaction, and breaks with the first one that does not.

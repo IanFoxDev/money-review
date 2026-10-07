@@ -68,6 +68,11 @@ eval/run.sh race-lock-order clean-installments
 eval/score.sh .eval-runs/<dir>           # score an existing run again
 ```
 
+`eval/bare.sh` runs the same cases through a plain "review this change" prompt with no
+plugin (`--model opus` by default), for comparison; its findings have no rule and are
+matched by file and line. The last comparison is in
+[eval-results/2026-10-07-plain-prompt.md](eval-results/2026-10-07-plain-prompt.md).
+
 Each reviewed run uses your Claude subscription about as much as one real review;
 changes that triage skips cost nothing. Results, reports and the working copies of
 the app are kept in `.eval-runs/<timestamp>/`, with `summary.md` on top.
