@@ -5,6 +5,8 @@
 #
 # Usage: money-review [options]
 #   --base REF          compare against REF (default: origin/HEAD, master, main)
+#   --commits RANGE     review committed work only, before there is a PR or MR:
+#                       one commit (abc123) or a range (master..feature, HEAD~3..)
 #   --mr N              review GitLab merge request N (needs glab, run in the repo)
 #   --pr N              review GitHub pull request N (needs gh, run in the repo)
 #   --post              with --mr or --pr: comment on it
@@ -23,8 +25,8 @@
 #                       (default: 1; not after a usage or rate limit)
 #   --allow-api-key     run even if ANTHROPIC_API_KEY is set (paid API billing)
 #
-# With --mr or --pr, the review runs in a temporary git worktree at its head, so your
-# working tree is not touched. After a posted review only commits added since
+# With --mr, --pr or --commits, the review runs in a temporary git worktree at its
+# head, so your working tree is not touched and uncommitted edits are left out. After a posted review only commits added since
 # the reviewed one are checked, unless --full is given.
 #
 # Exit codes: 0 done, 1 findings at --fail-on level, 2 usage error,
@@ -36,6 +38,7 @@ claude="${MONEY_REVIEW_CLAUDE:-claude}"
 min_version="2.1.0"
 
 base=""
+commits=""
 diff_in=""
 config=""
 format="markdown"
@@ -57,6 +60,7 @@ die() { echo "money-review: $2" >&2; exit "$1"; }
 while [ $# -gt 0 ]; do
     case "$1" in
         --base) base="${2:?}"; shift 2 ;;
+        --commits) commits="${2:?}"; shift 2 ;;
         --diff) diff_in="${2:?}"; shift 2 ;;
         --config) config="${2:?}"; shift 2 ;;
         --format) format="${2:?}"; shift 2 ;;
@@ -71,7 +75,7 @@ while [ $# -gt 0 ]; do
         --post) post=1; shift ;;
         --full) full=1; shift ;;
         --remote) remote="${2:?}"; shift 2 ;;
-        -h|--help) sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,33p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) die 2 "unknown argument $1 (see --help)" ;;
     esac
 done
@@ -91,11 +95,14 @@ elif [ -n "$pr" ]; then
 fi
 if [ -n "$forge" ]; then
     case "$number" in ''|*[!0-9]*) die 2 "--mr and --pr take a number" ;; esac
-    if [ -n "$diff_in" ] || [ -n "$base" ]; then
-        die 2 "--mr and --pr cannot be combined with --diff or --base"
+    if [ -n "$diff_in" ] || [ -n "$base" ] || [ -n "$commits" ]; then
+        die 2 "--mr and --pr cannot be combined with --diff, --base or --commits"
     fi
 elif [ "$post" -eq 1 ] || [ "$full" -eq 1 ]; then
     die 2 "--post and --full need --mr or --pr"
+fi
+if [ -n "$commits" ] && { [ -n "$diff_in" ] || [ -n "$base" ]; }; then
+    die 2 "--commits cannot be combined with --diff or --base"
 fi
 
 if [ -n "${ANTHROPIC_API_KEY:-}" ] && [ "$allow_api_key" -eq 0 ]; then
@@ -138,13 +145,22 @@ if [ -n "$forge" ]; then
         fi
     fi
 
-    git diff --no-color --no-ext-diff "${since:-$base_sha}" "$head_sha" > "$out/change.diff"
+    start_sha="${since:-$base_sha}"
+    [ -n "$since" ] && echo "money-review: $label, reviewing commits since ${since:0:12}" >&2
+elif [ -n "$commits" ]; then
+    git rev-parse --git-dir >/dev/null 2>&1 || die 2 "--commits needs a git repository"
+    r="$("$plugin/scripts/range.sh" "$commits")" || exit 2
+    start_sha="$(jq -r .start <<< "$r")"
+    head_sha="$(jq -r .head <<< "$r")"
+fi
+
+if [ -n "$head_sha" ]; then
+    git diff --no-color --no-ext-diff "$start_sha" "$head_sha" > "$out/change.diff"
     diff_in="$out/change.diff"
     git worktree add -q --detach "$out/worktree" "$head_sha"
     repo_dir="$(pwd)"
     trap 'git -C "$repo_dir" worktree remove --force "$out/worktree" >/dev/null 2>&1 || true' EXIT
     cd "$out/worktree"
-    [ -n "$since" ] && echo "money-review: $label, reviewing commits since ${since:0:12}" >&2
 fi
 
 prep_args=(--out "$out")

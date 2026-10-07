@@ -8,17 +8,20 @@
 # A change bigger than review.group_lines changed lines is split into groups of
 # files, each reviewed on its own (see split.sh); a copy goes to OUT/prepared.json.
 #
-# Usage: prepare.sh [--base REF] [--diff FILE] [--config FILE] [--out DIR]
+# Usage: prepare.sh [--base REF | --commits RANGE | --diff FILE] [--config FILE] [--out DIR]
 #
 # Without --diff the change is everything between the merge base with REF and
 # the working tree, so uncommitted edits and new untracked files are reviewed
-# too. Without --base the base is origin/HEAD, then master, then main. The
-# config defaults to .money-review.json in the repository root when it exists.
+# too. Without --base the base is origin/HEAD, then master, then main.
+# --commits takes one commit or a range (A..B, A..) and reviews only what is
+# committed there; see range.sh. The config defaults to .money-review.json in
+# the repository root when it exists.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 refs="$(cd "$here/../skills/money-review/references" && pwd)"
 base=""
+commits=""
 diff_in=""
 config=""
 out=""
@@ -26,10 +29,11 @@ out=""
 while [ $# -gt 0 ]; do
     case "$1" in
         --base) base="${2:?--base needs a ref}"; shift 2 ;;
+        --commits) commits="${2:?--commits needs a commit or a range}"; shift 2 ;;
         --diff) diff_in="${2:?--diff needs a file}"; shift 2 ;;
         --config) config="${2:?--config needs a file}"; shift 2 ;;
         --out) out="${2:?--out needs a directory}"; shift 2 ;;
-        -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "prepare: unknown argument $1" >&2; exit 2 ;;
     esac
 done
@@ -43,6 +47,11 @@ diff_file="$out/change.diff"
 
 if [ -n "$diff_in" ]; then
     [ "$diff_in" -ef "$diff_file" ] || cp "$diff_in" "$diff_file"
+elif [ -n "$commits" ]; then
+    git rev-parse --git-dir >/dev/null 2>&1 || { echo "prepare: not a git repository" >&2; exit 2; }
+    r="$("$here/range.sh" "$commits")" || exit 2
+    git diff --no-color --no-ext-diff "$(jq -r .start <<< "$r")" "$(jq -r .head <<< "$r")" > "$diff_file"
+    base="$(jq -r .start <<< "$r")"
 else
     git rev-parse --git-dir >/dev/null 2>&1 || { echo "prepare: not a git repository" >&2; exit 2; }
     if [ -z "$base" ]; then
