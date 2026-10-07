@@ -10,6 +10,35 @@
       "file": "src/Payouts/InstantWithdrawal.php",
       "anchor": "SECONDARY_PREFERRED",
       "anchor_end": "'\\$inc' => \\['balance' => -\\$amount\\]"
+    },
+    {
+      "rules": [
+        "TX-3",
+        "TX-2",
+        "MONEY-0"
+      ],
+      "file": "src/Payouts/InstantWithdrawal.php",
+      "anchor": "insertOne\\(\\['_id' => \\$requestId",
+      "anchor_end": "'balance' => -\\$amount",
+      "note": "withdrawal insert and debit are two writes without a transaction"
+    },
+    {
+      "rules": [
+        "MONEY-6",
+        "MONEY-0"
+      ],
+      "file": "src/Payouts/InstantWithdrawal.php",
+      "anchor": "'balance' => -\\$amount",
+      "note": "debit bypasses the Ledger, no ledger entry"
+    },
+    {
+      "rules": [
+        "MONEY-5",
+        "MONEY-0"
+      ],
+      "file": "src/Payouts/InstantWithdrawal.php",
+      "anchor": "public function reserve",
+      "note": "a negative amount is accepted and credits the wallet"
     }
   ],
   "acceptable": [

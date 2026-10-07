@@ -9,6 +9,25 @@
       "file": "app/Services/WithdrawalService.php",
       "anchor": "balance_cents < \\$amountCents",
       "anchor_end": "\\$account->save\\(\\)"
+    },
+    {
+      "rules": [
+        "MONEY-6",
+        "MONEY-0"
+      ],
+      "file": "app/Services/WithdrawalService.php",
+      "anchor": "balance_cents -= \\$amountCents",
+      "anchor_end": "increment\\('balance_cents'",
+      "note": "balances changed with no ledger entries, bypassing Ledger"
+    },
+    {
+      "rules": [
+        "MONEY-5",
+        "MONEY-0"
+      ],
+      "file": "app/Services/WithdrawalService.php",
+      "anchor": "public function withdraw",
+      "note": "a negative amount is accepted and credits the wallet"
     }
   ],
   "acceptable": [

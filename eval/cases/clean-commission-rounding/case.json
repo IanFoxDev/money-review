@@ -1,1 +1,1 @@
-{"title": "Commission rounded half up in integers by one helper used by the ledger and the statement", "bugs": [], "acceptable": []}
+{"title": "Commission rounded half up in integers by one helper; the statement reads the credited amounts from the ledger", "bugs": [], "acceptable": []}

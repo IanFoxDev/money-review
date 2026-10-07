@@ -9,6 +9,16 @@
       "file": "app/Services/RefundService.php",
       "anchor": "\\$payment = Payment::findOrFail\\(\\$paymentId\\)",
       "anchor_end": "alreadyRefunded = "
+    },
+    {
+      "rules": [
+        "MONEY-7",
+        "MONEY-0",
+        "TX-3"
+      ],
+      "file": "app/Jobs/ResolvePendingRefunds.php",
+      "anchor": "decrement\\('refunded_cents'",
+      "note": "refunded_cents is no longer incremented but still decremented, it goes stale and negative"
     }
   ],
   "acceptable": [

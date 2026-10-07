@@ -1,9 +1,32 @@
 {
   "title": "Payout retry generates a new idempotency key on every attempt",
   "bugs": [
-    {"rules": ["IDEM-3", "IDEM-6"], "file": "app/Jobs/RetryFailedPayout.php", "anchor": "'payout-retry-'.Str::uuid\\(\\)"}
+    {
+      "rules": [
+        "IDEM-3",
+        "IDEM-6"
+      ],
+      "file": "app/Jobs/RetryFailedPayout.php",
+      "anchor": "'payout-retry-'.Str::uuid\\(\\)"
+    },
+    {
+      "rules": [
+        "IDEM-10",
+        "MONEY-0"
+      ],
+      "file": "app/Jobs/RetryFailedPayout.php",
+      "anchor": "catch \\(GatewayTimeout",
+      "note": "a decline is not handled, the money stays in payouts_in_flight"
+    }
   ],
   "acceptable": [
-    {"rules": ["IDEM-4", "IDEM-6", "RACE-1"], "file": "app/Jobs/RetryFailedPayout.php"}
+    {
+      "rules": [
+        "IDEM-4",
+        "IDEM-6",
+        "RACE-1"
+      ],
+      "file": "app/Jobs/RetryFailedPayout.php"
+    }
   ]
 }

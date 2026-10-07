@@ -9,6 +9,15 @@
       "file": "src/Money/Ledger.php",
       "anchor": "Transactions need a replica set",
       "anchor_end": "\\['\\$inc' => \\['balance' => \\$amount\\]\\]\\);"
+    },
+    {
+      "rules": [
+        "MONEY-0",
+        "TX-4"
+      ],
+      "file": "src/Money/Ledger.php",
+      "anchor": "\\['_id' => \\$to, 'currency' => \\$currency\\], \\['\\$inc'",
+      "note": "credit result unchecked, money debited from the source vanishes when the target is missing"
     }
   ],
   "acceptable": [

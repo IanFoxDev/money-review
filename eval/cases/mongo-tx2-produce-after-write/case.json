@@ -9,6 +9,16 @@
       "file": "src/Payments/PaymentService.php",
       "anchor": "newTopic\\('billing\\.payments'\\)->produce",
       "anchor_end": "flush\\(1_000\\)"
+    },
+    {
+      "rules": [
+        "TX-9",
+        "MONEY-0"
+      ],
+      "file": "src/Payments/PaymentService.php",
+      "anchor": "produce\\(RD_KAFKA",
+      "anchor_end": "'payment_id' => \\$paymentId",
+      "note": "event lost partner_id and amount, and is published when the payment was not marked paid"
     }
   ],
   "acceptable": [

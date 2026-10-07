@@ -9,6 +9,15 @@
       "file": "app/Http/Controllers/ChargebackWebhookController.php",
       "anchor": "\\$this->ledger->transfer\\(",
       "anchor_end": "'chargeback',"
+    },
+    {
+      "rules": [
+        "IDEM-10",
+        "MONEY-0"
+      ],
+      "file": "app/Http/Controllers/ChargebackWebhookController.php",
+      "anchor": "->transfer\\(",
+      "note": "InsufficientFunds rolls back the chargeback, the provider retries forever"
     }
   ],
   "acceptable": [

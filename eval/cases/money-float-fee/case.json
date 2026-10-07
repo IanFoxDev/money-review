@@ -1,9 +1,34 @@
 {
   "title": "Payout fee computed in floats and truncated back to cents",
   "bugs": [
-    {"rules": ["MONEY-1", "MONEY-3"], "file": "app/Services/FeeCalculator.php", "anchor": "\\$amount = \\$amountCents / 100;", "anchor_end": "return \\['fee'"}
+    {
+      "rules": [
+        "MONEY-1",
+        "MONEY-3"
+      ],
+      "file": "app/Services/FeeCalculator.php",
+      "anchor": "\\$amount = \\$amountCents / 100;",
+      "anchor_end": "return \\['fee'"
+    },
+    {
+      "rules": [
+        "MONEY-5",
+        "MONEY-0"
+      ],
+      "file": "app/Services/FeeCalculator.php",
+      "anchor": "\\$net = \\$amount - \\$fee",
+      "note": "fee is not capped at the payout, net goes negative"
+    }
   ],
   "acceptable": [
-    {"rules": ["MONEY-1", "MONEY-3", "MONEY-4", "MONEY-2"], "file": "app/Services/FeeCalculator.php"}
+    {
+      "rules": [
+        "MONEY-1",
+        "MONEY-3",
+        "MONEY-4",
+        "MONEY-2"
+      ],
+      "file": "app/Services/FeeCalculator.php"
+    }
   ]
 }

@@ -10,6 +10,24 @@
       "file": "src/Money/FeeCharger.php",
       "anchor": "\\$wallet = \\$this->wallets->findOne",
       "anchor_end": "'\\$set' => \\['balance' =>"
+    },
+    {
+      "rules": [
+        "MONEY-6",
+        "MONEY-0"
+      ],
+      "file": "src/Money/FeeCharger.php",
+      "anchor": "wallets->updateOne\\(",
+      "note": "fee changes the balance with no ledger entry and no counter account"
+    },
+    {
+      "rules": [
+        "IDEM-5",
+        "MONEY-0"
+      ],
+      "file": "src/Money/FeeCharger.php",
+      "anchor": "fee_charged_at",
+      "note": "fee_charged_at is written but never checked, a re-run charges twice"
     }
   ],
   "acceptable": [
