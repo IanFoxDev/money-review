@@ -1,0 +1,1277 @@
+[
+  {
+    "case": "clean-avatar-upload",
+    "issues": [
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Old avatar file is not deleted on update",
+        "reason": "AvatarController.php:15 overwrites avatar_path; leaving the old file is storage housekeeping, no functional failure.",
+        "raised_by": {
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "image rule may accept SVG on old Laravel versions",
+        "reason": "AvatarController.php:12 uses 'image'; Laravel 11+ excludes SVG by default and nothing in the app shows an older version or public serving, so this is speculative hardening.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "clean-chargeback-webhook",
+    "issues": [
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Event marked processed when the payment is unknown or not succeeded",
+        "reason": "ChargebackWebhookController.php:25-34 acknowledges and dedups skipped events, the same handling as the base PspWebhookController.php:33-36; a chargeback arriving before payment.succeeded requires the success event to be delayed past the dispute window, so this is speculative hardening.",
+        "raised_by": {
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Chargeback booked against psp_clearing instead of debiting the user wallet",
+        "reason": "psp_clearing -> chargebacks (ChargebackWebhookController.php:38-44) is a balanced, keyed booking of a platform-absorbed loss; whether to claw back from the user wallet is a business policy the app does not state.",
+        "raised_by": {
+          "plain-opus": 2,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Chargeback books the full payment amount, ignoring partial refunds and the event amount",
+        "reason": "Line 42 always transfers $payment->amount_cents; a partially refunded payment stays 'succeeded' (RefundService only raises refunded_cents), so a 100.00 payment with 40.00 refunded books a 100.00 chargeback while the provider can pull back at most 60.00.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      }
+    ]
+  },
+  {
+    "case": "clean-commission-rounding",
+    "issues": [
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "accrue() has no caller yet",
+        "reason": "PartnerCommission::accrue (PartnerCommission.php:23) and statement() are both unreferenced in the app, so neither flow is live; wiring into PspWebhookController::succeeded is a follow-up, not a defect in the shown code.",
+        "raised_by": {
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Statement buckets by payments.created_at while the ledger credit happens at success time",
+        "reason": "PartnerCommission.php:46 filters on payments.created_at; payments start pending (migration status column) and succeed later via the webhook (PspWebhookController.php:48-63), so a payment created 31 Oct and succeeded 1 Nov is in the October statement but credited in November.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Statement includes payments made before the referral was created",
+        "reason": "PartnerCommission.php:43 ignores referrals.created_at, but accrue() takes partnerId from the (nonexistent) caller, so whether a pre-referral payment is accrued is undefined; speculative.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "wrong",
+        "in_change": null,
+        "summary": "Refunded payments make statement and ledger diverge",
+        "reason": "RefundService.php:27-33 keeps payment status 'succeeded' and only bumps refunded_cents; nothing sets 'refunded', so the payment stays in the statement (PartnerCommission.php:45) and both statement and ledger keep the full commission consistently. Clawback on refund is a policy choice, not a mismatch.",
+        "raised_by": {
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "LIKE on a timestamp column fails on Postgres",
+        "reason": "PartnerCommission.php:46 does created_at LIKE 'YYYY-MM%'; the schema's partial unique index (migration line 87) rules out MySQL, and Postgres has no timestamp ~~ text operator, so statement() errors. A date range works everywhere.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Statement rows carry no currency field",
+        "reason": "PartnerCommission.php:48-53 returns per-payment rows without summing them, so no amounts are mixed; adding currency is a presentation improvement.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "clean-payment-receipt",
+    "issues": [
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "SCALE table lists only JPY and KWD; other 0/3-decimal currencies would display with 2 decimals",
+        "reason": "PaymentReceiptController.php:12,17 defaults to 2, but nothing in the app shows KRW/BHD etc. are handled, and the response also returns exact amount_cents (line 23); amount_display is display-only (line 25). Speculative completeness, no failing flow in this app.",
+        "raised_by": {
+          "plain-sonnet": 2
+        }
+      }
+    ]
+  },
+  {
+    "case": "clean-payout-approval",
+    "issues": [
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "A notifier exception in one afterCommit callback skips the remaining partners' emails, and a retry cannot resend them",
+        "reason": "PayoutApproval.php:34 registers DB::afterCommit inside the outer batch transaction of ApproveEarlyPayouts.php:26; callbacks run in sequence after commit, an exception stops the rest, and the approvals are committed so a retry finds no requested payouts.",
+        "raised_by": {
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Daily limit counts only this run's requests and is checked after approve()",
+        "reason": "ApproveEarlyPayouts.php:30-37 checks inside the all-or-nothing transaction, so an over-limit batch rolls back fully and no money moves; counting earlier runs of the day is a policy choice not stated in the code.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "clean-revenue-report",
+    "issues": [
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Period filter uses LIKE on timestamp columns, fails on PostgreSQL and cannot use an index",
+        "reason": "RevenueReport.php:21 and :28 do where('created_at','like',$period.'%') on timestamp columns (migration :47, :57); the migration's partial index (:87) points to PostgreSQL, where timestamp LIKE text raises 'operator does not exist'.",
+        "raised_by": {
+          "plain-sonnet": 2
+        }
+      }
+    ]
+  },
+  {
+    "case": "idem-cashback-rerun",
+    "issues": [
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Period filter uses LIKE on a timestamp column",
+        "reason": "AccrueMonthlyCashback.php:27 does where('created_at','like',$this->period.'%') on payments.created_at (a timestamp); on PostgreSQL, suggested by the partial unique index in the migration (:87), this errors, and elsewhere it relies on implicit casts and skips indexes.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "idem-chargeback-webhook-no-dedup",
+    "issues": [
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "InsufficientFunds on the user wallet rolls back the chargeback, the loss is never booked and the PSP retries forever",
+        "reason": "User accounts default allow_negative=false (migration accounts table), so Ledger.php:42-44 throws when the user already spent the money; ChargebackWebhookController.php:25-36 rolls back and returns 500, while the provider has already taken the funds, so ledger and PSP diverge.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Unknown psp_reference returns 404 via firstOrFail, causing endless provider retries",
+        "reason": "ChargebackWebhookController.php:26 uses firstOrFail; PspWebhookController acknowledges unknown references instead.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Chargeback amount/currency from the signed payload is not bounded by the payment amount",
+        "reason": "The event is signature-checked (controller docblock :13) and the provider's chargeback amount is authoritative; a negative or zero amount cannot reverse the transfer because Ledger.php:18-20 rejects amount<=0. Bounding against the payment is hardening, not a concrete failure in this code.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      }
+    ]
+  },
+  {
+    "case": "idem-dedup-outside-transaction",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Dedup check, work and mark are three separate steps; crash or concurrent retry reprocesses the event",
+        "reason": "PspWebhookController.php:27 exists() check, work in its own transaction, then insertOrIgnore at :38 outside it; a crash between commit and :38 or two concurrent deliveries create a second deposit and credit.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Deposit ledger key comes from a fresh deposit id, so nothing but the broken event dedup stops a double credit",
+        "reason": "PspWebhookController.php:72-75 uses deposit:{$deposit->id} from a row just created; the double credit these findings describe happens only through the non-atomic dedup at :27-38, i.e. the planted bug.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "bankTransfer uses user_id/amount_cents/currency from the payload without validation",
+        "reason": "PspWebhookController.php:34 casts data to array and :73-76 index it directly; a missing key or a non-int amount gives a 500 or TypeError at Ledger::transfer(int) and endless PSP retries.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "idem-retry-around-credit",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "retry() around the credit with a per-attempt key and the mail inside re-credits on failure",
+        "reason": "GoodwillService.php:17-26: the key includes $attempt (:19) and Mail::send (:26) is in the retried closure, so a mail failure after a committed transfer posts another credit under a new key.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Mail::to() is given an int user id, not a recipient",
+        "reason": "GoodwillService.php:26 passes $userId (int) to Mail::to, which becomes the address \"123\" and fails RFC validation on send, so the email never reaches the user (and triggers the planted retry).",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 2
+        }
+      }
+    ]
+  },
+  {
+    "case": "idem-retry-fresh-key",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Each timeout retry sends a new random key, so several attempts can all pay out",
+        "reason": "RetryFailedPayout.php:28 uses 'payout-retry-'.Str::uuid() inside the retry loop at :26-35; a timed-out attempt that succeeded is paid again on the next loop pass.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Concurrent or repeated jobs both pass the pending check and both pay",
+        "reason": "Check at RetryFailedPayout.php:21 and update at :38 bracket the gateway call; the duplicate payout only reaches the provider because the key at :28 is random instead of payout-{id} as in RunMonthlyPayouts, so this is the planted bug seen from the concurrency side.",
+        "raised_by": {
+          "money-review": 1,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "GatewayDeclined not handled: payout stays pending and the amount is never returned from payouts_in_flight",
+        "reason": "RetryFailedPayout.php:30 catches only GatewayTimeout; RunMonthlyPayouts.php marks a decline failed and posts payout-return:{id}. Here a decline escapes, status stays pending and the partner's money stays in payouts_in_flight.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Blocking sleep in the queue job",
+        "reason": "RetryFailedPayout.php:34 sleeps at most 2+4 seconds; this is worker throughput style, not a defect.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "money-balance-without-entry",
+    "issues": [
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Welcome-bonus dedup key ignores currency and shares processed_events",
+        "reason": "PromoCredit.php:8 says once per user, so event_id=userId at :15 matches the intent; source 'welcome_bonus' is its own namespace in the (source,event_id) primary key.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "money-commission-rounding",
+    "issues": [
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Statement period filter uses LIKE on a timestamp column",
+        "reason": "PartnerCommission.php:45 filters payments.created_at (timestamp) with LIKE; on Postgres (the app uses a partial index in the base migration) this raises operator does not exist, and it is never index-friendly.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Statement rows carry no currency while commissions are booked per currency",
+        "reason": "accrue() credits a per-currency partner account (PartnerCommission.php:32), but statement() selects only id and amount_cents (line 47) with no currency, so a partner with referred users paying in USD and JPY gets indistinguishable cent amounts that cannot reconcile with per-currency payouts.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Statement attribution via referrals may differ from the partnerId passed to accrue",
+        "reason": "No caller of accrue() is in the change or the app, so a mismatch between the passed partnerId and referrals.partner_id (one partner per user, referrals.user_id primary) is speculative; reading ledger entries instead is a design suggestion.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "money-float-fee",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Fee and net computed in float dollars and truncated with (int)",
+        "reason": "FeeCalculator.php:15-19 divides cents by 100, rounds in float and casts with (int), e.g. 1000 cents gives fee 0.59*100=58.999 -> 58, and net is truncated separately so fee+net != amount.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 4
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Fee not capped at amount; small or non-positive payouts give negative net",
+        "reason": "FeeCalculator.php:16-17 always adds the 30-cent fixed fee, so forPayout(20) returns net -10 (and forPayout(0) net -30) with no validation, producing a negative payout.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      }
+    ]
+  },
+  {
+    "case": "money-mixed-currency-total",
+    "issues": [
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Period filter uses LIKE on a timestamp column: fails on PostgreSQL, no index use elsewhere",
+        "reason": "PartnerStatement.php:17 applies 'like' to ledger_entries.created_at, a timestamp (migration :36); the app uses a partial index (migration :87), so Postgres, which has no timestamp LIKE operator.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Period string is not validated before being used as a LIKE prefix",
+        "reason": "PartnerStatement.php:17 concatenates $period.'%' with no format check; an empty string or a '%'/'_' value widens the match to other months in a statement of what is owed.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "money-refund-sign",
+    "issues": [
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Period filter uses LIKE on timestamp columns",
+        "reason": "RevenueReport.php:20 and :27 apply ->where('created_at','like',$period.'%') to timestamp columns; the schema is Postgres (partial unique index in the base migration), where timestamp ~~ text has no operator and the query errors.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "money-split-rounding",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Each share rounded independently with round(), shares no longer sum to the pool",
+        "reason": "RevenueShare.php:22 replaced intdiv plus largest-remainder distribution with (int) round(...) per partner, so ties at .5 all round up and totals drift from the pool.",
+        "raised_by": {
+          "plain-opus": 2,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Float division imprecise above 2^53",
+        "reason": "RevenueShare.php:22 uses '/', but imprecision needs poolCents*weight above 2^53 (about 9e15), not a realistic amount; the real defect on that line is the per-share rounding.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-clean-consumer-metrics",
+    "issues": [
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "prometheus client_golang not in go.mod/go.sum, build fails",
+        "reason": "consumer.go:8 imports github.com/prometheus/client_golang/prometheus; go/go.mod requires only kafka-go and mongo-driver and the change does not touch go.mod.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "CounterVec never registered, metric never exported",
+        "reason": "consumer.go:29 uses prometheus.NewCounterVec with no MustRegister/promauto anywhere in the repo, so the series never reaches /metrics.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "zero-cashback, decode-error and transfer-failure paths have no outcome label",
+        "reason": "consumer.go:59-61 returns nil without Inc; this is metric coverage completeness, no functional failure.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "'credited' incremented again on redelivery although Transfer was a no-op",
+        "reason": "store.go:42-44 returns nil when the key exists; consumer.go:64-67 then increments credited, so the counter overstates real credits after a redelivery.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-clean-relay-batch",
+    "issues": [
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "batchSize not validated (0 means unlimited in MongoDB)",
+        "reason": "OutboxRelay.php:23,36 passes batchSize as limit; only a misconfiguration triggers it, and the old runOnce(int $limit) had no check either. Hardening.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Constructor reorder breaks positional callers passing $db; per-poll info log",
+        "reason": "No code in app-mongo constructs OutboxRelay (grep finds only the class), and the new required $logger forces every call site to change anyway; log volume is a logging opinion.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "runOnce() dropped $limit, old runOnce(10) calls silently ignored",
+        "reason": "No caller of runOnce exists in the repo; the limit moved to the constructor by design. Compatibility concern without a concrete failing call site.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-clean-wallet-hold",
+    "issues": [
+      {
+        "label": "wrong",
+        "in_change": null,
+        "summary": "holds:<currency> wallet is never created, so every hold fails",
+        "reason": "No code in the repo creates any wallet (user, cashback_budget or system wallets alike); wallets are provisioned outside the repo, and even if missing, Ledger.php:87-89 throws and the transaction aborts with no money moved.",
+        "raised_by": {
+          "plain-opus": 2,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "All holds in a currency hit one hot 'holds:<currency>' document",
+        "reason": "A pooled holds account per currency is a normal ledger design; write conflicts are retried by with_transaction (Ledger.php:54-57) and no money is lost, so this is a throughput/design opinion.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "'hold:' key prefix shares namespace with transfer idempotency keys",
+        "reason": "Collision needs a caller to pass a transfer key starting with 'hold:'; no caller in the repo does, so this is speculative hardening.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-idem2-redis-dedup",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Dedup moved to a Redis SETNX with 1h TTL outside the transaction, ledger _id made unique per call, so no durable idempotency",
+        "reason": "store.go:44-48 sets applied:key before the transaction with a 1h TTL; the in-tx FindOne is removed and store.go:54 appends time.Now() to _id, so after TTL expiry/Redis loss a replay debits and credits again, and a failed transaction leaves the key set so the retry is skipped.",
+        "raised_by": {
+          "money-review": 3,
+          "plain-opus": 6,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Store.redis never initialized, Transfer panics on nil *redis.Client",
+        "reason": "store.go:25-28 NewStore only sets client/wallets/entries; the new redis field (store.go:22) stays nil and s.redis.SetNX at store.go:44 panics on every call from consumer.go:57.",
+        "raised_by": {
+          "money-review": 2,
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Dedup key not scoped to from/to/amount/currency",
+        "reason": "The pre-change code also keyed only on the idempotency key (FindOne on _id=key), so key scope is unchanged; callers build the key from event id (consumer.go:57).",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-idem7-commit-before-apply",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Offset committed before apply, apply errors only logged, so failed cashback credits are lost",
+        "reason": "consumer.go:34-39 commits the message, then apply errors (transient, ctx cancel, store outage) go to log.Printf and the loop continues; the committed event is never redelivered. This is the planted commit-before-apply bug.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-money1-go-float",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Amount decoded and cashback computed as float64, then truncated to int64",
+        "reason": "consumer.go:15 Amount float64, :51 ev.Amount*0.01, :57 int64(cashback): fractional/large amounts are accepted and precision/rounding depend on float math. This is the planted MONEY-1/MONEY-3 bug (the specific 29900 underpay example is not reproducible, but the defect is the same).",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 5
+        }
+      },
+      {
+        "label": "wrong",
+        "in_change": null,
+        "summary": "Out-of-range float to int64 produces a huge negative credit",
+        "reason": "store.go:32 rejects amount <= 0, so a MinInt64 result errors out; a saturated MaxInt64 fails the $gte balance condition at store.go:55. No money moves, and the relay always sends (int) amounts (OutboxRelay.php:49).",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "cashbackBasisPoints constant now dead, 0.01 hard-coded",
+        "reason": "consumer.go:26 unused after the change; the < 1 threshold is equivalent to the old integer == 0 for non-negative amounts. Maintainability only.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Negative amounts now skipped silently instead of erroring in Transfer",
+        "reason": "consumer.go:52 returns nil for cashback < 1; before, a negative cashback errored at store.go:32 and stopped the consumer. Neither path moves money; the producer never emits negative amounts.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-race1-findone-set",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Read-then-$set of computed balance: stale check and lost update",
+        "reason": "FeeCharger.php:22-29 reads the wallet, checks balance in PHP, then $set balance = old - fee with a filter on _id only, overwriting concurrent changes.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Fee changes wallet balance directly with no ledger entry and no counterpart account",
+        "reason": "FeeCharger.php:27-30 updates wallets.balance outside App\\Money\\Ledger (Ledger.php:64-86 writes an entry per move), so balance no longer equals the sum of ledger_entries and the fee is not credited anywhere.",
+        "raised_by": {
+          "money-review": 3
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "No per-period guard: a re-run or overlapping monthly run charges the fee twice",
+        "reason": "fee_charged_at is written at FeeCharger.php:29 but never read; the filter at :28 is only _id and the check at :23 only balance, so a second call in the same month debits again.",
+        "raised_by": {
+          "money-review": 3,
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "updateOne result ignored, always returns true",
+        "reason": "The filter at FeeCharger.php:28 is only _id, which matches whenever the wallet read at :22 exists; nothing in the repo deletes wallets, so no concrete path returns true without a write.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-race3-refund-without-status",
+    "issues": [
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "refund() queues no payment.refunded outbox event",
+        "reason": "PaymentService.php:30-54 changes status and posts the ledger move without an outbox push, but no consumer handles a refund event (CommissionConsumer only pays commission on payment.paid), so this is a feature/design gap, not a failure in this code.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-race5-payout-unique-in-code",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "One-payout-per-period check is a findOne outside the transaction with no unique constraint; the in-transaction _id check is dead",
+        "reason": "PayoutService.php:36-40 checks partner_id+period then generates a random _id, so two concurrent requests both pass and the :44 lookup by the fresh id never matches.",
+        "raised_by": {
+          "plain-opus": 1,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Random payout id breaks the ledger and provider idempotency keys per partner/period",
+        "reason": "PayoutService.php:40 random id is used as ledger key (:58) and provider key in send(), so duplicates from the race above are separate ledger entries and separate provider transfers.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Existing payout returned without checking amount/currency of the new request",
+        "reason": "PayoutService.php:38 returns the existing id; the code before the change also returned silently on the same _id (app PayoutService.php:40-41), and this is a design choice.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-race7-lock-only-guard",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Redis lock with 5s TTL is the only guard; it expires during the provider call and a second worker sends the same pending payout",
+        "reason": "PayoutService.php:68-75 replaced the findOneAndUpdate claim with findOne on status pending and a 5_000 ms lock; RedisLock.php:7-9 says the lock can expire while the holder works. (The release is token-checked, RedisLock.php:13-18.)",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Payout never moves to sending, so a successful send is never marked sent and is resent every run",
+        "reason": "Consequence of removing the claim at PayoutService.php:75: the updateOne at :90-93 filters status=sending, which nothing sets, so the payout stays pending without a reference.",
+        "raised_by": {
+          "plain-opus": 1,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Timeout leaves the payout pending, so resolve() (status=sending) never reconciles it",
+        "reason": "Same removed claim: :83 assumes sending but the row is pending, and resolve() at :106 queries only sending.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Decline does not return funds: returnFunds() matches status=sending and modifies nothing",
+        "reason": "Same removed claim: returnFunds() at :128-135 filters status=sending, the payout is pending, so the payout-return ledger entry is skipped and money stays in payouts_in_flight.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-race8-secondary-balance",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Balance check reads a secondary and the debit $inc has no balance condition, so wallets overdraw",
+        "reason": "InstantWithdrawal.php:20-22 SECONDARY_PREFERRED, :28-29 check on possibly stale/concurrent read, :34 updateOne filter only {_id}. This is the planted RACE-8/RACE-1 bug.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Withdrawal insert and wallet debit are two non-transactional writes; crash or failure between them leaves a reserved withdrawal with no debit",
+        "reason": "InstantWithdrawal.php:33 inserts status 'reserved', :34 debits separately with no session/transaction and no result check; a crash or stepdown after :33 lets the queue pay out an undebited withdrawal, and a retry fails at :33 on duplicate _id so the debit is never applied.",
+        "raised_by": {
+          "money-review": 3,
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Debit bypasses the Ledger and writes no ledger entry",
+        "reason": "InstantWithdrawal.php:34 $inc's wallets.balance directly; .money-review.json says balances change only through App\\Money\\Ledger with an entry keyed by the idempotency key, so every withdrawal leaves balance != sum of ledger_entries.",
+        "raised_by": {
+          "money-review": 1
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Retry with the same requestId throws a duplicate-key exception instead of returning idempotently",
+        "reason": "InstantWithdrawal.php:33 uses requestId as _id with no catch for E11000, so a client retry of a successful reserve surfaces as an error.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Negative amount is not rejected and credits the wallet",
+        "reason": "reserve() (InstantWithdrawal.php:26-34) has no amount > 0 check, unlike Ledger.php:32; amount -500 passes the balance check at :29 and $inc of +500 at :34 mints funds.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-tx2-produce-after-write",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Kafka produce after the Mongo commit replaces the outbox: crash or Kafka failure loses payment.paid for good",
+        "reason": "PaymentService.php:63-68 publishes after with_transaction commits; the outbox $push was removed and processed_events (:36-39) makes a provider retry skip, so nothing republishes.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "flush(1_000) result ignored, undelivered events dropped silently",
+        "reason": "PaymentService.php:68 ignores the flush return code, unlike OutboxRelay.php:49; this is the silent-loss part of the planted dual write at :63-68.",
+        "raised_by": {
+          "plain-opus": 1,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "payment.paid is published even when the transaction did not mark the payment paid",
+        "reason": "produce at PaymentService.php:63 runs after both early returns (:37, :49); a late payment.succeeded for a failed payment matches nothing at :41-47, credits nothing, yet emits payment.paid, which CommissionConsumer.php:52 would pay commission on. Duplicates of a really paid payment are deduped by event_id keys, but the never-paid case is a first delivery.",
+        "raised_by": {
+          "money-review": 1,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "New event payload lacks user_id, partner_id, amount and currency that consumers need",
+        "reason": "Payload at PaymentService.php:63-67 has only event_id, type, payment_id; OutboxRelay.php:36-43 sent the rest. CommissionConsumer.php:43 reads partner_id (null, returns) and the Go consumer gets Amount=0 (consumer.go cashback==0, skip), so commission and cashback are never paid.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Message key changed from user_id to payment_id, breaking the per-user ordering the relay guarantees",
+        "reason": "PaymentService.php:67 keys by $paymentId while OutboxRelay.php:11-12,45 keys billing.payments by user_id so one user's events stay on one partition.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "json_encode without JSON_THROW_ON_ERROR, stale class docblock",
+        "reason": "PaymentService.php:63 encodes three plain strings, failure is not realistic; the docblock at :15-17 being stale is documentation.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-tx3-transfer-without-transaction",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Entry insert, debit and credit run without a transaction",
+        "reason": "Ledger.php:36-51 replaced with_transaction with separate writes; a crash or error between the entry insert (41), debit (43) and credit (51) leaves partial state, and the consumed key blocks repair.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Credit result is unchecked, so a missing or wrong-currency target wallet makes the debited money vanish",
+        "reason": "Ledger.php:51 ignores the updateOne result; the old path (applyInSession:96-98) threw on getMatchedCount()==0. CommissionConsumer.php:52-58 credits partner:<id>:<currency>, which may not exist; revenue is debited, nothing credited, transfer returns true. Wrapping in a transaction alone would not fix it.",
+        "raised_by": {
+          "money-review": 3,
+          "plain-opus": 3,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Check-then-insert idempotency race throws duplicate key instead of returning false",
+        "reason": "findOne at Ledger.php:38 then insertOne at 41 are not atomic; two concurrent calls with one key both pass and the second throws a BulkWriteException before any debit, instead of the documented false.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Ledger entry written by transfer() drops created_at",
+        "reason": "Ledger.php:41 omits created_at, which applyInSession (line 79) and the Go store (store.go:50) write, so these entries carry no timestamp.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Stale class docblock and unused import",
+        "reason": "Docblock at Ledger.php:14 and the with_transaction import are stale; documentation only.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "wrong",
+        "in_change": null,
+        "summary": "getModifiedCount for the debit check is unsafe",
+        "reason": "The filter at Ledger.php:44 plus $inc of -amount with amount>0 (line 32) means every matched document is modified, and writes are acknowledged by default, so getModifiedCount equals getMatchedCount here.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "mongo-tx8-provider-in-callback",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Random suffix on the provider idempotency key defeats dedup of retried sends",
+        "reason": "PayoutService.php:62 sends with $payoutId.':'.bin2hex(random_bytes(4)), so each with_transaction retry or re-request pays again and resolve()/send() using the bare $payoutId cannot match it.",
+        "raised_by": {
+          "money-review": 2,
+          "plain-opus": 3
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Provider call inside the transaction callback: commit failure or timeout loses the record of a sent payout",
+        "reason": "provider->send at PayoutService.php:62 runs inside with_transaction; an uncaught ProviderTimeout or an abort after send rolls back the payout doc and reservation while money left, and a slow call holds the transaction open.",
+        "raised_by": {
+          "plain-opus": 4,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Provider reference discarded when the payout is marked sent",
+        "reason": "PayoutService.php:63 sets status 'sent' without the reference returned by provider->send, unlike send() (line 96) and resolve() (line 119), so these payouts have no provider reference for reconciliation.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 2
+        }
+      }
+    ]
+  },
+  {
+    "case": "race-refund-cap-sum",
+    "issues": [
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "payments.refunded_cents is no longer incremented but ResolvePendingRefunds still decrements it",
+        "reason": "The change removed the increment (old RefundService.php:32) and the release() decrement, but app/Jobs/ResolvePendingRefunds.php:26 still decrements refunded_cents when a timed-out refund resolves failed, so the stored refunded amount goes stale and negative.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Concurrent retries with the same reason now hit the unique index and throw",
+        "reason": "Without lockForUpdate (RefundService.php:20), two calls with the same (payment_id, reason) both miss the lookup at line 22 and the second Refund::create at line 35 violates unique(payment_id, reason) from the base migration, returning a QueryException instead of the existing refund.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "race-unique-in-code",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Dropping the partial unique index leaves a racy select-then-insert as the only guard for one active subscription",
+        "reason": "drop_one_active_index.php:10 drops subscriptions_one_active and SubscriptionService.php:11-16 checks first() then create(), so two concurrent subscribes both insert.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Migration has no down()",
+        "reason": "drop_one_active_index.php has only up(); a missing rollback is migration hygiene, not a runtime failure in this code.",
+        "raised_by": {
+          "plain-opus": 3
+        }
+      }
+    ]
+  },
+  {
+    "case": "race-withdraw-no-lock",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Unlocked read-modify-write of balance_cents (lost update / overdraft)",
+        "reason": "WithdrawalService.php:17-18 reads the balance outside the transaction with no lockForUpdate, and :27-28 writes an absolute value back via save(), so concurrent withdrawals or deposits overwrite each other.",
+        "raised_by": {
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Balances changed directly with no ledger_entries, bypassing Ledger",
+        "reason": "WithdrawalService.php:23-29 inserts only a ledger_transactions header and edits balance_cents directly; Ledger.php:9-12 and the migration say balance_cents is a cache of ledger_entries, so entry sums drift from balances by every withdrawal amount.",
+        "raised_by": {
+          "money-review": 3,
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "real_money",
+        "in_change": true,
+        "summary": "Negative amount is not rejected and mints money into the wallet",
+        "reason": "No amountCents > 0 check at WithdrawalService.php:15-18; with -500 the check at :18 passes and :27 adds 500 to the user while :29 lowers withdrawals_pending. Ledger::transfer would reject it (Ledger.php:18).",
+        "raised_by": {
+          "plain-opus": 2,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "Retry with the same requestId throws instead of being an idempotent no-op",
+        "reason": "WithdrawalService.php:23 uses plain insert() on the unique idempotency_key, so a retry gets a QueryException (and may first fail the balance check at :18); the transaction rolls back so no double debit, but the caller sees an error for a completed withdrawal.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "forUser uses firstOrCreate and may create an empty account row",
+        "reason": "Account::forUser (Account.php) is pre-existing and creates a zero-balance row; the withdrawal is then rejected, no money effect, just a side-effect row.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      }
+    ]
+  },
+  {
+    "case": "tx-nested-payout-email",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Partner email sent inside the outer batch transaction, before rollback on limit",
+        "reason": "PayoutApproval.php:37 notifies after the inner DB::transaction, but ApproveEarlyPayouts.php:26 wraps approve() in an outer transaction, so when :35-36 throws the approvals roll back after the emails went out; checking the limit after approve() only widens this.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "All-or-nothing batch is blocked permanently by an over-limit total or one underfunded partner",
+        "reason": "ApproveEarlyPayouts.php:26-39: once requested rows exceed DAILY_LIMIT_CENTS or one Ledger::transfer throws InsufficientFunds, every run rolls back the same set and nothing is ever approved, while holding locks on payouts and payouts_in_flight for the whole loop.",
+        "raised_by": {
+          "money-review": 1,
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Daily limit counts only the current run, not earlier approvals of the day",
+        "reason": "ApproveEarlyPayouts.php:30 starts from 0; this only matters if the job runs more than once per currency per day, which nothing in the repo shows (docblock :11-14 describes one daily batch).",
+        "raised_by": {
+          "money-review": 2,
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "tx-payout-batch-one-transaction",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Provider calls inside one batch transaction: rollback after paying earlier partners recreates payouts with new ids and re-pays them",
+        "reason": "RunMonthlyPayouts.php:26-43 wraps firstOrCreate, ledger transfer and gateway->payout for all partners in one DB::transaction with $tries=3; a later failure rolls back the payout rows, and the retry inserts new ids so key payout-{id} is new.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "GatewayTimeout now rolls back the pending row, losing the unknown-outcome payout and re-paying on retry",
+        "reason": "Consequence of the call inside the transaction at RunMonthlyPayouts.php:42: the exception leaves the closure at :26, rolls back the payout row and ledger debit although the provider may have paid.",
+        "raised_by": {
+          "money-review": 1,
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "One decline aborts the whole all-or-nothing batch on every try, nobody gets paid and earlier partners are re-sent",
+        "reason": "Direct consequence of the single batch transaction (RunMonthlyPayouts.php:26-45) with no per-payout handling; the payout_return compensation is not needed because the debit itself is rolled back.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Row locks on all partner accounts and payouts_in_flight held across N provider HTTP calls",
+        "reason": "lockForUpdate at RunMonthlyPayouts.php:27 plus Ledger.php:38 locks are held until the outer transaction at :26 commits after every gateway call at :42; this is the long-transaction side of the planted TX-1/TX-6 bug.",
+        "raised_by": {
+          "money-review": 1,
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "wrong",
+        "in_change": null,
+        "summary": "Removed status!=pending skip makes a re-run pay sent or failed payouts again",
+        "reason": "A re-run reuses the same payout row, so the ledger key payout:{id} is a no-op (Ledger.php:26-35) and the gateway gets the same key payout-{id}, for which the provider returns the first result (PaymentGateway.php:9-10): a sent payout returns its reference, a declined one throws again. No second payment happens.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      },
+      {
+        "label": "nit",
+        "in_change": null,
+        "summary": "Status update at line 43 is no longer a compare-and-set on status=pending",
+        "reason": "RunMonthlyPayouts.php:43 runs under the batch transaction on a row it just created or read; the concurrent resolver it would race with (ResolvePendingPayouts) does not exist in the app, so no concrete failure.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "tx-refund-call-in-transaction",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Provider succeeds, then commit/save fails and rolls back: money refunded with no record",
+        "reason": "RefundService.php:37 calls gateway->refund inside DB::transaction; a failure at :40-41 or at COMMIT rolls back refunded_cents and the Refund row after the PSP already paid.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Payment row lock held across the PSP HTTP call",
+        "reason": "lockForUpdate at RefundService.php:19 stays held through the gateway call at :37 because it is inside the transaction; direct consequence of the planted TX-1 bug.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Timeout rolls back the row, retry gets a new id and a new idempotency key, double refund",
+        "reason": "Key is refund-{$refund->id} (RefundService.php:37) on a row created in the same transaction; a GatewayTimeout rolls it back, so the :21 dedup finds nothing and the retry sends a different key. Consequence of the call inside the transaction.",
+        "raised_by": {
+          "plain-opus": 2
+        }
+      },
+      {
+        "label": "real_other",
+        "in_change": true,
+        "summary": "GatewayDeclined/GatewayTimeout no longer handled: callers get an exception instead of a failed/pending Refund, no audit row",
+        "reason": "The change removed the catch blocks and release(); PaymentGateway.php:14 declares both exceptions, and they now escape refund() and roll back the attempt record, so ResolvePendingRefunds never sees pending rows.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 1
+        }
+      }
+    ]
+  },
+  {
+    "case": "tx-split-transfer",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Debit and credit committed in separate transactions; failure or concurrent reads see a half-applied transfer",
+        "reason": "Ledger.php:25-45 commits the debit and the ledger_transactions row, then line 51-55 credits in a second DB::transaction; a failure between them (including a missing target, which is no longer loaded or locked) leaves the source debited with no credit.",
+        "raised_by": {
+          "plain-opus": 2,
+          "plain-sonnet": 2
+        }
+      },
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "Idempotent retry or duplicate returns success for a half-applied transfer",
+        "reason": "The idempotency row commits with the debit, so a retry gets insertOrIgnore 0 and returns the id at Ledger.php:47-48 without the credit; a direct consequence of the split.",
+        "raised_by": {
+          "plain-opus": 3,
+          "plain-sonnet": 3
+        }
+      }
+    ]
+  },
+  {
+    "case": "tx-swallowed-ledger-error",
+    "issues": [
+      {
+        "label": "same_bug",
+        "in_change": null,
+        "summary": "catch Throwable swallows ledger transfer failure inside the webhook transaction",
+        "reason": "PspWebhookController.php:65 catches and logs any error from Ledger::transfer, so the outer transaction commits the 'succeeded' status and processed_events row without the credit (or with broken transaction state on deadlock), and the 204 stops provider retries.",
+        "raised_by": {
+          "plain-opus": 1
+        }
+      }
+    ]
+  }
+]
