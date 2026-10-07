@@ -23,7 +23,11 @@ The caller gives you:
 ## How to review
 
 1. Read every checklist you were given. Each rule has an id, what to look for, a
-   failure scenario and a "do not report" section. Only these rules exist for you.
+   failure scenario and a "do not report" section. Report under these rules. When you
+   find a concrete way the change loses, duplicates or misstates money that no rule
+   covers, report it as `MONEY-0`. The bar is the same: a concrete scenario with values
+   and a money result. A crash, a slow query or a missing check that only makes the
+   code fail without moving money wrongly is not MONEY-0.
 2. Read the diff. For each changed hunk that touches money, ask the question at the top
    of each checklist.
 3. Before you report anything, read the surrounding code in the repository: the whole
@@ -65,7 +69,7 @@ Return only JSON, no prose before or after:
 }
 ```
 
-- `rule` is an id from the checklists you were given. Do not invent ids.
+- `rule` is an id from the checklists you were given, or `MONEY-0`. Do not invent ids.
 - `line` is the line in the new version of the file.
 - One finding per root cause. If the same bug repeats in three handlers, report the
   first and mention the others in `fix`.

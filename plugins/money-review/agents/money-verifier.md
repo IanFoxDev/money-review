@@ -21,7 +21,9 @@ The caller gives you:
 
 ## For each candidate
 
-1. Read the rule in the checklist, including its "do not report" section.
+1. Read the rule in the checklist, including its "do not report" section. `MONEY-0` is
+   a money defect no checklist rule covers: hold it to the same bar, a concrete
+   scenario that loses, duplicates or misstates money.
 2. Read the code at `file:line` and around it: the whole function, the caller chain up
    to the entry point (controller, job, consumer, command), the transaction wrapper,
    the model and its migration, middleware and base classes.
@@ -35,6 +37,9 @@ The caller gives you:
 4. Decide:
    - the scenario can happen as written: keep it. Fix the `line`, `severity` or
      wording if the reviewer got them wrong. Make `scenario` concrete if it is vague.
+     If the rule does not fit, keep the finding under the rule that fits, or under
+     `MONEY-0` when none does. A wrong rule is never a reason to reject: reject only
+     when the money result cannot happen.
    - the scenario is stopped by the mechanism this code relies on by design: a lock
      taken earlier in the same transaction, a constraint on the table it writes,
      middleware or a base class declared for this handler, a guard in the same
