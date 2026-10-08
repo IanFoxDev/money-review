@@ -25,6 +25,7 @@
     {
       "rules": [
         "IDEM-10",
+        "IDEM-8",
         "RACE-3"
       ],
       "file": "app/Http/Controllers/ChargebackWebhookController.php"

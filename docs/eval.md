@@ -41,7 +41,9 @@ README come from here.
 }
 ```
 
-`note` is optional and says in a few words what the bug is. A case can have more than
+`note` is optional and says in a few words what the bug is. `also` (optional) lists
+other places, `{"file", "anchor"}`, where the same bug can fairly be reported, such as
+the line where a change removed what another file relies on. A case can have more than
 one bug: the planted one and a quieter one next to it. A bug can be in an app file the
 case does not change, when the change makes that code wrong; its anchor is then found in
 the app. `app` is optional and names the app under `eval/` the case is built on; the default is

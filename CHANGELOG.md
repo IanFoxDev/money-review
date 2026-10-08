@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A second look: when the reviewer finds something, it reviews the change once more,
+  told what it already found, for other money bugs next to it. One more reviewer pass,
+  only on changes with a finding; `review.second_pass: false` turns it off.
+
+### Eval
+
+- A bug in `case.json` can name other places where it can fairly be reported (`also`).
+- New baseline: recall 91% (87% without the second look), precision 100%, second bugs
+  31 of 45 (25), no false alarm in 36 runs of clean cases.
+
 ## [0.7.0] - 2026-10-08
 
 ### Added

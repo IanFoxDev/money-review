@@ -243,18 +243,18 @@ The repository has an eval with two apps and 50 merge requests on top of them. M
 have one planted bug, eleven have a second, quieter one next to it, and twelve have none
 (clean cases, some of them touching money code correctly). See
 [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/) for full
-reports. The table is every case three times, run on 2026-10-07 and 2026-10-08 with
-Claude Code 2.1.293, `claude-sonnet-5-5` as the reviewer and `claude-opus-5-5` as the
-verifier ([2026-10-08-rules.md](docs/eval-results/2026-10-08-rules.md)).
+reports. The table is every case three times, run on 2026-10-08 with Claude Code
+2.1.294, `claude-sonnet-5-5` as the reviewer and `claude-opus-5-5` as the verifier
+([2026-10-08-second-look.md](docs/eval-results/2026-10-08-second-look.md)).
 
 | | Laravel app on SQL | PHP and Go on MongoDB, Kafka, Redis |
 |---|---|---|
 | Cases | 32 (24 with bugs, 32 bugs; 8 clean) | 18 (14 with bugs, 21 bugs; 4 clean) |
-| Precision | 100% (85 of 85) | 100% (54 of 54) |
-| Recall | 89% (85 of 96) | 86% (54 of 63) |
+| Precision | 100% (92 of 92) | 100% (53 of 53) |
+| Recall | 96% (92 of 96) | 84% (53 of 63) |
 | False alarms on clean cases | 0 in 24 runs | 0 in 12 runs |
-| Time per review (median) | 61 s | 78 s |
-| API-equivalent cost per review | 0.26 USD | 0.28 USD |
+| Time per review (median) | 80 s | 89 s |
+| API-equivalent cost per review | 0.29 USD | 0.31 USD |
 
 The same cases through a plain "review this change" prompt with no plugin
 ([2026-10-07-plain-prompt.md](docs/eval-results/2026-10-07-plain-prompt.md) for the
@@ -262,16 +262,17 @@ method):
 
 | | money-review | plain prompt, opus | plain prompt, sonnet |
 |---|---|---|---|
-| Recall | 87% | 94% | 84% |
+| Recall | 91% | 94% | 84% |
 | Precision | 100% | 85% | 86% |
 | Clean runs with a false alarm | 0 of 36 | 8 of 36 | 16 of 36 |
-| API-equivalent cost per review | 0.27 USD | 0.15 USD | 0.07 USD |
+| API-equivalent cost per review | 0.30 USD | 0.15 USD | 0.07 USD |
 
 That comparison is where the second bugs come from: a plain prompt on opus found money
 bugs next to the planted ones that money-review did not report, because its reviewer could
 report only what the checklists named. With `MONEY-0` and three new rules, recall went from
-80% to 87% on the same cases, with no false alarm added. What it still misses is mostly a
-second bug that the verifier folds into the first because one fix covers both.
+80% to 87% on the same cases, and a second look at changes with a finding took it to 91%,
+with no false alarm added. What it still misses is mostly a second money bug on the same
+lines as the first: the sign of an input amount, a balance changed without a ledger entry.
 
 The checklists and the cases were written by the same person, so these numbers show
 that the rules work as intended, not how the tool does on someone else's code. The eval
