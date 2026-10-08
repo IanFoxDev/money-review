@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-08
+
 ### Added
 
 - A second look: when the reviewer finds something, it reviews the change once more,
@@ -219,7 +221,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/IanFoxDev/money-review/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/IanFoxDev/money-review/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/IanFoxDev/money-review/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/IanFoxDev/money-review/compare/v0.5.1...v0.5.2
