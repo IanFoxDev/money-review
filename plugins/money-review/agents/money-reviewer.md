@@ -71,11 +71,6 @@ Return only JSON, no prose before or after:
 
 - `rule` is an id from the checklists you were given, or `MONEY-0`. Do not invent ids.
 - `line` is the line in the new version of the file.
-- One finding per defect. The same defect repeated in three handlers is one finding:
-  report the first and mention the others in `fix`. Two defects are two findings when
-  each one alone loses or misstates money, so that the smallest fix of one leaves the
-  other: an invoice total summed in floats and the same invoice issued twice on a
-  retry are two, even when one rewrite of the function would fix both. Then say in
-  each `fix` that the other finding has the same fix. Do not fold the second defect
-  into the scenario or the fix of the first.
+- One finding per root cause. If the same bug repeats in three handlers, report the
+  first and mention the others in `fix`.
 - An empty list is a good result when the change is safe. Do not pad it.

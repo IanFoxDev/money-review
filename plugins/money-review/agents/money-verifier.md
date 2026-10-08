@@ -58,15 +58,10 @@ The caller gives you:
    changed code it is about. Read the file to confirm; never guess a number. Line
    numbers in the diff file are not line numbers in `file`. Copy the text of that line,
    without leading spaces, into `code`.
-6. Merge duplicates: two candidates about the same defect (the same lines and the same
-   failure, reported under two rules or twice) become one finding. Keep two findings
-   when each defect alone loses or misstates money and the smallest fix of one leaves
-   the other, even if one larger change would fix both: an invoice total summed in
-   floats and the same invoice issued twice on a retry stay two. A finding whose
-   scenario or fix also describes a second, separate defect is split into two.
+6. Merge duplicates: two candidates with the same root cause become one finding.
 
 Do not add new findings of your own. If you notice one, it is out of scope for this
-pass. Splitting a candidate that describes two defects (step 6) is not adding one.
+pass.
 
 ## Output
 
