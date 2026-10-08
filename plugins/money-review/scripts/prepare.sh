@@ -3,7 +3,7 @@
 # for bin/money-review:
 #   {"base": "...", "diff": "/tmp/.../change.diff", "money": true,
 #    "categories": [...], "checklists": [...], "files": [...], "context": "...",
-#    "groups": [{"diff", "checklists", "files", "lines"}], "coverage": {...},
+#    "groups": [{"diff", "checklists", "files", "lines"}], "second_pass": true, "coverage": {...},
 #    "ignore": [...], "secrets": [...]}
 # A change bigger than review.group_lines changed lines is split into groups of
 # files, each reviewed on its own (see split.sh); a copy goes to OUT/prepared.json.
@@ -156,6 +156,7 @@ jq -n \
     --argjson ignore "$ignore" \
     --argjson secrets "$secrets" \
     --argjson secrets_excluded "$secrets_excluded" \
+    --argjson review "$review" \
     '{
         base: $base,
         diff: $diff,
@@ -165,6 +166,7 @@ jq -n \
         files: $t.files,
         context: $t.context,
         groups: $groups,
+        second_pass: ($review.second_pass != false),
         coverage: {
             files_changed: $files_changed,
             files_with_money: ($t.files | length),

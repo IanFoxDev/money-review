@@ -55,6 +55,7 @@
   "ignore": [],
   "review": {
     "group_lines": 800,
-    "max_groups": 6
+    "max_groups": 6,
+    "second_pass": true
   }
 }

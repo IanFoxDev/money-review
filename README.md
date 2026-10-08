@@ -198,7 +198,9 @@ A review is a pipeline, and each stage can stop it:
 1. Triage without a model. A script decides from the diff and your config whether any
    changed file touches money and which checklists apply. A merge request about
    avatars ends here.
-2. One reviewer pass (Sonnet) with only the matched checklists.
+2. One reviewer pass (Sonnet) with only the matched checklists. When it finds
+   something, a second look at the same change, told what it already found, for other
+   money bugs next to it (`review.second_pass`, on by default).
 3. A verifier (Opus) tries to refute each candidate against the code around it: an
    earlier lock, a unique index in a migration, an outer transaction. It runs only if
    there are candidates.

@@ -153,3 +153,11 @@ field() { jq -c "$1" <<< "$output"; }
     run "$prepare" --diff "$BATS_TEST_TMPDIR/out/change.diff" --out "$BATS_TEST_TMPDIR/out"
     [ "$(field .coverage.secrets_excluded)" = '[".env"]' ]
 }
+
+@test "the second look is on by default and can be turned off" {
+    run "$prepare" --diff "$diffs/withdrawal.diff"
+    [ "$(field .second_pass)" = "true" ]
+    echo '{"review": {"second_pass": false}}' > .money-review.json
+    run "$prepare" --diff "$diffs/withdrawal.diff"
+    [ "$(field .second_pass)" = "false" ]
+}
