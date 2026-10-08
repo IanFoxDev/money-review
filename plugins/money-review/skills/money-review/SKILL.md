@@ -29,7 +29,9 @@ decided, without a model, which checklists apply:
    changes, nothing to review.` and stop. Do not open the diff.
 
 3. Run the `money-review:money-reviewer` agent once for every entry of `groups`, all of
-   them in one message so they run in parallel. Fill each prompt from that group:
+   them in one message so they run in parallel. Run them in the foreground (never
+   `run_in_background`): you need their results in this turn, and a background agent
+   leaves a headless run waiting with no report. Fill each prompt from that group:
 
    ```
    diff: <group diff>
@@ -46,7 +48,8 @@ decided, without a model, which checklists apply:
 4. If there are no candidates at all, the report is `{"findings": [], "rejected": []}`.
    Go to step 6 without running the verifier.
 
-5. Run the `money-review:money-verifier` agent once, for all candidates:
+5. Run the `money-review:money-verifier` agent once, for all candidates, in the
+   foreground:
 
    ```
    diff: <diff>
