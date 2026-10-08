@@ -47,6 +47,29 @@ setup() {
     [[ "$output" == *"models: claude-opus-5-5, claude-sonnet-5-5"* ]]
 }
 
+@test "--quiet suppresses usage but keeps the rendered report" {
+    run "$bin" --quiet --diff "$diffs/withdrawal.diff" --out "$out"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"### 1. HIGH RACE-1"* ]]
+    [[ "$output" != *"4 turns"* ]]
+    [[ "$output" != *"API-equivalent"* ]]
+    [ -f "$FAKE_LOG" ]
+}
+
+@test "--quiet keeps JSON output and the findings exit status" {
+    run "$bin" --quiet --diff "$diffs/withdrawal.diff" --format json --fail-on high
+    [ "$status" -eq 1 ]
+    [ "$(jq '.findings | length' <<< "$output")" = "2" ]
+    [[ "$output" != *"API-equivalent"* ]]
+}
+
+@test "--quiet keeps errors when a review produces no report" {
+    FAKE_REPORT="" run "$bin" --quiet --diff "$diffs/withdrawal.diff" --out "$out" --retries 0
+    [ "$status" -eq 4 ]
+    [[ "$output" == *"without a valid report"* ]]
+    [[ "$output" == *"done"* ]]
+}
+
 @test "claude is called with the plugin, sonnet and narrow permissions" {
     run "$bin" --diff "$diffs/withdrawal.diff" --out "$out"
     args="$(cat "$FAKE_LOG")"

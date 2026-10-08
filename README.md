@@ -135,8 +135,12 @@ From a shell:
 ```sh
 money-review                               # Markdown report
 money-review --format json                 # the report as JSON
+money-review --quiet                       # suppress the usage summary on stderr
 money-review --fail-on high                # exit 1 if there is a high finding
 ```
+
+`--quiet` suppresses only the usage summary; reports, errors and exit codes stay the
+same.
 
 Before there is a merge request, or for a part of one, review commits instead of the
 working tree:
