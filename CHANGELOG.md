@@ -21,11 +21,18 @@ All notable changes to this project are documented here. The format follows
 - The verifier moves a real finding to the rule that fits (or `MONEY-0`) instead of
   rejecting it for the wrong rule.
 
+### Fixed
+
+- The skill runs its agents in the foreground. A reviewer started in the background
+  left a headless run waiting for over an hour and ending with no report.
+
 ### Eval
 
 - Ten cases have a second, quieter bug that a plain review prompt found next to the
   planted one; a new case books a chargeback for the full amount in the wrong direction.
   `clean-chargeback-webhook` and `clean-commission-rounding` had real bugs and are fixed.
+- New baseline, 50 cases three times: recall 87% (80% before on the same cases),
+  precision 100%, no false alarm in 36 runs of clean cases.
 
 ## [0.6.0] - 2026-10-07
 

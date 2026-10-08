@@ -1,15 +1,15 @@
 {
-  "runs": 147,
-  "cases": 49,
-  "precision": 0.982,
-  "recall": 1,
-  "loose_recall": 1,
-  "true_positives": 111,
-  "false_positives": 2,
-  "missed": 0,
-  "wrong_rule": 15,
-  "duplicates": 8,
-  "acceptable_extras": 5,
+  "runs": 150,
+  "cases": 50,
+  "precision": 1,
+  "recall": 0.874,
+  "loose_recall": 0.874,
+  "true_positives": 139,
+  "false_positives": 0,
+  "missed": 20,
+  "wrong_rule": 4,
+  "duplicates": 2,
+  "acceptable_extras": 6,
   "clean_runs_with_findings": 0,
   "clean_runs": 36,
   "triage_misses": 0,
@@ -17,15 +17,15 @@
   "by_category": [
     {
       "category": "IDEM",
-      "bugs": 30,
-      "found": 30,
-      "recall": 1
+      "bugs": 39,
+      "found": 37,
+      "recall": 0.949
     },
     {
       "category": "MONEY",
-      "bugs": 21,
-      "found": 21,
-      "recall": 1
+      "bugs": 54,
+      "found": 36,
+      "recall": 0.667
     },
     {
       "category": "RACE",
@@ -35,16 +35,16 @@
     },
     {
       "category": "TX",
-      "bugs": 30,
-      "found": 30,
+      "bugs": 36,
+      "found": 36,
       "recall": 1
     }
   ],
   "cost_usd": {
-    "total": 37.92,
-    "per_reviewed_run": 0.269
+    "total": 38.51,
+    "per_reviewed_run": 0.267
   },
-  "seconds_per_reviewed_run": 54.213,
+  "seconds_per_reviewed_run": 78.667,
   "cases_detail": [
     {
       "case": "clean-avatar-upload",
@@ -71,14 +71,14 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 24,
+      "seconds": 22,
       "cost": 0.16,
       "missed": [],
       "fps": []
     },
     {
       "case": "clean-commission-rounding",
-      "title": "Commission rounded half up in integers by one helper used by the ledger and the statement",
+      "title": "Commission rounded half up in integers by one helper; the statement reads the credited amounts from the ledger",
       "runs": 3,
       "bugs": 0,
       "found": 0,
@@ -86,7 +86,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 25,
+      "seconds": 27,
       "cost": 0.15,
       "missed": [],
       "fps": []
@@ -101,7 +101,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 19,
+      "seconds": 16,
       "cost": 0.11,
       "missed": [],
       "fps": []
@@ -116,7 +116,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 22,
+      "seconds": 24,
       "cost": 0.15,
       "missed": [],
       "fps": []
@@ -131,7 +131,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 27,
+      "seconds": 18,
       "cost": 0.12,
       "missed": [],
       "fps": []
@@ -146,8 +146,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 23,
-      "cost": 0.16,
+      "seconds": 29,
+      "cost": 0.17,
       "missed": [],
       "fps": []
     },
@@ -161,8 +161,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 23,
-      "cost": 0.13,
+      "seconds": 39,
+      "cost": 0.12,
       "missed": [],
       "fps": []
     },
@@ -176,7 +176,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 54,
+      "seconds": 51,
       "cost": 0.27,
       "missed": [],
       "fps": []
@@ -185,14 +185,14 @@
       "case": "idem-chargeback-webhook-no-dedup",
       "title": "Chargeback webhook debits the wallet on every delivery",
       "runs": 3,
-      "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "bugs": 2,
+      "found": 6,
+      "loose_found": 6,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 56,
-      "cost": 0.29,
+      "seconds": 103,
+      "cost": 0.43,
       "missed": [],
       "fps": []
     },
@@ -206,7 +206,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 57,
+      "seconds": 81,
       "cost": 0.31,
       "missed": [],
       "fps": []
@@ -221,8 +221,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 51,
-      "cost": 0.26,
+      "seconds": 56,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -230,14 +230,14 @@
       "case": "idem-retry-fresh-key",
       "title": "Payout retry generates a new idempotency key on every attempt",
       "runs": 3,
-      "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "bugs": 2,
+      "found": 6,
+      "loose_found": 6,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 71,
-      "cost": 0.34,
+      "seconds": 85,
+      "cost": 0.35,
       "missed": [],
       "fps": []
     },
@@ -251,7 +251,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 51,
+      "seconds": 78,
       "cost": 0.27,
       "missed": [],
       "fps": []
@@ -266,8 +266,23 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 73,
-      "cost": 0.33,
+      "seconds": 61,
+      "cost": 0.3,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "money-chargeback-wrong-amount",
+      "title": "Chargeback books the full payment amount and moves clearing the wrong way",
+      "runs": 3,
+      "bugs": 2,
+      "found": 6,
+      "loose_found": 6,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "seconds": 105,
+      "cost": 0.41,
       "missed": [],
       "fps": []
     },
@@ -275,30 +290,47 @@
       "case": "money-commission-rounding",
       "title": "Commission rounded half up in the ledger and truncated in the partner statement",
       "runs": 3,
-      "bugs": 1,
+      "bugs": 2,
       "found": 3,
       "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 49,
-      "cost": 0.24,
-      "missed": [],
+      "seconds": 81,
+      "cost": 0.27,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-2"
+          ],
+          "file": "app/Services/PartnerCommission.php",
+          "line": 47
+        }
+      ],
       "fps": []
     },
     {
       "case": "money-float-fee",
       "title": "Payout fee computed in floats and truncated back to cents",
       "runs": 3,
-      "bugs": 1,
+      "bugs": 2,
       "found": 3,
       "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 68,
-      "cost": 0.27,
-      "missed": [],
+      "seconds": 85,
+      "cost": 0.28,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-5",
+            "MONEY-0"
+          ],
+          "file": "app/Services/FeeCalculator.php",
+          "line": 17
+        }
+      ],
       "fps": []
     },
     {
@@ -311,8 +343,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 42,
-      "cost": 0.21,
+      "seconds": 53,
+      "cost": 0.2,
       "missed": [],
       "fps": []
     },
@@ -326,8 +358,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 57,
-      "cost": 0.28,
+      "seconds": 53,
+      "cost": 0.26,
       "missed": [],
       "fps": []
     },
@@ -342,7 +374,7 @@
       "triage_skipped": 0,
       "errors": 0,
       "seconds": 54,
-      "cost": 0.24,
+      "cost": 0.25,
       "missed": [],
       "fps": []
     },
@@ -356,8 +388,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 26,
-      "cost": 0.13,
+      "seconds": 29,
+      "cost": 0.12,
       "missed": [],
       "fps": []
     },
@@ -371,8 +403,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 22,
-      "cost": 0.15,
+      "seconds": 67,
+      "cost": 0.16,
       "missed": [],
       "fps": []
     },
@@ -401,7 +433,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 29,
+      "seconds": 516,
       "cost": 0.16,
       "missed": [],
       "fps": []
@@ -416,8 +448,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 56,
-      "cost": 0.28,
+      "seconds": 63,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -431,8 +463,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 78,
-      "cost": 0.37,
+      "seconds": 85,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -447,7 +479,7 @@
       "triage_skipped": 0,
       "errors": 0,
       "seconds": 48,
-      "cost": 0.23,
+      "cost": 0.24,
       "missed": [],
       "fps": []
     },
@@ -461,8 +493,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 56,
-      "cost": 0.27,
+      "seconds": 69,
+      "cost": 0.29,
       "missed": [],
       "fps": []
     },
@@ -476,8 +508,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 77,
-      "cost": 0.3,
+      "seconds": 86,
+      "cost": 0.33,
       "missed": [],
       "fps": []
     },
@@ -485,15 +517,32 @@
       "case": "mongo-race1-findone-set",
       "title": "Fee charge reads the wallet and writes a computed balance",
       "runs": 3,
-      "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "bugs": 3,
+      "found": 5,
+      "loose_found": 5,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 79,
-      "cost": 0.38,
-      "missed": [],
+      "seconds": 78,
+      "cost": 0.33,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-6",
+            "MONEY-0"
+          ],
+          "file": "src/Money/FeeCharger.php",
+          "line": 27
+        },
+        {
+          "rules": [
+            "IDEM-5",
+            "MONEY-0"
+          ],
+          "file": "src/Money/FeeCharger.php",
+          "line": 29
+        }
+      ],
       "fps": []
     },
     {
@@ -506,8 +555,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 61,
-      "cost": 0.31,
+      "seconds": 84,
+      "cost": 0.3,
       "missed": [],
       "fps": []
     },
@@ -521,7 +570,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 60,
+      "seconds": 86,
       "cost": 0.32,
       "missed": [],
       "fps": []
@@ -536,8 +585,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 58,
-      "cost": 0.29,
+      "seconds": 79,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -545,29 +594,46 @@
       "case": "mongo-race8-secondary-balance",
       "title": "Instant withdrawal checks the balance on a secondary and reserves without a condition",
       "runs": 3,
-      "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "bugs": 4,
+      "found": 7,
+      "loose_found": 7,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 82,
-      "cost": 0.4,
-      "missed": [],
+      "seconds": 153,
+      "cost": 0.37,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-5",
+            "MONEY-0"
+          ],
+          "file": "src/Payouts/InstantWithdrawal.php",
+          "line": 26
+        },
+        {
+          "rules": [
+            "MONEY-6",
+            "MONEY-0"
+          ],
+          "file": "src/Payouts/InstantWithdrawal.php",
+          "line": 34
+        }
+      ],
       "fps": []
     },
     {
       "case": "mongo-tx2-produce-after-write",
       "title": "payment.paid is produced to Kafka after the transaction instead of the outbox",
       "runs": 3,
-      "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "bugs": 2,
+      "found": 6,
+      "loose_found": 6,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 64,
-      "cost": 0.31,
+      "seconds": 79,
+      "cost": 0.37,
       "missed": [],
       "fps": []
     },
@@ -575,14 +641,14 @@
       "case": "mongo-tx3-transfer-without-transaction",
       "title": "Ledger transfer runs its writes without a transaction",
       "runs": 3,
-      "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "bugs": 2,
+      "found": 6,
+      "loose_found": 6,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 71,
-      "cost": 0.36,
+      "seconds": 67,
+      "cost": 0.33,
       "missed": [],
       "fps": []
     },
@@ -596,8 +662,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 51,
-      "cost": 0.26,
+      "seconds": 45,
+      "cost": 0.24,
       "missed": [],
       "fps": []
     },
@@ -611,8 +677,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 68,
-      "cost": 0.34,
+      "seconds": 60,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -626,8 +692,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 59,
-      "cost": 0.27,
+      "seconds": 54,
+      "cost": 0.26,
       "missed": [],
       "fps": []
     },
@@ -635,15 +701,25 @@
       "case": "race-refund-cap-sum",
       "title": "Refund cap is a sum over refunds without locking the payment",
       "runs": 3,
-      "bugs": 1,
+      "bugs": 2,
       "found": 3,
       "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 60,
-      "cost": 0.31,
-      "missed": [],
+      "seconds": 77,
+      "cost": 0.3,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-7",
+            "MONEY-0",
+            "TX-3"
+          ],
+          "file": "app/Jobs/ResolvePendingRefunds.php",
+          "line": 26
+        }
+      ],
       "fps": []
     },
     {
@@ -656,8 +732,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 51,
-      "cost": 0.26,
+      "seconds": 259,
+      "cost": 0.29,
       "missed": [],
       "fps": []
     },
@@ -671,7 +747,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 45,
+      "seconds": 61,
       "cost": 0.24,
       "missed": [],
       "fps": []
@@ -680,15 +756,32 @@
       "case": "race-withdraw-no-lock",
       "title": "Withdrawal checks the balance outside the transaction and without a lock",
       "runs": 3,
-      "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "bugs": 3,
+      "found": 7,
+      "loose_found": 7,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 82,
-      "cost": 0.4,
-      "missed": [],
+      "seconds": 105,
+      "cost": 0.35,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-5",
+            "MONEY-0"
+          ],
+          "file": "app/Services/WithdrawalService.php",
+          "line": 15
+        },
+        {
+          "rules": [
+            "MONEY-6",
+            "MONEY-0"
+          ],
+          "file": "app/Services/WithdrawalService.php",
+          "line": 27
+        }
+      ],
       "fps": []
     },
     {
@@ -698,26 +791,13 @@
       "bugs": 1,
       "found": 3,
       "loose_found": 3,
-      "false_positives": 2,
+      "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 79,
-      "cost": 0.38,
+      "seconds": 60,
+      "cost": 0.3,
       "missed": [],
-      "fps": [
-        {
-          "rule": "RACE-6",
-          "file": "app/Jobs/ApproveEarlyPayouts.php",
-          "line": 30,
-          "title": "Daily limit counts only the requests in the current run, not what was already approved today"
-        },
-        {
-          "rule": "RACE-6",
-          "file": "app/Jobs/ApproveEarlyPayouts.php",
-          "line": 30,
-          "title": "Daily limit counts only the current batch, not payouts already approved today"
-        }
-      ]
+      "fps": []
     },
     {
       "case": "tx-payout-batch-one-transaction",
@@ -729,8 +809,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 89,
-      "cost": 0.39,
+      "seconds": 97,
+      "cost": 0.36,
       "missed": [],
       "fps": []
     },
@@ -744,8 +824,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 55,
-      "cost": 0.28,
+      "seconds": 61,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -759,8 +839,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 71,
-      "cost": 0.33,
+      "seconds": 55,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -774,8 +854,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 61,
-      "cost": 0.31,
+      "seconds": 64,
+      "cost": 0.3,
       "missed": [],
       "fps": []
     },
@@ -789,17 +869,17 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 63,
-      "cost": 0.3,
+      "seconds": 66,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     }
   ],
   "env": {
     "date": "2026-10-07",
-    "claude_code": "2.1.292",
-    "money_review": "0.5.2",
-    "commit": "0144576",
+    "claude_code": "2.1.293",
+    "money_review": "0.6.0",
+    "commit": "24ef4f9",
     "runs_per_case": 3
   },
   "models": [

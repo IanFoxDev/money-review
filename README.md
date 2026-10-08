@@ -237,41 +237,44 @@ Every field is described in [docs/config.md](docs/config.md).
 
 ## How good is it
 
-The repository has an eval with two apps and 49 merge requests on top of them, each
-with one planted bug or none (clean cases, some of them touching money code
-correctly). See [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/)
-for full reports. The table is one run of every case, three times each, on 2026-10-07
-with the review of 0.6.0, Claude Code 2.1.292, `claude-sonnet-5-5` as the reviewer and
-`claude-opus-5-5` as the verifier.
+The repository has an eval with two apps and 50 merge requests on top of them. Most
+have one planted bug, eleven have a second, quieter one next to it, and twelve have none
+(clean cases, some of them touching money code correctly). See
+[docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/) for full
+reports. The table is every case three times, run on 2026-10-07 and 2026-10-08 with
+Claude Code 2.1.293, `claude-sonnet-5-5` as the reviewer and `claude-opus-5-5` as the
+verifier ([2026-10-08-rules.md](docs/eval-results/2026-10-08-rules.md)).
 
 | | Laravel app on SQL | PHP and Go on MongoDB, Kafka, Redis |
 |---|---|---|
-| Cases | 31 (23 bugs, 8 clean) | 18 (14 bugs, 4 clean) |
-| Precision | 97% (69 of 71) | 100% (42 of 42) |
-| Recall | 100% (69 of 69) | 100% (42 of 42) |
+| Cases | 32 (24 with bugs, 32 bugs; 8 clean) | 18 (14 with bugs, 21 bugs; 4 clean) |
+| Precision | 100% (85 of 85) | 100% (54 of 54) |
+| Recall | 89% (85 of 96) | 86% (54 of 63) |
 | False alarms on clean cases | 0 in 24 runs | 0 in 12 runs |
-| Time per review | 52 s | 58 s |
-| API-equivalent cost per review | 0.26 USD | 0.29 USD |
+| Time per review (median) | 61 s | 78 s |
+| API-equivalent cost per review | 0.26 USD | 0.28 USD |
 
-Every checklist (TX, RACE, IDEM, MONEY) found all of its planted bugs. The false alarms
-(2 in 3 runs of one case) are a `low` finding on a case about nested transactions: it says a daily limit is
-counted per batch, which matters only if the job runs more than once a day.
+The same cases through a plain "review this change" prompt with no plugin
+([2026-10-07-plain-prompt.md](docs/eval-results/2026-10-07-plain-prompt.md) for the
+method):
+
+| | money-review | plain prompt, opus | plain prompt, sonnet |
+|---|---|---|---|
+| Recall | 87% | 94% | 84% |
+| Precision | 100% | 85% | 86% |
+| Clean runs with a false alarm | 0 of 36 | 8 of 36 | 16 of 36 |
+| API-equivalent cost per review | 0.27 USD | 0.15 USD | 0.07 USD |
+
+That comparison is where the second bugs come from: a plain prompt on opus found money
+bugs next to the planted ones that money-review did not report, because its reviewer could
+report only what the checklists named. With `MONEY-0` and three new rules, recall went from
+80% to 87% on the same cases, with no false alarm added. What it still misses is mostly a
+second bug that the verifier folds into the first because one fix covers both.
 
 The checklists and the cases were written by the same person, so these numbers show
-that the rules work as intended, not how the tool does on someone else's code. Earlier
-runs were lower: on 2026-10-05 the SQL app had 93% recall, all misses in two cases where
-the change removed one of two safety layers and the other still held. Those cases were
-rebuilt so that the removed layer is the only one. The eval runs again on every minor
-release and every model change, and is compared with this run (`eval/baseline/`).
-
-Against a plain "review this change" prompt on the same cases
-([2026-10-07-plain-prompt.md](docs/eval-results/2026-10-07-plain-prompt.md)), all three
-found every planted bug. money-review raised 141 findings in 147 runs against 317 for a
-plain prompt on opus, none of them wrong, and nothing on clean changes; opus flagged 11
-of 36 clean runs. The plain
-prompt also found more real money problems next to the planted bug (12 against 7) and a
-real bug in one case that was meant to be clean. Those gaps are the next work on the
-checklists.
+that the rules work as intended, not how the tool does on someone else's code. The eval
+runs again on every minor release and every model change, and is compared with the last
+accepted run (`eval/baseline/`).
 
 Bugs that only the current callers hide are reported as `low`, with the code that
 protects them today: a ledger transfer split over two transactions is safe while
