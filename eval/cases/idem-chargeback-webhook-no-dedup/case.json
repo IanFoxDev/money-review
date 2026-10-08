@@ -25,7 +25,9 @@
       "rules": [
         "IDEM-1",
         "IDEM-3",
-        "MONEY-2"
+        "MONEY-2",
+        "MONEY-5",
+        "MONEY-7"
       ],
       "file": "app/Http/Controllers/ChargebackWebhookController.php"
     }

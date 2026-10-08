@@ -2,18 +2,32 @@
   "title": "Chargeback books the full payment amount and moves clearing the wrong way",
   "bugs": [
     {
-      "rules": ["MONEY-7", "MONEY-0"],
+      "rules": [
+        "MONEY-7",
+        "MONEY-0"
+      ],
       "file": "app/Http/Controllers/ChargebackWebhookController.php",
       "anchor": "\\$payment->amount_cents,",
       "note": "the full amount is booked, also after a partial refund"
     },
     {
-      "rules": ["MONEY-5", "MONEY-0"],
+      "rules": [
+        "MONEY-5",
+        "MONEY-0"
+      ],
       "file": "app/Http/Controllers/ChargebackWebhookController.php",
       "anchor": "Account::system\\('psp_clearing'",
       "anchor_end": "Account::system\\('chargebacks'",
       "note": "the top-up moved money out of psp_clearing, the chargeback moves it out again instead of back"
     }
   ],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-10",
+        "RACE-3"
+      ],
+      "file": "app/Http/Controllers/ChargebackWebhookController.php"
+    }
+  ]
 }

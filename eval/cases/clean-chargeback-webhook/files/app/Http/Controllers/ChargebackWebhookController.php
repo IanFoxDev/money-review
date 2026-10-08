@@ -8,6 +8,7 @@ use App\Services\Ledger;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /** chargeback.created events. The signature is checked by the VerifyPspSignature middleware. */
 final class ChargebackWebhookController
@@ -41,11 +42,18 @@ final class ChargebackWebhookController
             if ($payment->status === 'charged_back') {
                 return; // one chargeback per payment, already booked
             }
-            // Refunds (also pending ones) are already counted in refunded_cents; the provider
-            // cannot take back more than is left of the payment.
-            $left = $payment->amount_cents - $payment->refunded_cents;
-            if ($currency !== $payment->currency || $amountCents <= 0 || $amountCents > $left) {
+            if ($currency !== $payment->currency || $amountCents <= 0) {
                 throw new \UnexpectedValueException("chargeback {$eventId} does not match payment {$payment->id}");
+            }
+            // The provider has taken the money already, so it is booked even when it is more
+            // than is left of the payment after refunds (also pending ones); that case goes to
+            // reconciliation instead of being refused.
+            $left = $payment->amount_cents - $payment->refunded_cents;
+            if ($amountCents > $left) {
+                Log::warning('chargeback over the refundable amount', [
+                    'event_id' => $eventId, 'payment_id' => $payment->id,
+                    'amount_cents' => $amountCents, 'left_cents' => $left,
+                ]);
             }
 
             // The top-up moved the money out of psp_clearing; the provider has now kept it, so
