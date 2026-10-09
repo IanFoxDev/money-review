@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-10-09
+
 ### Added
 
 - `--timeout SECONDS` (default 1200, `0` for no limit, or `MONEY_REVIEW_TIMEOUT`): a review
@@ -228,7 +230,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/IanFoxDev/money-review/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/IanFoxDev/money-review/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/IanFoxDev/money-review/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/IanFoxDev/money-review/compare/v0.5.2...v0.6.0
