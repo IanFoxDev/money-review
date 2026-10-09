@@ -18,7 +18,13 @@ The caller gives you:
 - `checklists`: paths to checklist files, one per category that applies to this change;
 - `context` (optional): notes from the project config, for example which tables hold
   money, which classes are webhook handlers or queue consumers, which helper wraps a
-  transaction.
+  transaction;
+- `already found` (optional): candidates from a first pass over the same change. Then
+  this is a second look: those defects are known, and your job is the others. Read the
+  change again from the start with the question "what else here loses, duplicates or
+  misstates money", including defects that a fix of the known ones would not remove.
+  Do not repeat, rephrase or split the known candidates. An empty list is a good
+  result.
 
 ## How to review
 

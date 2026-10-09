@@ -43,7 +43,19 @@ decided, without a model, which checklists apply:
    When there is more than one group, add two lines: `part: group <i> of <n> of a
    larger change` and `full diff: <diff>`, so the reviewer can look at the rest of the
    change when a guard may sit in another group. Each agent returns
-   `{"candidates": [...]}`. Put all candidates into one list.
+   `{"candidates": [...]}`.
+
+   Second look: if `second_pass` is `true`, run the reviewer once more for every group
+   that returned at least one candidate, again all in one message and in the
+   foreground, with the same prompt plus:
+
+   ```
+   already found: <that group's candidates as JSON>
+   ```
+
+   A change with one money bug often has a second one next to it that the first pass
+   folded into the first or did not look for. Put the candidates of both passes into
+   one list.
 
 4. If there are no candidates at all, the report is `{"findings": [], "rejected": []}`.
    Go to step 6 without running the verifier.

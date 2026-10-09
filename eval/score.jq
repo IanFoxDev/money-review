@@ -13,7 +13,9 @@
 # A finding without a rule (eval/bare.sh: a plain review prompt knows no rules)
 # matches a bug by file and line, and an "acceptable" entry by file.
 
-def near($b; $f): $f.file == $b.file and $f.line >= $b.line - 5 and $f.line <= ($b.end_line // $b.line) + 5;
+def near_one($b; $f): $f.file == $b.file and $f.line >= $b.line - 5 and $f.line <= ($b.end_line // $b.line) + 5;
+# A bug may name other places where it can fairly be reported ("also" in case.json).
+def near($b; $f): near_one($b; $f) or any(($b.also // [])[]; near_one(.; $f));
 def rule_ok($b; $f): $f.rule == null or ($b.rules | index($f.rule)) != null;
 def ratio($a; $b): if $b == 0 then null else ($a / $b * 1000 | round / 1000) end;
 def category: split("-")[0];

@@ -106,3 +106,10 @@ summary() { jq -c "$1" "$out/summary.json"; }
     run "$eval_dir/score.sh" "$out"
     [ "$(summary '[.true_positives, .duplicates, .missed]')" = "[2,0,0]" ]
 }
+
+@test "a bug can also be found at another place it names" {
+    "$eval_dir/expected.sh" race-refund-cap-sum > "$out/expected.json"
+    result race-refund-cap-sum 1 0 "{\"findings\": [$(finding MONEY-0 app/Services/RefundService.php 35)], \"rejected\": []}" '{}'
+    run "$eval_dir/score.sh" "$out"
+    [ "$(summary '[.true_positives, .false_positives]')" = "[1,0]" ]
+}

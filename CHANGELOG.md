@@ -10,6 +10,20 @@ All notable changes to this project are documented here. The format follows
 
 - Shell command: `--quiet` suppresses the usage summary on stderr.
 
+## [0.8.0] - 2026-10-08
+
+### Added
+
+- A second look: when the reviewer finds something, it reviews the change once more,
+  told what it already found, for other money bugs next to it. One more reviewer pass,
+  only on changes with a finding; `review.second_pass: false` turns it off.
+
+### Eval
+
+- A bug in `case.json` can name other places where it can fairly be reported (`also`).
+- New baseline: recall 91% (87% without the second look), precision 100%, second bugs
+  31 of 45 (25), no false alarm in 36 runs of clean cases.
+
 ## [0.7.0] - 2026-10-08
 
 ### Added
@@ -211,7 +225,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/IanFoxDev/money-review/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/IanFoxDev/money-review/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/IanFoxDev/money-review/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/IanFoxDev/money-review/compare/v0.5.1...v0.5.2

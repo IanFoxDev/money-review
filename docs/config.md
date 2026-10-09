@@ -79,6 +79,12 @@ When there are more groups than `max_groups`, the groups that match the most
 checklists are reviewed and the rest are listed in the report as not reviewed. Each
 extra group adds about one reviewer pass to the time and the subscription use.
 
+`second_pass` (default `true`): when the reviewer finds something, it looks at the
+change once more, told what it already found, for other money bugs next to it. A change
+with one bug often has a second one that the first pass folds into the first. The
+second look costs one more reviewer pass, only on changes with a candidate; turn it off
+with `{ "review": { "second_pass": false } }`.
+
 ### `context`
 
 Free text passed to the reviewer as is. This is the cheapest way to cut false alarms.

@@ -28,7 +28,21 @@ for c in "$@"; do
             end="$(grep -nE -m 1 -- "$anchor_end" "$src" | cut -d: -f1 || true)"
             [ -n "$end" ] || { echo "expected: $c: anchor_end /$anchor_end/ not found in $file" >&2; exit 2; }
         fi
-        bugs="$(jq -c --argjson b "$bug" --argjson l "$line" --argjson e "$end" '. + [$b + {line: $l, end_line: $e}]' <<< "$bugs")"
+        # Another place where the same bug can fairly be reported: {file, anchor}.
+        also="[]"
+        n_also="$(jq '.also // [] | length' <<< "$bug")"
+        k=0
+        while [ "$k" -lt "$n_also" ]; do
+            a_file="$(jq -r ".also[$k].file" <<< "$bug")"
+            a_anchor="$(jq -r ".also[$k].anchor" <<< "$bug")"
+            a_src="$dir/files/$a_file"
+            [ -f "$a_src" ] || a_src="$eval_dir/$(jq -r '.app // "app"' "$dir/case.json")/$a_file"
+            a_line="$(grep -nE -m 1 -- "$a_anchor" "$a_src" | cut -d: -f1 || true)"
+            [ -n "$a_line" ] || { echo "expected: $c: anchor /$a_anchor/ not found in $a_file" >&2; exit 2; }
+            also="$(jq -c --arg f "$a_file" --argjson l "$a_line" '. + [{file: $f, line: $l, end_line: $l}]' <<< "$also")"
+            k=$((k + 1))
+        done
+        bugs="$(jq -c --argjson b "$bug" --argjson l "$line" --argjson e "$end" --argjson a "$also" '. + [$b + {line: $l, end_line: $e, also: $a}]' <<< "$bugs")"
         i=$((i + 1))
     done
     result="$(jq -c --arg c "$c" --argjson s "$spec" --argjson b "$bugs" \

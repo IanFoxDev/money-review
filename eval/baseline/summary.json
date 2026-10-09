@@ -2,14 +2,14 @@
   "runs": 150,
   "cases": 50,
   "precision": 1,
-  "recall": 0.874,
-  "loose_recall": 0.874,
-  "true_positives": 139,
+  "recall": 0.912,
+  "loose_recall": 0.912,
+  "true_positives": 145,
   "false_positives": 0,
-  "missed": 20,
-  "wrong_rule": 4,
-  "duplicates": 2,
-  "acceptable_extras": 6,
+  "missed": 14,
+  "wrong_rule": 3,
+  "duplicates": 5,
+  "acceptable_extras": 7,
   "clean_runs_with_findings": 0,
   "clean_runs": 36,
   "triage_misses": 0,
@@ -18,14 +18,14 @@
     {
       "category": "IDEM",
       "bugs": 39,
-      "found": 37,
-      "recall": 0.949
+      "found": 38,
+      "recall": 0.974
     },
     {
       "category": "MONEY",
       "bugs": 54,
-      "found": 36,
-      "recall": 0.667
+      "found": 41,
+      "recall": 0.759
     },
     {
       "category": "RACE",
@@ -41,10 +41,10 @@
     }
   ],
   "cost_usd": {
-    "total": 38.51,
-    "per_reviewed_run": 0.267
+    "total": 42.73,
+    "per_reviewed_run": 0.297
   },
-  "seconds_per_reviewed_run": 78.667,
+  "seconds_per_reviewed_run": 130.743,
   "cases_detail": [
     {
       "case": "clean-avatar-upload",
@@ -71,8 +71,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 22,
-      "cost": 0.16,
+      "seconds": 26,
+      "cost": 0.15,
       "missed": [],
       "fps": []
     },
@@ -86,7 +86,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 27,
+      "seconds": 34,
       "cost": 0.15,
       "missed": [],
       "fps": []
@@ -101,7 +101,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 16,
+      "seconds": 19,
       "cost": 0.11,
       "missed": [],
       "fps": []
@@ -116,8 +116,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 24,
-      "cost": 0.15,
+      "seconds": 23,
+      "cost": 0.11,
       "missed": [],
       "fps": []
     },
@@ -131,8 +131,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 18,
-      "cost": 0.12,
+      "seconds": 24,
+      "cost": 0.1,
       "missed": [],
       "fps": []
     },
@@ -146,8 +146,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 29,
-      "cost": 0.17,
+      "seconds": 30,
+      "cost": 0.15,
       "missed": [],
       "fps": []
     },
@@ -161,7 +161,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 39,
+      "seconds": 25,
       "cost": 0.12,
       "missed": [],
       "fps": []
@@ -176,8 +176,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 51,
-      "cost": 0.27,
+      "seconds": 77,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -191,8 +191,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 103,
-      "cost": 0.43,
+      "seconds": 113,
+      "cost": 0.4,
       "missed": [],
       "fps": []
     },
@@ -206,8 +206,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 81,
-      "cost": 0.31,
+      "seconds": 93,
+      "cost": 0.35,
       "missed": [],
       "fps": []
     },
@@ -221,8 +221,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 56,
-      "cost": 0.27,
+      "seconds": 80,
+      "cost": 0.29,
       "missed": [],
       "fps": []
     },
@@ -236,8 +236,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 85,
-      "cost": 0.35,
+      "seconds": 107,
+      "cost": 0.41,
       "missed": [],
       "fps": []
     },
@@ -251,8 +251,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 78,
-      "cost": 0.27,
+      "seconds": 361,
+      "cost": 0.3,
       "missed": [],
       "fps": []
     },
@@ -266,8 +266,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 61,
-      "cost": 0.3,
+      "seconds": 89,
+      "cost": 0.33,
       "missed": [],
       "fps": []
     },
@@ -281,8 +281,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 105,
-      "cost": 0.41,
+      "seconds": 146,
+      "cost": 0.5,
       "missed": [],
       "fps": []
     },
@@ -291,13 +291,13 @@
       "title": "Commission rounded half up in the ledger and truncated in the partner statement",
       "runs": 3,
       "bugs": 2,
-      "found": 3,
-      "loose_found": 3,
+      "found": 4,
+      "loose_found": 4,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 81,
-      "cost": 0.27,
+      "seconds": 90,
+      "cost": 0.36,
       "missed": [
         {
           "rules": [
@@ -314,13 +314,13 @@
       "title": "Payout fee computed in floats and truncated back to cents",
       "runs": 3,
       "bugs": 2,
-      "found": 3,
-      "loose_found": 3,
+      "found": 4,
+      "loose_found": 4,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 85,
-      "cost": 0.28,
+      "seconds": 110,
+      "cost": 0.32,
       "missed": [
         {
           "rules": [
@@ -343,8 +343,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 53,
-      "cost": 0.2,
+      "seconds": 65,
+      "cost": 0.24,
       "missed": [],
       "fps": []
     },
@@ -358,8 +358,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 53,
-      "cost": 0.26,
+      "seconds": 124,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -373,8 +373,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 54,
-      "cost": 0.25,
+      "seconds": 105,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -388,8 +388,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 29,
-      "cost": 0.12,
+      "seconds": 33,
+      "cost": 0.13,
       "missed": [],
       "fps": []
     },
@@ -403,8 +403,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 67,
-      "cost": 0.16,
+      "seconds": 40,
+      "cost": 0.14,
       "missed": [],
       "fps": []
     },
@@ -433,8 +433,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 516,
-      "cost": 0.16,
+      "seconds": 38,
+      "cost": 0.15,
       "missed": [],
       "fps": []
     },
@@ -448,8 +448,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 63,
-      "cost": 0.27,
+      "seconds": 62,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -463,8 +463,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 85,
-      "cost": 0.31,
+      "seconds": 93,
+      "cost": 0.35,
       "missed": [],
       "fps": []
     },
@@ -478,8 +478,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 48,
-      "cost": 0.24,
+      "seconds": 70,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -493,8 +493,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 69,
-      "cost": 0.29,
+      "seconds": 102,
+      "cost": 0.32,
       "missed": [],
       "fps": []
     },
@@ -503,14 +503,23 @@
       "title": "Cashback is decoded and computed as float64",
       "runs": 3,
       "bugs": 1,
-      "found": 3,
-      "loose_found": 3,
+      "found": 2,
+      "loose_found": 2,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 86,
-      "cost": 0.33,
-      "missed": [],
+      "seconds": 138,
+      "cost": 0.38,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-1",
+            "MONEY-3"
+          ],
+          "file": "go/internal/credits/consumer.go",
+          "line": 15
+        }
+      ],
       "fps": []
     },
     {
@@ -523,8 +532,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 78,
-      "cost": 0.33,
+      "seconds": 105,
+      "cost": 0.34,
       "missed": [
         {
           "rules": [
@@ -555,8 +564,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 84,
-      "cost": 0.3,
+      "seconds": 81,
+      "cost": 0.32,
       "missed": [],
       "fps": []
     },
@@ -570,8 +579,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 86,
-      "cost": 0.32,
+      "seconds": 139,
+      "cost": 0.34,
       "missed": [],
       "fps": []
     },
@@ -585,8 +594,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 79,
-      "cost": 0.31,
+      "seconds": 98,
+      "cost": 0.34,
       "missed": [],
       "fps": []
     },
@@ -595,22 +604,14 @@
       "title": "Instant withdrawal checks the balance on a secondary and reserves without a condition",
       "runs": 3,
       "bugs": 4,
-      "found": 7,
-      "loose_found": 7,
+      "found": 10,
+      "loose_found": 10,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 153,
-      "cost": 0.37,
+      "seconds": 127,
+      "cost": 0.41,
       "missed": [
-        {
-          "rules": [
-            "MONEY-5",
-            "MONEY-0"
-          ],
-          "file": "src/Payouts/InstantWithdrawal.php",
-          "line": 26
-        },
         {
           "rules": [
             "MONEY-6",
@@ -632,8 +633,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 79,
-      "cost": 0.37,
+      "seconds": 221,
+      "cost": 0.38,
       "missed": [],
       "fps": []
     },
@@ -642,14 +643,23 @@
       "title": "Ledger transfer runs its writes without a transaction",
       "runs": 3,
       "bugs": 2,
-      "found": 6,
-      "loose_found": 6,
+      "found": 3,
+      "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 67,
-      "cost": 0.33,
-      "missed": [],
+      "seconds": 92,
+      "cost": 0.35,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-0",
+            "TX-4"
+          ],
+          "file": "src/Money/Ledger.php",
+          "line": 51
+        }
+      ],
       "fps": []
     },
     {
@@ -662,8 +672,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 45,
-      "cost": 0.24,
+      "seconds": 1711,
+      "cost": 0.27,
       "missed": [],
       "fps": []
     },
@@ -677,8 +687,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 60,
-      "cost": 0.28,
+      "seconds": 288,
+      "cost": 0.41,
       "missed": [],
       "fps": []
     },
@@ -692,8 +702,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 54,
-      "cost": 0.26,
+      "seconds": 72,
+      "cost": 0.3,
       "missed": [],
       "fps": []
     },
@@ -702,24 +712,14 @@
       "title": "Refund cap is a sum over refunds without locking the payment",
       "runs": 3,
       "bugs": 2,
-      "found": 3,
-      "loose_found": 3,
+      "found": 6,
+      "loose_found": 6,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 77,
-      "cost": 0.3,
-      "missed": [
-        {
-          "rules": [
-            "MONEY-7",
-            "MONEY-0",
-            "TX-3"
-          ],
-          "file": "app/Jobs/ResolvePendingRefunds.php",
-          "line": 26
-        }
-      ],
+      "seconds": 119,
+      "cost": 0.36,
+      "missed": [],
       "fps": []
     },
     {
@@ -732,7 +732,7 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 259,
+      "seconds": 69,
       "cost": 0.29,
       "missed": [],
       "fps": []
@@ -747,8 +747,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 61,
-      "cost": 0.24,
+      "seconds": 63,
+      "cost": 0.28,
       "missed": [],
       "fps": []
     },
@@ -757,31 +757,14 @@
       "title": "Withdrawal checks the balance outside the transaction and without a lock",
       "runs": 3,
       "bugs": 3,
-      "found": 7,
-      "loose_found": 7,
+      "found": 9,
+      "loose_found": 9,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 105,
-      "cost": 0.35,
-      "missed": [
-        {
-          "rules": [
-            "MONEY-5",
-            "MONEY-0"
-          ],
-          "file": "app/Services/WithdrawalService.php",
-          "line": 15
-        },
-        {
-          "rules": [
-            "MONEY-6",
-            "MONEY-0"
-          ],
-          "file": "app/Services/WithdrawalService.php",
-          "line": 27
-        }
-      ],
+      "seconds": 184,
+      "cost": 0.55,
+      "missed": [],
       "fps": []
     },
     {
@@ -794,8 +777,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 60,
-      "cost": 0.3,
+      "seconds": 75,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     },
@@ -809,8 +792,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 97,
-      "cost": 0.36,
+      "seconds": 139,
+      "cost": 0.42,
       "missed": [],
       "fps": []
     },
@@ -824,8 +807,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 61,
-      "cost": 0.27,
+      "seconds": 102,
+      "cost": 0.29,
       "missed": [],
       "fps": []
     },
@@ -839,8 +822,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 55,
-      "cost": 0.27,
+      "seconds": 88,
+      "cost": 0.35,
       "missed": [],
       "fps": []
     },
@@ -854,8 +837,8 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 64,
-      "cost": 0.3,
+      "seconds": 103,
+      "cost": 0.33,
       "missed": [],
       "fps": []
     },
@@ -869,17 +852,17 @@
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "seconds": 66,
-      "cost": 0.28,
+      "seconds": 83,
+      "cost": 0.31,
       "missed": [],
       "fps": []
     }
   ],
   "env": {
-    "date": "2026-10-07",
-    "claude_code": "2.1.293",
-    "money_review": "0.6.0",
-    "commit": "24ef4f9",
+    "date": "2026-10-08",
+    "claude_code": "2.1.294",
+    "money_review": "0.7.0",
+    "commit": "6cf9167",
     "runs_per_case": 3
   },
   "models": [

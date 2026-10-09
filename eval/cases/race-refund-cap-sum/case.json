@@ -18,7 +18,13 @@
       ],
       "file": "app/Jobs/ResolvePendingRefunds.php",
       "anchor": "decrement\\('refunded_cents'",
-      "note": "refunded_cents is no longer incremented but still decremented, it goes stale and negative"
+      "note": "refunded_cents is no longer incremented but still decremented, it goes stale and negative; it can be reported where the increment was removed, too",
+      "also": [
+        {
+          "file": "app/Services/RefundService.php",
+          "anchor": "return Refund::create\\("
+        }
+      ]
     }
   ],
   "acceptable": [
