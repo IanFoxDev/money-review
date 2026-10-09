@@ -158,3 +158,17 @@ setup() {
     grep -qx 'Read(\*\*/\*.pem)' "$FAKE_LOG"
     grep -qx 'Read(\*\*/secrets/\*\*)' "$FAKE_LOG"
 }
+
+@test "a review that runs past --timeout is stopped and not tried again" {
+    FAKE_SLEEP=3 run "$bin" --diff "$diffs/withdrawal.diff" --out "$out" --timeout 1
+    [ "$status" -eq 4 ]
+    [[ "$output" == *"did not finish within 1 s"* ]]
+    [ "$(cat "$FAKE_LOG.calls")" = "1" ]
+}
+
+@test "--timeout 0 means no limit, and the option takes a number" {
+    FAKE_SLEEP=1 run "$bin" --diff "$diffs/withdrawal.diff" --out "$out" --timeout 0
+    [ "$status" -eq 0 ]
+    run "$bin" --diff "$diffs/withdrawal.diff" --timeout soon
+    [ "$status" -eq 2 ]
+}
