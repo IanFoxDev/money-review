@@ -174,7 +174,8 @@ twice. How a team can share this without a CI token: [docs/team.md](docs/team.md
 Exit codes: 0 done, 1 findings at the `--fail-on` level, 2 usage error, 3 refused to
 run because `ANTHROPIC_API_KEY` is set (it would bill the API instead of your
 subscription; pass `--allow-api-key` if that is what you want), 4 the review did not
-produce a report, also after one more try (`--retries N` to change that).
+produce a report, also after one more try (`--retries N` to change that), or ran past
+`--timeout` (20 minutes by default; a typical review takes one or two).
 
 ## What it checks
 

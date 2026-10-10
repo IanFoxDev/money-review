@@ -10,6 +10,15 @@ All notable changes to this project are documented here. The format follows
 
 - Shell command: `--quiet` suppresses the usage summary on stderr.
 
+## [0.8.1] - 2026-10-09
+
+### Added
+
+- `--timeout SECONDS` (default 1200, `0` for no limit, or `MONEY_REVIEW_TIMEOUT`): a review
+  that runs longer is stopped and exits with 4, and is not tried again. A run that waits
+  for a background agent never ends by itself; the skill already says to run agents in
+  the foreground, this is the guard when that is not followed.
+
 ## [0.8.0] - 2026-10-08
 
 ### Added
@@ -225,7 +234,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/IanFoxDev/money-review/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/IanFoxDev/money-review/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/IanFoxDev/money-review/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/IanFoxDev/money-review/compare/v0.5.2...v0.6.0
