@@ -42,6 +42,11 @@ The caller gives you:
    function, its callers, the transaction wrapper, the migration for the table, the
    middleware or base class of a handler. Most false positives come from not seeing a
    lock, a unique index or an outer transaction that is outside the hunk.
+   Drop a scenario only when you find the code that stops it. When the changed code
+   would lose money on a path and the only doubt is whether that path is used (which
+   provider a product sells through, a config value, a caller in another service),
+   report it and name the assumption in `scenario`. The verifier decides how much it
+   weighs; a finding you drop never reaches it.
 4. Write a finding only if you can describe a concrete failure scenario: who does what,
    in which order, with which values, and what the money result is. "This could cause
    a race condition" is not a scenario. "Two callbacks for payment 42 arrive 30 ms

@@ -52,8 +52,8 @@ The caller gives you:
      say what breaks when that outside code changes (a new caller, a refactor of the
      other layer); in `fix` name the code that protects it today and how to make the
      changed code safe on its own.
-   - you cannot tell from the repository (the guard may live in another service):
-     keep it with severity lowered by one level and say what to check in `fix`.
+   - you cannot tell from the repository (the guard may live in another service, or
+     the path depends on which provider or config a product uses): keep it with severity lowered by one level and say what to check in `fix`.
 5. Check `line`: it must be a line that exists in `file`, inside or next to the
    changed code it is about. Read the file to confirm; never guess a number. Line
    numbers in the diff file are not line numbers in `file`. Copy the text of that line,
