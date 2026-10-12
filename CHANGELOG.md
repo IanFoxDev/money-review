@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The reviewer reads every rule it was given. It used to get the path of each chosen
+  checklist and often opened only the ones it judged relevant; now the checklists of a
+  group come as one file, read in full before the diff. On the eval: recall 91% to 94%,
+  second bugs 32 to 37 of 45, precision 100% and no alarm on clean code as before
+  ([eval](docs/eval-results/2026-10-12-checklist-file.md)).
+
 ## [0.8.1] - 2026-10-09
 
 ### Added
