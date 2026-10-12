@@ -17,7 +17,7 @@ The caller gives you:
 - `diff`: path to the unified diff of the change;
 - `candidates`: JSON with candidate findings (`rule`, `severity`, `file`, `line`,
   `title`, `scenario`, `fix`);
-- `checklists`: paths to the checklist files the reviewer used.
+- `checklist`: the checklist file the reviewer used, with every rule that applies.
 
 ## For each candidate
 

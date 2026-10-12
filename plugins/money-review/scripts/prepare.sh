@@ -3,7 +3,8 @@
 # for bin/money-review:
 #   {"base": "...", "diff": "/tmp/.../change.diff", "money": true,
 #    "categories": [...], "checklists": [...], "files": [...], "context": "...",
-#    "groups": [{"diff", "checklists", "files", "lines"}], "second_pass": true, "coverage": {...},
+#    "groups": [{"diff", "checklists", "checklist", "files", "lines"}], "checklist": "...",
+#    "second_pass": true, "coverage": {...},
 #    "ignore": [...], "secrets": [...]}
 # A change bigger than review.group_lines changed lines is split into groups of
 # files, each reviewed on its own (see split.sh); a copy goes to OUT/prepared.json.
@@ -145,11 +146,39 @@ if [ "$(jq -r .money <<< "$triage")" = "true" ]; then
     fi
 fi
 
+# The checklists of a group go to the reviewer as one file. Given several paths, the
+# reviewer often read only the ones it judged relevant and missed the rest.
+combine() { # checklist paths JSON, output file
+    : > "$2"
+    while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        cat "$f" >> "$2"
+        printf '\n' >> "$2"
+    done < <(jq -r '.[]' <<< "$1")
+}
+checklist=""
+if [ "$(jq length <<< "$groups")" -gt 0 ]; then
+    checklist="$out/checklists.md"
+    combine "$(checklists_of "$(jq -c .categories <<< "$triage")")" "$checklist"
+    n="$(jq length <<< "$groups")"
+    i=0
+    with_files="[]"
+    while [ "$i" -lt "$n" ]; do
+        g_file="$out/checklists-$((i + 1)).md"
+        combine "$(jq -c ".[$i].checklists" <<< "$groups")" "$g_file"
+        with_files="$(jq -c --argjson g "$(jq -c ".[$i]" <<< "$groups")" --arg f "$g_file" \
+            '. + [$g + {checklist: $f}]' <<< "$with_files")"
+        i=$((i + 1))
+    done
+    groups="$with_files"
+fi
+
 jq -n \
     --argjson t "$triage" \
     --arg base "$base" \
     --arg diff "$diff_file" \
     --argjson checklists "$(checklists_of "$(jq -c .categories <<< "$triage")")" \
+    --arg checklist "$checklist" \
     --argjson groups "$groups" \
     --argjson not_reviewed "$not_reviewed" \
     --argjson files_changed "$files_changed" \
@@ -163,6 +192,7 @@ jq -n \
         money: $t.money,
         categories: $t.categories,
         checklists: $checklists,
+        checklist: $checklist,
         files: $t.files,
         context: $t.context,
         groups: $groups,

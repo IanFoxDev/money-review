@@ -35,7 +35,7 @@ decided, without a model, which checklists apply:
 
    ```
    diff: <group diff>
-   checklists: <group checklists, one path per line>
+   checklist: <group checklist>
    files in scope: <group files>
    context: <context, or "none">
    ```
@@ -65,7 +65,7 @@ decided, without a model, which checklists apply:
 
    ```
    diff: <diff>
-   checklists: <checklists, one path per line>
+   checklist: <checklist>
    candidates: {"candidates": <the combined list, unchanged>}
    ```
 

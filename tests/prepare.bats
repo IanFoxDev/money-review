@@ -161,3 +161,20 @@ field() { jq -c "$1" <<< "$output"; }
     run "$prepare" --diff "$diffs/withdrawal.diff"
     [ "$(field .second_pass)" = "false" ]
 }
+
+@test "the checklists of a group come as one file with every rule" {
+    run "$prepare" --diff "$diffs/withdrawal.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$status" -eq 0 ]
+    f="$(jq -r '.groups[0].checklist' <<< "$output")"
+    [ -f "$f" ]
+    for c in $(jq -r '.groups[0].checklists[]' <<< "$output"); do
+        grep -qF "$(head -1 "$c")" "$f"
+    done
+    [ "$(grep -c '^## [A-Z]*-[0-9]' "$f")" = "$(cat $(jq -r '.groups[0].checklists[]' <<< "$output") | grep -c '^## [A-Z]*-[0-9]')" ]
+    [ -f "$(jq -r '.checklist' <<< "$output")" ]
+}
+
+@test "no money, no checklist file" {
+    run "$prepare" --diff "$diffs/readme-only.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$(jq -r '.checklist' <<< "$output")" = "" ]
+}
