@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Shell command: `--quiet` suppresses the usage summary on stderr.
+
 ## [0.8.2] - 2026-10-13
 
 ### Fixed
