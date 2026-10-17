@@ -1,0 +1,32 @@
+{
+  "repo": "getAlby/hub",
+  "license": "Apache-2.0",
+  "mode": "introducer",
+  "base": "e5dc19ae68a240f4efdca14e34af08cea3f02281",
+  "head": "b55978d7bcd474cb5f9eff095f911a4ac9900c05",
+  "fix": "979644cf688282ee3c4014554be7215fb9e8f151",
+  "date": "2026-06-10",
+  "files": [
+    "alby/models.go",
+    "api/api.go",
+    "api/models.go",
+    "config/models.go",
+    "lnclient/ldk/ldk.go",
+    "lsp/models.go",
+    "nip47/controllers/make_invoice_controller.go",
+    "service/start.go",
+    "transactions/transactions_service.go"
+  ],
+  "title": "JIT channel invoices are created with no limit on the opening fee the LSP deducts from the incoming payment",
+  "bugs": [
+    {
+      "rules": ["MONEY-0"],
+      "class": "NEW-PSP",
+      "file": "lnclient/ldk/ldk.go",
+      "anchor": "invoiceObj, err = ls\\.node\\.Bolt11Payment\\(\\)\\.ReceiveViaJitChannel\\(",
+      "anchor_end": "^\\s+nil,$",
+      "note": "The last argument of ReceiveViaJitChannel is the maximum total LSP fee; nil means no limit. The LSP opens the channel and takes its opening fee out of the payment it forwards, so whatever fee it quotes at that moment is accepted: a 10,000 sat receive can arrive as a few sats, and the user is never asked."
+    }
+  ],
+  "acceptable": []
+}

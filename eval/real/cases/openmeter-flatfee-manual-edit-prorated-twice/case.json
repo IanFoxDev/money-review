@@ -1,0 +1,26 @@
+{
+  "repo": "openmeterio/openmeter",
+  "license": "Apache-2.0",
+  "mode": "introducer",
+  "base": "a69361847f3752c2568394c036c3fa8ea671b849",
+  "head": "a6eaf64d5653de3b6b22bc16702c3fbd189635c2",
+  "fix": "d9446df8d8d7861b946e07438fe956d212555aca",
+  "date": "2026-06-27",
+  "files": [
+    "openmeter/billing/charges/flatfee/service/manualedit.go",
+    "openmeter/billing/charges/flatfee/service/creditheninvoice.go",
+    "openmeter/billing/charges/flatfee/service/lineengine.go"
+  ],
+  "title": "Manual edit of a flat-fee line stores the shown, already prorated amount as the amount before proration and keeps proration on",
+  "bugs": [
+    {
+      "rules": ["MONEY-7"],
+      "class": "NEW-SUB",
+      "file": "openmeter/billing/charges/flatfee/service/manualedit.go",
+      "anchor": "out := s\\.Charge\\.Intent\\.GetEffectiveIntent\\(\\)\\.IntentMutableFields",
+      "anchor_end": "out\\.AmountBeforeProration = flatPrice\\.Amount",
+      "note": "The override intent starts from the effective intent, so it inherits the proration setting of the subscription item, and then takes the line's flat price as the amount before proration. The price on an invoice line of a partial period is already prorated. The charge prorates it again, so a mid-period item edited by hand is billed a fraction of a fraction (a half-month fee of 50 becomes 25)."
+    }
+  ],
+  "acceptable": []
+}

@@ -1,0 +1,28 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "reverse",
+  "base": "72406a32ce9debad8d9e8ee25895fc3ac5b05a28",
+  "head": "1f783cf2e68bf0e83c5aa72b60b65f0fc51c5481",
+  "fix": "72406a32ce9debad8d9e8ee25895fc3ac5b05a28",
+  "date": "2026-10-09",
+  "files": ["components/ledger/internal/services/command/transaction_completion_service.go"],
+  "title": "Completion publishes transaction and balance events only after the metadata and fee-debt projections, so a projection failure loses them",
+  "bugs": [
+    {
+      "rules": ["TX-2"],
+      "class": "TX",
+      "file": "components/ledger/internal/services/command/transaction_completion_service.go",
+      "anchor": "if err := service\\.persistPreparedProjections\\(ctx, \\[\\]preparedTransactionCompletion\\{prepared\\}\\); err != nil",
+      "anchor_end": "service\\.publisher\\.PublishAppliedTransactionEvents\\(ctx, prepared\\.writeSet\\.Transaction, outcome\\.LifecyclePhase\\)",
+      "also": [
+        {
+          "file": "components/ledger/internal/services/command/transaction_completion_service.go",
+          "anchor": "PublishAppliedTransactionEvents\\(ctx, prepared\\[index\\]\\.writeSet\\.Transaction"
+        }
+      ],
+      "note": "The SQL write has committed when the projections run. If the Mongo metadata or the fee-debt record fails, the record goes back for a retry whose SQL replay reports the noop phase, and a noop publishes nothing. The transaction.*, balance.changed and overdraft events for money that did move are never sent, so consumers that keep balances or notify customers miss it."
+    }
+  ],
+  "acceptable": []
+}

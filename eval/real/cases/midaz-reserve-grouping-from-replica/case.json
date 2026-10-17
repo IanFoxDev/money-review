@@ -1,0 +1,27 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "introducer",
+  "base": "bcd1ee2acb00a2871f66f9c6b9012ce980237e5a",
+  "head": "9775ce78c139360a89f78e4952e6b2eea4c28fa2",
+  "fix": "54fffd692e1926a054d510bdde82208b922551e1",
+  "date": "2026-10-16",
+  "files": [
+    "components/ledger/internal/adapters/tracer/types.go",
+    "components/ledger/internal/services/command/create_atomic_transaction_batch_tracer.go",
+    "components/ledger/internal/services/command/create_transaction_engine.go",
+    "components/ledger/internal/services/command/transaction_reservation_anchor.go",
+    "components/ledger/internal/services/command/transaction_reservation_scope.go"
+  ],
+  "title": "Limit reserve reads the source account's segment and portfolio through a read that goes to the replica",
+  "bugs": [
+    {
+      "rules": ["RACE-8"],
+      "class": "RACE",
+      "file": "components/ledger/internal/services/command/transaction_reservation_scope.go",
+      "anchor": "found, err := uc\\.AccountRepo\\.Find\\(ctx, organizationID, ledgerID, nil, accountID",
+      "note": "The grouping decides which spending limits the reserve is counted against, enforce mode included. Find is routed to the read replica and ignores the primary-read intent, so right after an account moves to another portfolio or segment a lagging replica returns the old grouping: the spend is counted against the old limit and the new one is not checked. An account not yet replicated reserves with no grouping at all."
+    }
+  ],
+  "acceptable": []
+}

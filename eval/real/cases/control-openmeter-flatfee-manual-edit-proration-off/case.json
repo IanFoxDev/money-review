@@ -1,0 +1,13 @@
+{
+  "repo": "openmeterio/openmeter",
+  "license": "Apache-2.0",
+  "mode": "control",
+  "base": "dd41a0cfbfb2ee8bd480a82a8fa9b561fb214ac1",
+  "head": "d9446df8d8d7861b946e07438fe956d212555aca",
+  "fix": "d9446df8d8d7861b946e07438fe956d212555aca",
+  "date": "2026-10-06",
+  "files": ["openmeter/billing/charges/flatfee/service/manualedit.go"],
+  "title": "Manual flat-fee line edits turn proration off, since the edited amount already includes it",
+  "bugs": [],
+  "acceptable": []
+}

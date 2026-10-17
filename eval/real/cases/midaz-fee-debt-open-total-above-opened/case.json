@@ -1,0 +1,27 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "introducer",
+  "base": "d568825f5af2a6d49fbe511de4507588f8c88b47",
+  "head": "e0a913851033e47a8d6e7ec1327765f04671e816",
+  "fix": "9de76145f54f18b57b150fada160e67a5f9834c5",
+  "date": "2026-09-28",
+  "files": [
+    "components/ledger/internal/adapters/http/in/fee_debt_core.go",
+    "components/ledger/internal/adapters/http/in/fee_debt_handler.go",
+    "components/ledger/internal/adapters/mongodb/fees/fee_debt/indexes.go",
+    "components/ledger/internal/adapters/mongodb/fees/fee_debt/repository.go",
+    "components/ledger/internal/services/fees/fee_debt_service.go"
+  ],
+  "title": "Debtor open total sums raw remaining, which can exceed the opened amount while out-of-order changes converge",
+  "bugs": [
+    {
+      "rules": ["MONEY-0"],
+      "class": "NEW-AGG",
+      "file": "components/ledger/internal/adapters/mongodb/fees/fee_debt/repository.go",
+      "anchor": "\\{Key: \"\\$sum\", Value: \"\\$remaining\"\\}",
+      "note": "Changes to a debt are applied as commuting increments in any order (the comment on Apply says so). A reopen recorded before the settlement it undoes lifts remaining above the opened amount until the settlement lands. openTotal is presented as the amount a collector should take, so in that window it reports more than the debtor can owe; each debt should count at most its opened amount."
+    }
+  ],
+  "acceptable": []
+}

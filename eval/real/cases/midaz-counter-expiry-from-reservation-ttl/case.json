@@ -1,0 +1,21 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "introducer",
+  "base": "2039de1ae0f59dfe279e730fb094f893f0f69731",
+  "head": "e516c2e6793725b5893020003fc7c7cea0e9322c",
+  "fix": "f2a12fe2eabc768cce78d137bfd5bb75f23edf91",
+  "date": "2026-06-05",
+  "files": ["components/tracer/internal/adapters/postgres/usage_reservation_repository.go"],
+  "title": "Reserve writes the reservation's own short lifetime as the expiry of the limit's usage counter",
+  "bugs": [
+    {
+      "rules": ["MONEY-0"],
+      "class": "NEW-TIME",
+      "file": "components/tracer/internal/adapters/postgres/usage_reservation_repository.go",
+      "anchor": "&reservation\\.ReservationExpiresAt,",
+      "note": "The last argument of the counter upsert is usage_counters.expires_at, the deadline the cleanup worker deletes the counter by. Passing the reservation TTL (minutes) refreshes it on every reserve, and confirm never extends it. Minutes after the last reserve the sweep deletes a daily or monthly counter mid-period, confirmed spend included, and the limit starts again from zero."
+    }
+  ],
+  "acceptable": []
+}

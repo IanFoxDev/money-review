@@ -1,0 +1,22 @@
+{
+  "repo": "openmeterio/openmeter",
+  "license": "Apache-2.0",
+  "mode": "reverse",
+  "base": "c34810003872d75a211629fed3ed75564c9aafd2",
+  "head": "5d1ebbb54fcf11907fa0e3a619a9e9ed5d4d35a4",
+  "fix": "c34810003872d75a211629fed3ed75564c9aafd2",
+  "date": "2026-08-03",
+  "files": ["openmeter/credit/balance.go"],
+  "title": "Usage reset saves its snapshot but leaves the balance snapshots taken after the reset time valid",
+  "bugs": [
+    {
+      "rules": ["RACE-8"],
+      "class": "NEW-AGG",
+      "file": "openmeter/credit/balance.go",
+      "anchor": "failed to lock owner %s",
+      "anchor_end": "snap, err = m\\.saveSnapshot\\(ctx, snapshotParams\\{",
+      "note": "A reset at time T rolls the grants over and writes a snapshot at T, but snapshots already stored after T were computed without the reset. Grant creation and voiding invalidate snapshots after their effective time; the reset does not. A later balance query starts from such a stale snapshot, so usage before the reset is counted again and grant balances after a backdated reset are wrong."
+    }
+  ],
+  "acceptable": []
+}

@@ -1,0 +1,35 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "introducer",
+  "base": "c24205b5cf571f2a6fe573d65e421f5fa1dc9042",
+  "head": "7e07bb7d624f7e04c5a349589e6f184d70e9a94f",
+  "fix": "e525d6e328c64307950c465e5988fd559874bec8",
+  "date": "2026-09-29",
+  "files": [
+    "components/ledger/internal/adapters/http/in/fee_debt_collect_core.go",
+    "components/ledger/internal/adapters/http/in/fee_debt_collect_handler.go",
+    "components/ledger/internal/adapters/http/in/fee_debt_collect_routes.go",
+    "components/ledger/internal/services/command/collect_fee_debt.go",
+    "components/ledger/internal/services/command/engine_fee_debt_translation.go",
+    "components/ledger/internal/services/command/transaction_completion_fee_debt.go"
+  ],
+  "title": "New fee debt collect endpoint moves money with no idempotency key, so a retried request collects again",
+  "bugs": [
+    {
+      "rules": ["IDEM-3", "IDEM-1"],
+      "class": "IDEM",
+      "file": "components/ledger/internal/adapters/http/in/fee_debt_collect_handler.go",
+      "anchor": "type CollectFeeDebtRequest struct",
+      "anchor_end": "RawBody +\\[\\]byte",
+      "also": [
+        {
+          "file": "components/ledger/internal/services/command/collect_fee_debt.go",
+          "anchor": "type CollectFeeDebtInput struct"
+        }
+      ],
+      "note": "Every other money-moving POST of the ledger takes X-Idempotency and replays the first answer. The collect request has no key and the command builds a new transaction id for each call, so a client that retries after a lost response settles the debtor's fee debts a second time from its available balance, as long as debt remains open."
+    }
+  ],
+  "acceptable": []
+}

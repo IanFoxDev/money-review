@@ -1,0 +1,30 @@
+{
+  "repo": "openmeterio/openmeter",
+  "license": "Apache-2.0",
+  "mode": "introducer",
+  "base": "d6d4cd22dad8c4db3f75f2dc8278eaafccdf6962",
+  "head": "cf787e580aa11e7ca1938d6df23c5b14ea145238",
+  "fix": "5e2e51c7abb1918986a6bc56e1089edafe730268",
+  "date": "2026-08-13",
+  "files": [
+    "openmeter/subscription/workflow/service/subscription.go",
+    "openmeter/subscription/currency.go"
+  ],
+  "title": "Item added to a running custom-currency subscription without a currency is priced in the fiat invoice currency",
+  "bugs": [
+    {
+      "rules": ["MONEY-2"],
+      "class": "NEW-SUB",
+      "file": "openmeter/subscription/workflow/service/subscription.go",
+      "anchor": "meta\\.Currency = lo\\.ToPtr\\(currencies\\.NewCurrencyReference\\(invoiceCurrency\\)\\)",
+      "also": [
+        {
+          "file": "openmeter/subscription/workflow/service/subscription.go",
+          "anchor": "resolveEditPatchCurrency\\(ctx, subscriptionID\\.Namespace, curr\\.Spec\\.InvoiceCurrency"
+        }
+      ],
+      "note": "The same change lets a plan be priced in a custom currency (credits) while the subscription invoices in the customer's fiat currency. An edit that adds a priced item with no currency gets the invoice currency, not the plan's, so a price of 10 meant as 10 credits is billed as 10 USD, at a different value from every other item of the subscription."
+    }
+  ],
+  "acceptable": []
+}

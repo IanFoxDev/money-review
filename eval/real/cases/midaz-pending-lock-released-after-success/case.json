@@ -1,0 +1,26 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "introducer",
+  "base": "c2659b12ec0ed918344ee4740c1022630f786c17",
+  "head": "918614aba21ada7d166ea0b94fa6d34d612e9dfd",
+  "fix": "675a1f874c48cddc1e0f1ed75822b46479a72d81",
+  "date": "2026-10-08",
+  "files": [
+    "components/ledger/internal/services/command/commit_transaction.go",
+    "components/ledger/internal/services/command/transition_pending_engine.go",
+    "components/ledger/internal/services/command/transition_pending_steps.go"
+  ],
+  "title": "Pending commit and cancel release the per-transaction lock on success, which lets an unguarded release apply the opposite transition",
+  "bugs": [
+    {
+      "rules": ["RACE-1", "RACE-3"],
+      "class": "RACE",
+      "file": "components/ledger/internal/services/command/commit_transaction.go",
+      "anchor": "Released on every exit, including an indeterminate engine outcome",
+      "anchor_end": "tran, err := uc\\.transitionPendingWithEngine\\(ctx, span, logger, run, true\\)",
+      "note": "Before this change a successful commit or cancel kept the Redis lock until its TTL. The change releases it with a deferred call on every exit, on the argument that the engine guard stops a second transition. A release path that does not use the engine guard only takes the same lock, so once the lock is freed it can cancel a hold that was just committed (or commit one just cancelled), and the funds of the hold move twice."
+    }
+  ],
+  "acceptable": []
+}

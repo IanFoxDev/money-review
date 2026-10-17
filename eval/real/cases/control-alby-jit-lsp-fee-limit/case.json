@@ -1,0 +1,13 @@
+{
+  "repo": "getAlby/hub",
+  "license": "Apache-2.0",
+  "mode": "control",
+  "base": "f4010e239acde5ac91678e3b018f604e8299c5b8",
+  "head": "979644cf688282ee3c4014554be7215fb9e8f151",
+  "fix": "979644cf688282ee3c4014554be7215fb9e8f151",
+  "date": "2026-08-12",
+  "files": ["lnclient/ldk/ldk.go"],
+  "title": "JIT channel invoices cap the LSP opening fee from the advertised fee menu and an absolute ceiling",
+  "bugs": [],
+  "acceptable": []
+}

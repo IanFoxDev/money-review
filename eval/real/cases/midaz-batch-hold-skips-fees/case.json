@@ -1,0 +1,26 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "introducer",
+  "base": "56575b27de64d5140c6132592b44c198be51cd10",
+  "head": "e65424a0d6f556be35a3c316cbd797163a488da6",
+  "fix": "66fd2ef0ff3e777ea311073ae84f429993e784bd",
+  "date": "2026-09-17",
+  "files": [
+    "components/ledger/internal/services/command/create_atomic_transaction_batch_engine.go",
+    "components/ledger/internal/services/command/create_atomic_transaction_batch_idempotency.go",
+    "components/ledger/internal/services/command/create_atomic_transaction_batch_v2.go"
+  ],
+  "title": "Hold items of a v2 atomic batch pass their pending flag where the fee step expects the annotation flag, so no fee is charged",
+  "bugs": [
+    {
+      "rules": ["MONEY-7"],
+      "class": "NEW-DATA",
+      "file": "components/ledger/internal/services/command/create_atomic_transaction_batch_v2.go",
+      "anchor": "if err := uc\\.applyFees\\(",
+      "anchor_end": "item\\.input\\.Pending,",
+      "note": "applyFees(ctx, input, org, ledger, isAnnotation, honoredFeeSkip) returns early when isAnnotation is true. The batch now passes input.Pending in that slot, so every hold posted through the batch skips the fee engine, while the same hold posted through the single v2 create is charged. The fee is silently not collected."
+    }
+  ],
+  "acceptable": []
+}

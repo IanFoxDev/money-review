@@ -1,0 +1,16 @@
+{
+  "repo": "LerianStudio/midaz",
+  "license": "Elastic-2.0",
+  "mode": "control",
+  "base": "c10c6bfd54c17ed25c67bb7b4316527858755e28",
+  "head": "675a1f874c48cddc1e0f1ed75822b46479a72d81",
+  "fix": "675a1f874c48cddc1e0f1ed75822b46479a72d81",
+  "date": "2026-10-13",
+  "files": [
+    "components/ledger/internal/services/command/commit_transaction.go",
+    "components/ledger/internal/services/command/transition_pending_steps.go"
+  ],
+  "title": "Pending transition keeps its lock until the TTL after a success and releases it at once only on failure",
+  "bugs": [],
+  "acceptable": []
+}
