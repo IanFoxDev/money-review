@@ -1,0 +1,15 @@
+{
+  "repo": "Paymenter/Paymenter",
+  "license": "MIT",
+  "mode": "control",
+  "base": "b06576592fc5e3620e7d7d0036d302c3c8948301",
+  "head": "51980c1393fa3ab40c182df9d946bb40e0dc116a",
+  "fix": "51980c1393fa3ab40c182df9d946bb40e0dc116a",
+  "date": "2026-08-18",
+  "files": [
+    "app/Observers/InvoiceObserver.php"
+  ],
+  "title": "Paid-invoice processing and notifications deferred until the payment commits",
+  "bugs": [],
+  "acceptable": []
+}

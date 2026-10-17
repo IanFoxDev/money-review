@@ -1,0 +1,24 @@
+{
+  "repo": "laravel/cashier-stripe",
+  "license": "MIT",
+  "mode": "reverse",
+  "base": "3f197c6cadfe33578a3e6044cd556f5f58891998",
+  "head": "cb9fbcbc95ea28a4494139cc4a5d35ca0cc9b400",
+  "fix": "3f197c6cadfe33578a3e6044cd556f5f58891998",
+  "date": "2026-06-17",
+  "files": [
+    "src/Http/Controllers/WebhookController.php"
+  ],
+  "title": "Subscription webhook keeps the local trial end when Stripe sends trial_end as null",
+  "bugs": [
+    {
+      "rules": ["IDEM-10", "MONEY-7"],
+      "class": "NEW-SUB",
+      "file": "src/Http/Controllers/WebhookController.php",
+      "anchor": "// Trial ending date",
+      "anchor_end": "isset\\(\\$data\\['trial_end'\\]\\)",
+      "note": "customer.subscription.updated sends trial_end: null when the trial is ended early or removed. isset() is false for null, so the branch is skipped and trial_ends_at keeps the old future date. The app keeps treating the subscription as on trial (onTrial, trial-only access, trial-period logic in billing) after Stripe has started charging, or after the trial was cut short."
+    }
+  ],
+  "acceptable": []
+}

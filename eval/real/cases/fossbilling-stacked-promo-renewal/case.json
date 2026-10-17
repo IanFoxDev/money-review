@@ -1,0 +1,24 @@
+{
+  "repo": "FOSSBilling/fossbilling",
+  "license": "Apache-2.0",
+  "mode": "reverse",
+  "base": "becdb9bcdd3bb60eff90790b15929b503db757d0",
+  "head": "30fa01bdccd5465a2e23811e76e3929baf48ae18",
+  "fix": "becdb9bcdd3bb60eff90790b15929b503db757d0",
+  "date": "2026-09-23",
+  "files": [
+    "src/modules/Product/Service.php"
+  ],
+  "title": "Renewal discount of the primary promo is derived from the order's combined checkout discount",
+  "bugs": [
+    {
+      "rules": ["MONEY-7", "MONEY-4"],
+      "class": "NEW-SUB",
+      "file": "src/modules/Product/Service.php",
+      "anchor": "\\$discountAmount = \\(float\\) \\(\\$order->getDiscount\\(\\) \\?\\? 0\\);",
+      "anchor_end": "\\$discountAmount = max\\(0\\.0, \\$discountAmount - \\$stackedDiscount\\);",
+      "note": "With stacked promotions the order stores one combined discount. The renewal code gives the recurring primary promo whatever is left after subtracting only the recurring stacked shares, so a one-time promo used at checkout is counted as part of the primary's share and keeps being taken off every renewal invoice. The per-promo amounts recorded at checkout are not used, and a recorded zero is treated as missing."
+    }
+  ],
+  "acceptable": []
+}

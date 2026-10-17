@@ -1,0 +1,24 @@
+{
+  "repo": "laravel/cashier-stripe",
+  "license": "MIT",
+  "mode": "introducer",
+  "base": "52c15748d067f780cdeaa738ce679cd0a039fee5",
+  "head": "9a278e011e8f588ac9f08cca7896fc8d96292df7",
+  "fix": "b92231cb19aefafa75cca47d3b6f8fbb035442a9",
+  "date": "2025-06-07",
+  "files": [
+    "src/CustomerBalanceTransaction.php"
+  ],
+  "title": "Balance transaction helpers read a field Stripe does not send",
+  "bugs": [
+    {
+      "rules": ["MONEY-7", "IDEM-10"],
+      "class": "NEW-PSP",
+      "file": "src/CustomerBalanceTransaction.php",
+      "anchor": "return \\$this->transaction->balance_type;",
+      "anchor_end": "balance_type === 'checkout_session_subscription_payment_canceled'",
+      "note": "The kind of a Stripe customer balance transaction is in its type field; there is no balance_type. balanceType() always returns null and both checkout-session predicates are always false, so code that uses them to tell a Checkout subscription payment, or its reversal, from other credits and debits misclassifies every such movement of the customer balance."
+    }
+  ],
+  "acceptable": []
+}

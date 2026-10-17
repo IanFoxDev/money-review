@@ -1,0 +1,15 @@
+{
+  "repo": "FOSSBilling/fossbilling",
+  "license": "Apache-2.0",
+  "mode": "control",
+  "base": "ddb977925c57f71a7f53d36d744d1e5c424824d7",
+  "head": "b5f9af2d3e09eef65ef7f49762cc8fdd3105b280",
+  "fix": "b5f9af2d3e09eef65ef7f49762cc8fdd3105b280",
+  "date": "2026-10-03",
+  "files": [
+    "src/modules/Invoice/ServiceTransaction.php"
+  ],
+  "title": "Offline approval keeps the transaction in processing until settlement finishes",
+  "bugs": [],
+  "acceptable": []
+}

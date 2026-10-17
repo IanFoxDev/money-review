@@ -1,0 +1,24 @@
+{
+  "repo": "laravel/cashier-paddle",
+  "license": "MIT",
+  "mode": "reverse",
+  "base": "70c908f13b56b76ee25a9d32f1a6c27dec8bc554",
+  "head": "642e37d645b10b25b2795214b48e2b43916539e3",
+  "fix": "70c908f13b56b76ee25a9d32f1a6c27dec8bc554",
+  "date": "2026-08-05",
+  "files": [
+    "src/Http/Controllers/WebhookController.php"
+  ],
+  "title": "A late transaction.updated webhook overwrites a completed transaction with an older status",
+  "bugs": [
+    {
+      "rules": ["IDEM-8", "RACE-3"],
+      "class": "NEW-PSP",
+      "file": "src/Http/Controllers/WebhookController.php",
+      "anchor": "protected function handleTransactionUpdated",
+      "anchor_end": "'status' => \\$data\\['status'\\],",
+      "note": "Paddle does not deliver webhooks in order. handleTransactionUpdated writes whatever status the payload carries, so an updated event for the billed or paid state that arrives after transaction.completed moves a completed, charged transaction back to an earlier status and fires TransactionUpdated with it. The local record no longer shows the payment as completed."
+    }
+  ],
+  "acceptable": []
+}

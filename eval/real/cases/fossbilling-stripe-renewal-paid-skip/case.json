@@ -1,0 +1,24 @@
+{
+  "repo": "FOSSBilling/fossbilling",
+  "license": "Apache-2.0",
+  "mode": "reverse",
+  "base": "7058313b07cb0717ce79c4ec31595bf660d9cbce",
+  "head": "81a96f63f10a43af1dc2d92215173e8829a500e4",
+  "fix": "7058313b07cb0717ce79c4ec31595bf660d9cbce",
+  "date": "2026-10-16",
+  "files": [
+    "src/library/Payment/Adapter/Stripe.php"
+  ],
+  "title": "Stripe renewal payments are dropped because the first invoice of the subscription is already paid",
+  "bugs": [
+    {
+      "rules": ["IDEM-10", "MONEY-7"],
+      "class": "NEW-SUB",
+      "file": "src/library/Payment/Adapter/Stripe.php",
+      "anchor": "if \\(\\$existingInvoice->getStatus\\(\\) === Invoice::STATUS_PAID\\) \\{",
+      "anchor_end": "return false;",
+      "note": "The invoice id in the subscription metadata is always the invoice that started the subscription. The already-paid skip in the invoice.paid handler looks at that invoice for every event, not only for the initial payment, so each renewal returns early once the first invoice is paid: Stripe charges the card, no funds are added and the renewal invoice stays unpaid until the service is suspended."
+    }
+  ],
+  "acceptable": []
+}

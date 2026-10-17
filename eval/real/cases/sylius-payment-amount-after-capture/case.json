@@ -1,0 +1,31 @@
+{
+  "repo": "Sylius/Sylius",
+  "license": "MIT",
+  "mode": "reverse",
+  "base": "3e575a2e273ad7a9b1cd2e687a47a7f5436fd015",
+  "head": "1255d75b20d3d88a5e5c8d46791504134c838480",
+  "fix": "3e575a2e273ad7a9b1cd2e687a47a7f5436fd015",
+  "date": "2026-09-02",
+  "files": [
+    "src/Sylius/Component/Core/OrderProcessing/OrderPaymentProcessor.php",
+    "src/Sylius/Component/Core/Payment/Remover/OrderPaymentsRemover.php"
+  ],
+  "title": "Order processing rewrites the payment amount while a gateway capture is already running",
+  "bugs": [
+    {
+      "rules": ["RACE-3", "MONEY-7"],
+      "class": "NEW-PSP",
+      "file": "src/Sylius/Component/Core/OrderProcessing/OrderPaymentProcessor.php",
+      "anchor": "\\$lastPayment = \\$order->getLastPayment\\(\\$this->targetState\\);",
+      "anchor_end": "\\$lastPayment->setAmount\\(\\$order->getTotal\\(\\)\\);",
+      "also": [
+        {
+          "file": "src/Sylius/Component/Core/Payment/Remover/OrderPaymentsRemover.php",
+          "anchor": "return \\$payment->getState\\(\\) === PaymentInterface::STATE_CART;"
+        }
+      ],
+      "note": "Every order recalculation copies the order total and currency into the last open payment, and the remover drops cart-state payments when the total reaches zero, without asking whether a capture or authorize request for that payment is already in progress. If the cart changes (a promotion, a shipping change, a second tab) after the buyer was sent to the gateway, the payment record no longer matches what the gateway charges: the order is completed as paid for an amount that was never captured, or the payment the gateway is completing disappears."
+    }
+  ],
+  "acceptable": []
+}

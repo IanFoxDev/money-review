@@ -1,0 +1,26 @@
+{
+  "repo": "FOSSBilling/fossbilling",
+  "license": "Apache-2.0",
+  "mode": "introducer",
+  "base": "edb8469c8558557cb34c1cdbd2a41e6667d2e187",
+  "head": "56cc8099539dda0ea34e7b40a145f651f2a8e258",
+  "fix": "3b9f428bf1fdc0a1f786ba83beb63e1b049cbe69",
+  "date": "2026-08-18",
+  "files": [
+    "src/library/Payment/Adapter/ClientBalance.php",
+    "src/modules/Invoice/Service.php",
+    "src/library/FOSSBilling/Logging/DatabaseWriter.php",
+    "src/modules/Profile/Service.php"
+  ],
+  "title": "Automated cast removal turns the client balance gateway check into a ?? b !== 0",
+  "bugs": [
+    {
+      "rules": ["MONEY-7"],
+      "class": "NEW-PSP",
+      "file": "src/library/Payment/Adapter/ClientBalance.php",
+      "anchor": "if \\(\\$invoiceModel->getGateway\\(\\)\\?->getId\\(\\) \\?\\? \\(int\\) \\$gateway_id !== 0\\)",
+      "note": "Dropping the parentheses and casts in a style pass changes the meaning: !== binds tighter than ??, so the condition is the invoice gateway id when one is set (always truthy) and otherwise whether the posted gateway id is non-zero. The check that the invoice is meant for the client balance gateway now fails for every real request, so no invoice can be paid from account credit and renewals that rely on credit go unpaid until the service is suspended."
+    }
+  ],
+  "acceptable": []
+}

@@ -1,0 +1,15 @@
+{
+  "repo": "bagisto/bagisto",
+  "license": "MIT",
+  "mode": "control",
+  "base": "d066cdab5575d83eba2518e4cfe20641801acb5d",
+  "head": "627b0b0321701782de00cd1690502ae689983be7",
+  "fix": "627b0b0321701782de00cd1690502ae689983be7",
+  "date": "2026-10-13",
+  "files": [
+    "packages/Webkul/Razorpay/src/Payment/RazorpayPayment.php"
+  ],
+  "title": "Razorpay order amount rounded to minor units like the payment check",
+  "bugs": [],
+  "acceptable": []
+}

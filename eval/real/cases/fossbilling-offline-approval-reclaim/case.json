@@ -1,0 +1,32 @@
+{
+  "repo": "FOSSBilling/fossbilling",
+  "license": "Apache-2.0",
+  "mode": "introducer",
+  "base": "df7287a549570a76fbcd77c078625a958ca11b10",
+  "head": "71b4d083002b961364c7659f7100a707a9725af3",
+  "fix": "b5f9af2d3e09eef65ef7f49762cc8fdd3105b280",
+  "date": "2026-10-03",
+  "files": [
+    "src/modules/Invoice/ServiceTransaction.php",
+    "src/modules/Invoice/Api/Admin.php",
+    "src/library/Payment/Adapter/Custom.php",
+    "src/modules/Invoice/ServicePayGateway.php"
+  ],
+  "title": "Offline payment approval claims the transaction, then writes back a status the claim accepts again",
+  "bugs": [
+    {
+      "rules": ["RACE-3", "RACE-2"],
+      "class": "RACE",
+      "file": "src/modules/Invoice/ServiceTransaction.php",
+      "anchor": "\\$model->setStatus\\(Transaction::STATUS_APPROVED\\);",
+      "also": [
+        {
+          "file": "src/modules/Invoice/ServiceTransaction.php",
+          "anchor": "^ +Transaction::STATUS_APPROVED,$"
+        }
+      ],
+      "note": "approveTransaction takes the row with the conditional UPDATE to processing, and then sets and flushes approved before settling. The same change adds approved to the statuses claimForProcessing accepts, so a second admin request (double click, second tab) arriving while the first is still settling claims the row again and settles the same offline payment a second time: the invoice is paid or the client credited twice."
+    }
+  ],
+  "acceptable": []
+}
