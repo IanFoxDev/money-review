@@ -280,3 +280,29 @@ arrive later are columns that the newer version overwrites.
 
 Do not report: a key field that the code sets before the first write and never changes;
 say where it is set.
+
+## IDEM-12. A dedup check that can never match
+
+Look for: a dedup lookup whose key differs in type or meaning from what is stored (a
+string id compared with a field stored as an integer, a subscription id where the
+transaction id is stored); a dedup function with a default `return false` for the
+providers or event types it does not list; a key built from `time()`, `uuid()`,
+`now()` or a random value, so a retry gets a new key; a key that includes fields that
+change between deliveries (amount, status, timestamp); a unique index over a nullable
+column (NULL values do not collide); a composite key missing the event type, so a
+refund and a charge with the same reference collide, or are never compared.
+
+Failure scenario: rebill postbacks are deduped by `findOne({transaction_id: $id})` with
+`$id` from the payload as a string, while the field is stored as an integer. The query
+never finds the earlier row; every retried postback books another rebill, and the daily
+report shows twice the revenue. An internal transfer uses
+`"referral-transfer-{$userId}-" . time()` as its operation id: a retry a second later
+gets a new id and transfers again.
+
+Good: the key is the business identity of the event (provider, event type, provider
+event id, or our own stable operation id), normalised to the stored type; it is
+enforced by a unique index that has no nullable parts; a test sends the same event twice.
+
+Do not report: a key that is random by design because the operation is not retried
+(a one-off admin action behind a confirmation), if nothing calls it in a loop.
+

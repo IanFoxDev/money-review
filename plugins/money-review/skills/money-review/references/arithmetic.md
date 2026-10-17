@@ -111,6 +111,45 @@ payment; a cap reads the same records that the later operations change.
 Do not report: an operation that the domain defines as full (a void before capture
 always covers the whole authorization).
 
+## MONEY-8. Amounts in different units or scales
+
+Look for: `* 100`, `/ 100`, `* 1000000` and similar literals next to amounts; an amount
+from a provider or another service used without a named conversion (providers send
+minor units, major units or strings, and each internal system may use its own scale);
+a price stored in cents and used as units, or the reverse; an exchange or token rate
+written as a constant; a threshold or limit in config whose unit is not stated
+(`min_deposit: 500` cents or units?).
+
+Failure scenario: the game provider reports wins in cents (factor 100), the wallet
+stores micro-units (factor 1 000 000). The callback passes the provider amount through
+unchanged: a win of 5.00 (500) is credited as 0.0005. The reverse direction reports a
+balance 10 000 times too large to the provider, and players bet money they do not have.
+
+Good: one converter per boundary (`toInternalMinor`, `toProviderMinor`) with the scale
+named; config keys carry the unit (`min_deposit_minor`); rates come from a source with a
+date, not from literals.
+
+Do not report: a conversion inside a money library that knows the currency's scale.
+
+## MONEY-9. A missing value that defaults to moving money
+
+Look for: `?? 'USD'`, `?? 'EUR'`, `?? $balance`, `?? $order->total`, `?: 0` on an amount
+that will be charged or paid out; an empty list treated as "everyone" in one place and
+"nobody" in another (`isset` against `empty`); a filter that is skipped when its list is
+empty, so the query selects all rows; a no-op stub swapped in when configuration is
+missing, so money is silently not recorded.
+
+Failure scenario: a payout instruction is missing its `amount` field because of a form
+bug; `$amount = $req['amount'] ?? $account->balance` sends the whole balance. A refund job
+gets an empty list of order ids from a failed lookup; the repository drops the `IN ()`
+condition and refunds every order of the day.
+
+Good: required money fields are required: a missing value is an error; empty filters
+return nothing, explicitly; missing configuration fails at start-up.
+
+Do not report: a default that is the documented, intended behaviour and does not move
+money (a display currency).
+
 ## MongoDB, Go and JSON
 
 ### MONEY-1 in stored documents and decoded JSON
