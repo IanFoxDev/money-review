@@ -19,6 +19,8 @@ def near($b; $f): near_one($b; $f) or any(($b.also // [])[]; near_one(.; $f));
 def rule_ok($b; $f): $f.rule == null or ($b.rules | index($f.rule)) != null;
 def ratio($a; $b): if $b == 0 then null else ($a / $b * 1000 | round / 1000) end;
 def category: split("-")[0];
+# A real-bug case can name a family that no rule has yet ("class": "NEW-TIME").
+def bug_category: .class // (.rules[0] | category);
 
 def score_run($exp; $r):
   ($exp.bugs) as $bugs
@@ -43,8 +45,8 @@ def score_run($exp; $r):
       fn: (($bugs | length) - ($s.matched | length)),
       loose_found: (($s.matched + $s.loose) | unique | length),
       missed: [range(0; $bugs | length) as $k | select(($s.matched | index($k)) == null) | $bugs[$k] | {rules, file, line}],
-      found_categories: [$s.matched[] | $bugs[.].rules[0] | category],
-      bug_categories: [$bugs[].rules[0] | category],
+      found_categories: [$s.matched[] | $bugs[.] | bug_category],
+      bug_categories: [$bugs[] | bug_category],
       triage_skipped: ($r.claude == null and $r.exit == 0),
       error: ($r.report == null or $r.exit >= 2),
       cost: (($r.claude // {}).total_cost_usd // 0),
