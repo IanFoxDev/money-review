@@ -1,0 +1,14 @@
+{
+  "title": "Webhook maps provider event names to outcomes, and every unlisted event counts as a success",
+  "bugs": [
+    {
+      "rules": ["PSP-1", "PSP-2"],
+      "file": "app/Http/Controllers/PspWebhookController.php",
+      "anchor": "default => 'succeeded'",
+      "note": "payment.canceled, payment.voided or any new event type credits the wallet"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["PSP-7"], "file": "app/Http/Controllers/PspWebhookController.php"}
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "app": "app-mongo",
+  "title": "Paywise callback reads the form field approved=false as true",
+  "bugs": [
+    {
+      "rules": ["PSP-2"],
+      "file": "src/Payments/PaywiseCallback.php",
+      "anchor": "\\$approved = \\(bool\\)",
+      "anchor_end": "if \\(\\$approved\\)",
+      "note": "form values are strings, (bool) 'false' is true, so a declined card credits the wallet"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["PSP-4"], "file": "src/Payments/PaywiseCallback.php"},
+    {"rules": ["PSP-5"], "file": "src/Payments/PaywiseCallback.php"}
+  ]
+}

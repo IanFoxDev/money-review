@@ -1,0 +1,16 @@
+{
+  "app": "app-mongo",
+  "title": "Commission clawback on refund is recomputed with the partner's current rate instead of reversing what was paid",
+  "bugs": [
+    {
+      "rules": ["REV-2", "REV-5"],
+      "file": "src/Events/CommissionConsumer.php",
+      "anchor": "private function clawBack",
+      "anchor_end": "'commission-clawback:'",
+      "note": "after a rate change the clawback differs from the commission paid on the payment; the original entry is commission:payment.paid:<id>"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-10", "MONEY-9", "REV-4"], "file": "src/Events/CommissionConsumer.php"}
+  ]
+}

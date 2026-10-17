@@ -1,0 +1,16 @@
+{
+  "title": "Provider-side refunds are matched to a payment by our order reference, which every rebill shares",
+  "bugs": [
+    {
+      "rules": ["REV-1"],
+      "file": "app/Http/Controllers/ProviderRefundWebhookController.php",
+      "anchor": "where\\('order_reference', \\$orderReference\\)",
+      "anchor_end": "->first\\(\\);",
+      "note": "a refund of the third rebill is booked on the first charge; charge_reference is in the payload and unused"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["REV-5"], "file": "app/Http/Controllers/ProviderRefundWebhookController.php"},
+    {"rules": ["PSP-7"], "file": "app/Http/Controllers/ProviderRefundWebhookController.php"}
+  ]
+}
