@@ -229,3 +229,33 @@ through an outbox (TX-2).
 Do not report: a field that no consumer in the repository reads. Say which consumers you
 checked.
 
+
+## TX-10. A second write path that skips what the main path does
+
+Look for: a new or alternate way to record money (a provider sync, a backfill, an admin
+tool, account linking or merging, a migration, a direct collection or table write) that
+does not do what the main path does around the same write: emit the event, post the
+ledger entry, update the denormalised copy, write the audit record, run the model hook or
+observer; mass `update()` or raw queries that bypass model events or the state machine;
+an event emitted without checking that the write it announces happened (`$inserted`).
+
+Failure scenario: purchases from the checkout path go through `PurchaseService::create`,
+which also emits `purchase.created` for the revenue consumer and updates the user's
+premium copy. A new provider sync inserts missed purchases with a direct `insertOne`.
+Access works, but the revenue pipeline never sees those purchases and partners are not
+paid for them. A refund handler emits `refund.created` before the insert, and the insert
+then fails on a duplicate key: consumers book a refund that does not exist.
+
+```php
+// bad: the sync path writes the row only
+$this->purchases->insertOne($row);
+
+// good: every path goes through the one place that owns the side effects
+$this->purchaseService->recordFromSync($row); // insert, event, copy, audit
+```
+
+Good: one function owns the write and its side effects, and every path calls it; events
+are emitted from the result of the write (or through an outbox, TX-2).
+
+Do not report: a path that deliberately skips a side effect (a backfill that must not
+notify users), with the skipped effect handled elsewhere and said so.
