@@ -1,0 +1,22 @@
+{
+  "repo": "invoiceninja/invoiceninja",
+  "license": "Elastic-2.0",
+  "mode": "reverse",
+  "base": "249f4bb5c4adcb8817e8aa3efb84d5134e5d80fc",
+  "head": "5b27febf298375682cc8c603e24a0ee366ccb7fc",
+  "fix": "249f4bb5c4adcb8817e8aa3efb84d5134e5d80fc",
+  "date": "2025-11-28",
+  "files": ["app/Http/ValidationRules/Payment/ValidInvoicesRules.php"],
+  "title": "Payment validation accepts a negative amount applied to a positive invoice",
+  "bugs": [
+    {
+      "rules": ["MONEY-5"],
+      "class": "MONEY",
+      "file": "app/Http/ValidationRules/Payment/ValidInvoicesRules.php",
+      "anchor": "if \\(\\$inv->status_id == Invoice::STATUS_DRAFT && \\$invoice\\['amount'\\] <= \\$inv->amount\\)",
+      "anchor_end": "\\} elseif \\(floatval\\(\\$invoice\\['amount'\\]\\) > floatval\\(\\$inv->balance\\)\\)",
+      "note": "The per-invoice checks only cap the amount from above, so a negative amount on a normal positive invoice passes. Applying it raises the invoice balance and lowers paid-to-date instead of paying anything, which turns a payment into a hidden charge or refund."
+    }
+  ],
+  "acceptable": []
+}

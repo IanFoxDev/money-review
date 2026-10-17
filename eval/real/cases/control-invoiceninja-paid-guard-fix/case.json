@@ -1,0 +1,16 @@
+{
+  "repo": "invoiceninja/invoiceninja",
+  "license": "Elastic-2.0",
+  "mode": "control",
+  "base": "543288c5251ebb719296fcf7e237d93d8438ba2f",
+  "head": "4345dece14fb6e3e07e8ad4d28a2e99f6c011d10",
+  "fix": "4345dece14fb6e3e07e8ad4d28a2e99f6c011d10",
+  "date": "2021-10-11",
+  "files": [
+    "app/Services/Invoice/ApplyPaymentAmount.php",
+    "app/Services/Invoice/MarkPaid.php"
+  ],
+  "title": "Double-payment guards fixed to read status_id",
+  "bugs": [],
+  "acceptable": []
+}

@@ -1,0 +1,13 @@
+{
+  "repo": "bavix/laravel-wallet",
+  "license": "MIT",
+  "mode": "control",
+  "base": "8521fe57d7f224a6315d5fdbfd7a97a69ba5c7df",
+  "head": "4a6b52d09e586c429191accc54adcf132b9b74c7",
+  "fix": "4a6b52d09e586c429191accc54adcf132b9b74c7",
+  "date": "2020-03-07",
+  "files": ["src/Models/Transaction.php"],
+  "title": "Float setter rounds to the nearest minor unit before storing the integer amount",
+  "bugs": [],
+  "acceptable": []
+}

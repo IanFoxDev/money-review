@@ -1,0 +1,43 @@
+{
+  "repo": "bagisto/bagisto",
+  "license": "MIT",
+  "mode": "introducer",
+  "base": "8abce3302a54848494142011075cbb44f9dd9013",
+  "head": "cb5e3a47f6d9aa6595626f1579259714d35833a9",
+  "fix": "427ba437436866217e3fc000b3db2c5fc9a7a828",
+  "date": "2020-02-04",
+  "files": [
+    "packages/Webkul/Checkout/src/Cart.php",
+    "packages/Webkul/Checkout/src/Helpers/Tax.php",
+    "packages/Webkul/Tax/src/Helpers/Tax.php",
+    "packages/Webkul/Tax/src/Providers/TaxServiceProvider.php",
+    "packages/Webkul/Admin/src/Resources/views/sales/orders/view.blade.php",
+    "packages/Webkul/Shop/src/Resources/views/checkout/total/summary.blade.php",
+    "packages/Webkul/Shop/src/Resources/views/emails/sales/new-admin-order.blade.php",
+    "packages/Webkul/Shop/src/Resources/views/emails/sales/new-invoice.blade.php",
+    "packages/Webkul/Shop/src/Resources/views/emails/sales/new-order.blade.php",
+    "packages/Webkul/Shop/src/Resources/views/emails/sales/new-refund.blade.php",
+    "packages/Webkul/Shop/src/Resources/views/emails/sales/order-cancel.blade.php"
+  ],
+  "title": "Cart totals refactor adds the discount to the grand total instead of subtracting it",
+  "bugs": [
+    {
+      "rules": [
+        "MONEY-5"
+      ],
+      "class": "MONEY",
+      "file": "packages/Webkul/Checkout/src/Cart.php",
+      "anchor": "\\$cart->grand_total = \\$cart->sub_total \\+ \\$cart->tax_total \\+ \\$cart->discount_amount;",
+      "note": "The cart-currency grand total adds discount_amount while the base-currency line below subtracts it. With any coupon the customer is charged the subtotal plus tax plus the discount, twice the discount more than intended, and grand_total no longer matches base_grand_total at the exchange rate."
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-3",
+        "MONEY-1"
+      ],
+      "file": "packages/Webkul/Tax/src/Helpers/Tax.php"
+    }
+  ]
+}

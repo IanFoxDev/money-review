@@ -1,0 +1,29 @@
+{
+  "repo": "blnkfinance/blnk",
+  "license": "Apache-2.0",
+  "mode": "introducer",
+  "base": "e47a61f7bea7322f68046442bbe4e18fe740f3dd",
+  "head": "b4aea6158a66b00f03209714ece132849e6f88eb",
+  "fix": "7816be4f45b01aff8f593af5e30bd8411354f4f6",
+  "date": "2025-02-24",
+  "files": [
+    "database/balance.go",
+    "balance.go",
+    "api/balance.go",
+    "api/api.go",
+    "database/repository.go",
+    "sql/1740373196.sql"
+  ],
+  "title": "Historical balance replays transactions by comparing a plain TIMESTAMP column with a timestamptz snapshot time",
+  "bugs": [
+    {
+      "rules": ["MONEY-0"],
+      "class": "NEW-TIME",
+      "file": "database/balance.go",
+      "anchor": "AND created_at > \\$2",
+      "anchor_end": "balanceID, snapshot\\.SnapshotTime, targetTime\\)",
+      "note": "transactions.created_at is TIMESTAMP without time zone while the snapshot time and target time are bound as timestamptz, so Postgres converts them using the session TimeZone. In a non-UTC session the window shifts by the offset and the balance at a point in time double counts or skips transactions around the snapshot."
+    }
+  ],
+  "acceptable": []
+}

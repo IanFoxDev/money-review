@@ -1,0 +1,26 @@
+{
+  "repo": "Sylius/Sylius",
+  "license": "MIT",
+  "mode": "reverse",
+  "base": "0d6d5a15cca1344581412e8c13336438462238bc",
+  "head": "416e16681e89c02e730d5db535c75e0890fa7ffb",
+  "fix": "0d6d5a15cca1344581412e8c13336438462238bc",
+  "date": "2022-12-22",
+  "files": [
+    "src/Sylius/Bundle/CoreBundle/CatalogPromotion/Calculator/PercentageDiscountPriceCalculator.php"
+  ],
+  "title": "Percentage catalog discount casts the float price to int instead of rounding it",
+  "bugs": [
+    {
+      "rules": [
+        "MONEY-3",
+        "MONEY-1"
+      ],
+      "class": "MONEY",
+      "file": "src/Sylius/Bundle/CoreBundle/CatalogPromotion/Calculator/PercentageDiscountPriceCalculator.php",
+      "anchor": "\\$price = \\(int\\) \\(\\$channelPricing->getPrice\\(\\) - ",
+      "note": "The discounted price is computed as a float and the (int) cast drops the fraction instead of rounding. 15% off 1050 cents is 892.5 and off 994 cents is 844.9, which become 892 and 844 instead of 893 and 845, so every such variant is sold one cent under its configured promotion price."
+    }
+  ],
+  "acceptable": []
+}

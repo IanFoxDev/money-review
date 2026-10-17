@@ -1,0 +1,27 @@
+{
+  "repo": "firefly-iii/firefly-iii",
+  "license": "AGPL-3.0",
+  "mode": "introducer",
+  "base": "28b2ddde1831ca7efa4737b138a656bc68796de2",
+  "head": "a69b6d9ce2409b16df7d3f2ed7b1d45001185221",
+  "fix": "e43a188af8c90277df692ad0d88309e9c7b2555b",
+  "date": "2025-07-27",
+  "files": [
+    "app/Transformers/TransactionGroupTransformer.php",
+    "app/Api/V1/Controllers/Chart/AccountController.php",
+    "app/Api/V1/Controllers/Models/Transaction/ShowController.php",
+    "app/Helpers/Collector/GroupCollector.php"
+  ],
+  "title": "Same-currency check binds as a ?? (null === b), so every transaction gets its own amount as the native amount",
+  "bugs": [
+    {
+      "rules": ["MONEY-7", "MONEY-2"],
+      "class": "MONEY",
+      "file": "app/Transformers/TransactionGroupTransformer.php",
+      "anchor": "if\\(\\$transaction\\['native_currency'\\]\\['id'\\] \\?\\? null === \\$transaction\\['currency_id'\\]\\)",
+      "anchor_end": "\\$transaction\\['native_amount'\\] = \\$amount;",
+      "note": "=== binds tighter than ??, so the condition is the native currency id itself, which is truthy whenever a native currency is set. The converted native amount of a foreign-currency transaction is replaced by its amount in the original currency, so 100 USD shows and sums as 100 EUR."
+    }
+  ],
+  "acceptable": []
+}

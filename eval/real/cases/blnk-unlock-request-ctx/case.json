@@ -1,0 +1,22 @@
+{
+  "repo": "blnkfinance/blnk",
+  "license": "Apache-2.0",
+  "mode": "reverse",
+  "base": "7b3e025dcdcced886e1654708f3899e976013a6e",
+  "head": "30d35fba6819ab4238b40a31040051b06752600d",
+  "fix": "7b3e025dcdcced886e1654708f3899e976013a6e",
+  "date": "2026-08-14",
+  "files": ["internal/lock/lock.go"],
+  "title": "Balance lock release runs on the request context, so a cancelled request leaves the lock held until TTL",
+  "bugs": [
+    {
+      "rules": ["RACE-7"],
+      "class": "RACE",
+      "file": "internal/lock/lock.go",
+      "anchor": "func \\(l \\*Locker\\) Unlock\\(ctx context\\.Context\\) error",
+      "anchor_end": "result, err := l\\.client\\.Eval\\(ctx, script, \\[\\]string\\{l\\.key\\}, l\\.value\\)\\.Result\\(\\)",
+      "note": "Unlock sends the Redis delete on the caller's context. When the request is cancelled or times out the delete never runs, the error is only logged, and the balance stays locked until the key expires, so every transaction on that balance fails to acquire the lock in the meantime."
+    }
+  ],
+  "acceptable": []
+}

@@ -1,0 +1,22 @@
+{
+  "repo": "blnkfinance/blnk",
+  "license": "Apache-2.0",
+  "mode": "reverse",
+  "base": "d8784d3784eb6f38e0b1343b880be35b64f43ab2",
+  "head": "1217ea397766828ecc6aa9afcc3941fff9b85249",
+  "fix": "d8784d3784eb6f38e0b1343b880be35b64f43ab2",
+  "date": "2026-08-20",
+  "files": ["database/transaction_refunds.go"],
+  "title": "Refundable-children query also returns the earlier refund, so a repeated refund reverses the refund",
+  "bugs": [
+    {
+      "rules": ["MONEY-0"],
+      "class": "NEW-STATE",
+      "file": "database/transaction_refunds.go",
+      "anchor": "-- Case 2: The transaction is a child and is APPLIED or VOID",
+      "anchor_end": "OR \\(t\\.status = 'APPLIED' AND t\\.meta_data->>'QUEUED_PARENT_TRANSACTION' = \\$1\\)",
+      "note": "A refund is recorded as an APPLIED child of the transaction it refunds, and the query picks up every APPLIED child. A second refund call of X selects the refund of X as well, which has not been refunded yet, so it gets reversed and the original payment is applied again while the API answers 409."
+    }
+  ],
+  "acceptable": []
+}

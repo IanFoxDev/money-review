@@ -1,0 +1,28 @@
+{
+  "repo": "invoiceninja/invoiceninja",
+  "license": "Elastic-2.0",
+  "mode": "reverse",
+  "base": "4de59d24f1d8b4bbb5ba5ecb0d379679c593db6f",
+  "head": "b8fb0cb8efdc648e4a4912c56f32f5d7193e9e5b",
+  "fix": "4de59d24f1d8b4bbb5ba5ecb0d379679c593db6f",
+  "date": "2026-08-28",
+  "files": ["app/Http/ValidationRules/Payment/ValidRefundableRequest.php"],
+  "title": "Refund limit checks sum and compare amounts as PHP floats",
+  "bugs": [
+    {
+      "rules": ["MONEY-1"],
+      "class": "MONEY",
+      "file": "app/Http/ValidationRules/Payment/ValidRefundableRequest.php",
+      "anchor": "\\$total_refund_requested = collect\\(\\$request_invoices\\)->sum\\('amount'\\)",
+      "anchor_end": "if \\(\\$total_refund_requested > \\$max_total_refundable\\)",
+      "note": "The requested refund total and the refundable maximum are built with float addition and subtraction and compared with a strict greater-than. Sums such as 18.35 + 11.85 come out as 30.200000000000003, so a refund of exactly the refundable amount is rejected as over the limit.",
+      "also": [
+        {
+          "file": "app/Http/ValidationRules/Payment/ValidRefundableRequest.php",
+          "anchor": "\\$refundable_amount = \\(\\$paymentable->pivot->amount - \\$paymentable->pivot->refunded\\);"
+        }
+      ]
+    }
+  ],
+  "acceptable": []
+}

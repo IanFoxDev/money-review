@@ -1,0 +1,13 @@
+{
+  "repo": "blnkfinance/blnk",
+  "license": "Apache-2.0",
+  "mode": "control",
+  "base": "85df5e8ac8be204c79bceec8032f88f9c18cd00c",
+  "head": "0cc9e689195ce14a3b1d930a4ac2e438212b3969",
+  "fix": "0cc9e689195ce14a3b1d930a4ac2e438212b3969",
+  "date": "2026-08-21",
+  "files": ["api/transactions.go"],
+  "title": "Inflight dry run moved after amount resolution so preview and real commit use the same amount",
+  "bugs": [],
+  "acceptable": []
+}

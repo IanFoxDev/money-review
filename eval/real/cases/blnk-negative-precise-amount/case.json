@@ -1,0 +1,33 @@
+{
+  "repo": "blnkfinance/blnk",
+  "license": "Apache-2.0",
+  "mode": "reverse",
+  "base": "5cf64bdc7fd779a80d1420b84bca3f0c419c8814",
+  "head": "1217ea397766828ecc6aa9afcc3941fff9b85249",
+  "fix": "5cf64bdc7fd779a80d1420b84bca3f0c419c8814",
+  "date": "2026-08-20",
+  "files": [
+    "api/model/model.go",
+    "model/model.go"
+  ],
+  "title": "Transaction validation lets a negative amount through when precision is also negative",
+  "bugs": [
+    {
+      "rules": [
+        "MONEY-5"
+      ],
+      "class": "MONEY",
+      "file": "api/model/model.go",
+      "anchor": "validation\\.Field\\(&t\\.Amount, validation\\.By\\(func\\(value interface\\{\\}\\) error \\{",
+      "anchor_end": "validation\\.Field\\(&t\\.Precision, validation\\.By\\(validatePrecisionIsInteger\\)\\)",
+      "note": "Neither amount nor precision is checked for sign at the API boundary, and the deep check only looks at the product. amount -25 with precision -100 gives a positive precise_amount, so the transfer applies while the stored amount says -25, and reports or filters that read amount see the opposite direction.",
+      "also": [
+        {
+          "file": "model/model.go",
+          "anchor": "func \\(transaction \\*Transaction\\) validate\\(\\) error"
+        }
+      ]
+    }
+  ],
+  "acceptable": []
+}

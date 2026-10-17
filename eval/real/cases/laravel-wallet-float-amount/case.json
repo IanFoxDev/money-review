@@ -1,0 +1,33 @@
+{
+  "repo": "bavix/laravel-wallet",
+  "license": "MIT",
+  "mode": "introducer",
+  "base": "f57de9175a798b6b84230944c5d17c9fb022def8",
+  "head": "2d975934279420c26a18e1cc3785063c9f1192dd",
+  "fix": "4a6b52d09e586c429191accc54adcf132b9b74c7",
+  "date": "2020-01-20",
+  "files": [
+    "src/Models/Transaction.php"
+  ],
+  "title": "Float setter on Transaction writes the unrounded float product into the integer amount",
+  "bugs": [
+    {
+      "rules": [
+        "MONEY-1",
+        "MONEY-3"
+      ],
+      "class": "MONEY",
+      "file": "src/Models/Transaction.php",
+      "anchor": "\\$this->amount = \\$amount \\* \\$decimalPlaces;",
+      "note": "The decimal amount is multiplied by the minor-unit factor as a float and assigned without rounding. 2556.72 * 100 is 255671.99999999997, so the int cast reads it back as 255671 and the column gets a value that depends on the database, which leaves the transaction and the recalculated balance a cent off."
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-1"
+      ],
+      "file": "src/Models/Transaction.php"
+    }
+  ]
+}
