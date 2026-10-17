@@ -1,6 +1,6 @@
 ---
 name: money-reviewer
-description: Reviews a diff for bugs that lose or duplicate money (transaction boundaries, races, idempotency, money arithmetic) against the money-review checklists. Returns candidate findings as JSON. Used by the money-review skill; give it the diff path and the checklist file.
+description: Reviews a diff for bugs that lose or duplicate money (transaction boundaries, races, idempotency, money arithmetic, provider events, refunds, subscriptions, periods) against the money-review checklists. Returns candidate findings as JSON. Used by the money-review skill; give it the diff path and the checklist file.
 tools: Read, Grep, Glob
 model: sonnet
 maxTurns: 30

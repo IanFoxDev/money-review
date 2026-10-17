@@ -1,6 +1,6 @@
 ---
 name: money-review
-description: Review the current change for bugs that lose or duplicate money - transaction boundaries, races, idempotency, money arithmetic. Use when the user asks to review a branch, a diff or a merge request that touches payments, balances, payouts, refunds or invoices.
+description: Review the current change for bugs that lose or duplicate money - transaction boundaries, races, idempotency, money arithmetic, provider events, refunds, subscriptions and billing periods. Use when the user asks to review a branch, a diff or a merge request that touches payments, balances, payouts, refunds or invoices.
 argument-hint: "[--base REF] [--commits RANGE] [--diff FILE] [--config FILE]"
 allowed-tools: Bash, Read, Write, Agent
 ---
