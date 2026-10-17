@@ -169,3 +169,9 @@ has() { [ "$(field ".categories | index(\"$1\") != null")" = "true" ]; }
     [ "$(field '[.categories[] | select(. == "SUB" or . == "TIME")]')" = '["SUB","TIME"]' ]
     [ "$(field '.categories | index("REV")')" = "null" ]
 }
+
+@test "a provider sync with a cursor loads the data checklist" {
+    run "$triage" "$diffs/provider-sync-cursor.diff"
+    [ "$(field .money)" = "true" ]
+    [ "$(field '.categories | index("DATA") != null')" = "true" ]
+}

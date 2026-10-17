@@ -164,7 +164,8 @@ checklists_of() { # categories JSON -> checklist paths JSON
         TX: "transactions.md", RACE: "races.md",
         IDEM: "idempotency.md", MONEY: "arithmetic.md",
         PSP: "providers.md", REV: "reversals.md",
-        SUB: "lifecycle.md", TIME: "time.md"
+        SUB: "lifecycle.md", TIME: "time.md",
+        DATA: "data.md"
     }[.] as $b | if $b then $refs + "/" + $b else $p[.] // empty end)
     | if length > 0 and $inv != "" then . + [$inv] else . end' <<< "$1"
 }

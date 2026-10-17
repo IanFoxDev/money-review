@@ -32,7 +32,7 @@ For a repository with only Go code:
 
 Globs for files that are always money code, whatever words they contain. A file here
 always gets the four base checklists (TX, RACE, IDEM, MONEY); the narrower ones (PSP,
-REV, SUB, TIME) only when its lines or its path match them. Use it for the billing
+REV, SUB, TIME, DATA) only when its lines or its path match them. Use it for the billing
 module, the ledger, provider adapters.
 
 ```json
@@ -51,7 +51,8 @@ whole expression: a string replaces the default.
 
 An object from checklist prefix to an extended regular expression: `TX`, `RACE`,
 `IDEM`, `MONEY`, `PSP` (provider events and responses), `REV` (refunds, chargebacks,
-voids), `SUB` (subscriptions) and `TIME` (periods and dates). A checklist is loaded when
+voids), `SUB` (subscriptions), `TIME` (periods and dates) and `DATA` (data completeness and
+aggregates). A checklist is loaded when
 the changed lines or the path of a file in scope match its expression, so a
 `PostbackController.php` gets the provider checklist even when the changed lines do not
 name the provider.

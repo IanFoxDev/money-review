@@ -1,0 +1,13 @@
+diff --git a/app/Sync/ProviderPaymentsSync.php b/app/Sync/ProviderPaymentsSync.php
+--- a/app/Sync/ProviderPaymentsSync.php
++++ b/app/Sync/ProviderPaymentsSync.php
+@@ -30,6 +30,11 @@ class ProviderPaymentsSync
+         $rows = $this->provider->payments($cursor, $cursor->modify('+1 day'));
++        foreach ($rows as $row) {
++            $this->payments->insertOne(['amount' => $row['amount'], 'id' => $row['id']]);
++        }
++        if (count($rows) > 0) {
++            $this->state->saveCursor($cursor->modify('+1 day'));
++        }
+     }
+ }

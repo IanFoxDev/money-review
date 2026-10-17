@@ -179,14 +179,14 @@ produce a report, also after one more try (`--retries N` to change that), or ran
 
 ## What it checks
 
-Eight checklists, 61 rules. Each rule has what to look for, a failure scenario, a bad
+Nine checklists, 69 rules. Each rule has what to look for, a failure scenario, a bad
 and a good example, and a "do not report" section that keeps false alarms down. Every
 checklist covers SQL databases and MongoDB; transactions and idempotency also cover
 Kafka, Redpanda and RabbitMQ consumers and producers.
 
 | Checklist | Covers |
 |---|---|
-| [Transaction boundaries (TX)](plugins/money-review/skills/money-review/references/transactions.md) | provider calls inside a transaction, side effects after commit with no record (including a database write followed by a Kafka produce), debit and credit in separate transactions, swallowed exceptions, nested transactions, one transaction around a batch, MongoDB calls that miss the session, side effects in a retried transaction callback, events that stop carrying what money consumers read |
+| [Transaction boundaries (TX)](plugins/money-review/skills/money-review/references/transactions.md) | provider calls inside a transaction, side effects after commit with no record (including a database write followed by a Kafka produce), debit and credit in separate transactions, swallowed exceptions, nested transactions, one transaction around a batch, MongoDB calls that miss the session, side effects in a retried transaction callback, events that stop carrying what money consumers read, a second write path that skips the events, ledger entries or copies of the main one |
 | [Races (RACE)](plugins/money-review/skills/money-review/references/races.md) | check-then-act (including `findOne` then `updateOne`), lost updates, state transitions without a guard, lock order, uniqueness enforced only in code, limits checked under READ COMMITTED, Redis locks that do not hold, money decisions read from a secondary or a cache |
 | [Idempotency (IDEM)](plugins/money-review/skills/money-review/references/idempotency.md) | callbacks and consumers without a dedup key, dedup outside the transaction, outgoing calls without a stable idempotency key, timeouts treated as failures, batches that are not safe to re-run, retries around non-idempotent code, offset commits and acks before the work, events of one account out of order, a duplicate key caught inside a MongoDB transaction, provider declines and business errors with no path, a dedup key (unique index, upsert filter, `ReplacingMergeTree` key) with a field that is filled later, dedup checks that can never match |
 | [Money arithmetic (MONEY)](plugins/money-review/skills/money-review/references/arithmetic.md) | floats, amounts without a currency, rounding without a rule, splits that do not add up, signs of refunds and fees, negative input amounts, reversals booked in the wrong direction, balances changed without a ledger entry, an amount taken from the wrong source (the full amount after a partial refund), amounts in different units or scales, a missing value that defaults to moving money |
@@ -194,6 +194,7 @@ Kafka, Redpanda and RabbitMQ consumers and producers.
 | [Refunds and reversals (REV)](plugins/money-review/skills/money-review/references/reversals.md) | a reversal linked to the wrong original, a reversal booked as a new movement instead of mirroring the original legs, reversals that add up to more than the original, declines paid out of our own money, access and partner shares left after a refund |
 | [Subscription lifecycle (SUB)](plugins/money-review/skills/money-review/references/lifecycle.md) | plan changes that leave the old recurring charge running, two active subscriptions, renewals of cancelled or already paid periods, access periods from the wrong base, cancellation timing, trials and promotions that repeat, proration on the wrong basis |
 | [Periods and dates (TIME)](plugins/money-review/skills/money-review/references/time.md) | month and year arithmetic, boundaries in the wrong time zone, period edges that overlap or leave gaps, "now" where the event's own time belongs, off-by-one at limits |
+| [Data completeness (DATA)](plugins/money-review/skills/money-review/references/data.md) | cursors and watermarks that skip or stall, reads that stop at the first page, rows dropped from money totals by joins and filters, re-runs and backfills that count twice, ClickHouse replacing tables summed without `FINAL`, writes acknowledged before they are stored, periods closed with missing inputs |
 
 A money bug that no rule covers is still reported, as `MONEY-0`, when the reviewer can
 write a concrete failure scenario for it. Style, naming and general code quality are out

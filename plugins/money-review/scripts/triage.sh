@@ -110,7 +110,7 @@ while IFS= read -r path; do
         # The path counts too: a PostbackController is about provider messages even
         # when the changed lines do not say so.
         # A money_paths file always gets the four base checklists; the narrower
-        # ones (provider, reversals, subscriptions, time) only when they match.
+        # ones (provider, reversals, subscriptions, time, data) only when they match.
         base=false
         case "$cat" in TX|RACE|IDEM|MONEY) base=true ;; esac
         if { [ "$why" = "money_paths" ] && $base; } || grep -Eq -- "$pattern" "$blob" ||
