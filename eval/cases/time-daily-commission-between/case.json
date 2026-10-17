@@ -1,0 +1,14 @@
+{
+  "title": "Daily partner commission selects the day with whereBetween, so a payment at exactly midnight is paid in two days",
+  "bugs": [
+    {
+      "rules": ["TIME-3", "DATA-4"],
+      "file": "app/Jobs/AccrueDailyPartnerCommission.php",
+      "anchor": "whereBetween\\('paid_at', \\[\\$from, \\$to\\]\\)",
+      "note": "BETWEEN is closed on both ends: paid_at = 00:00:00 of the next day is in both days"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["REV-5", "DATA-3", "DATA-7", "TIME-4"], "file": "app/Jobs/AccrueDailyPartnerCommission.php"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Renewal job charges subscriptions that the user cancelled at period end",
+  "bugs": [
+    {
+      "rules": ["SUB-3", "SUB-5"],
+      "file": "app/Jobs/RenewSubscriptions.php",
+      "anchor": "\\$due = Subscription::where\\('status', 'active'\\)",
+      "anchor_end": "->get\\(\\);",
+      "note": "no cancel_at_period_end filter: the renewal runs every ten minutes, ExpireSubscriptions hourly, so the cancelled month is charged first"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["SUB-6", "TX-4"], "file": "app/Jobs/RenewSubscriptions.php"},
+    {"rules": ["RACE-3"], "file": "app/Jobs/ExpireSubscriptions.php"}
+  ]
+}

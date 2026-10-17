@@ -1,0 +1,14 @@
+{
+  "title": "Installment due dates computed with +N month, which overflows from the 29th, 30th and 31st",
+  "bugs": [
+    {
+      "rules": ["TIME-1"],
+      "file": "app/Services/InstallmentPlan.php",
+      "anchor": "modify\\(\"\\+\\{\\$i\\} month\"\\)",
+      "note": "a purchase on January 31 is due March 3 and March 31: no charge in February, two in March, dates differ from the checkout"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["TIME-2"], "file": "app/Services/InstallmentPlan.php"}
+  ]
+}

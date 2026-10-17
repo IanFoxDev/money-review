@@ -1,0 +1,14 @@
+{
+  "title": "Rebill webhook extends access by a month from the time the event arrives, not from the end of the paid period",
+  "bugs": [
+    {
+      "rules": ["SUB-4", "TIME-4"],
+      "file": "app/Http/Controllers/RebillWebhookController.php",
+      "anchor": "current_period_end = now\\(\\)",
+      "note": "a rebill retried three days late gives three free days every month; an early one cuts paid days"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["PSP-4", "PSP-7", "SUB-5", "REV-4"], "file": "app/Http/Controllers/RebillWebhookController.php"}
+  ]
+}

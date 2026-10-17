@@ -1,0 +1,1 @@
+{"title": "Daily partner commission over a half-open day in the business time zone, converted to UTC for the query", "bugs": [], "acceptable": [{"rules": ["REV-5", "DATA-3", "DATA-7"], "file": "app/Jobs/AccrueDailyPartnerCommission.php"}]}

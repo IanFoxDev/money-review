@@ -1,0 +1,16 @@
+{
+  "title": "Plan change creates a new recurring agreement and marks the old subscription replaced, but never cancels the old agreement",
+  "bugs": [
+    {
+      "rules": ["SUB-1", "TX-10", "SUB-2"],
+      "file": "app/Services/SubscriptionService.php",
+      "anchor": "\\$old->status = 'replaced'",
+      "anchor_end": "\\$old->save\\(\\);",
+      "note": "cancel() calls cancelAgreement, changePlan does not: the provider keeps charging the old plan every month",
+      "also": [{"file": "app/Services/SubscriptionService.php", "anchor": "public function changePlan"}]
+    }
+  ],
+  "acceptable": [
+    {"rules": ["TX-1", "TX-4", "IDEM-4", "SUB-7", "RACE-1"], "file": "app/Services/SubscriptionService.php"}
+  ]
+}
