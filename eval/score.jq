@@ -101,10 +101,31 @@ $expected[0] as $expected
       false_positives: (map(.fp) | add),
       triage_skipped: (map(select(.triage_skipped)) | length),
       errors: (map(select(.error)) | length),
+      runs_complete: (map(select(.fn == 0)) | length),
+      mode: $expected[.[0].case].mode,
+      date: $expected[.[0].case].date,
       seconds: (map(.seconds) | add / length | round),
       cost: (map(.cost) | add / length * 100 | round / 100),
       missed: (map(.missed[]) | unique),
       fps: (map(.fps[]))
     }))
   }
+  | . + (
+      # Real-bug cases (eval/real) carry a mode and a date: recall by mode, before and
+      # after the models' training cutoff, and how steadily each bug case is found.
+      [.cases_detail[] | select(.mode != null and .bugs > 0)] as $real
+      | (($env[0] // {}).cutoff // "2026-06-01") as $cutoff
+      | def recall_of($cs): ($cs | map(.bugs * .runs) | add // 0) as $b
+          | {bugs: $b, found: ($cs | map(.found) | add // 0)} | . + {recall: ratio(.found; .bugs)};
+      if $real == [] then {} else {
+        by_mode: ($real | group_by(.mode) | map({mode: .[0].mode} + recall_of(.))),
+        by_date: {cutoff: $cutoff,
+                  before: recall_of([$real[] | select(.date < $cutoff)]),
+                  after: recall_of([$real[] | select(.date >= $cutoff)])},
+        stability: {cases: ($real | length),
+                    every_run: ($real | map(select(.runs_complete == .runs)) | length),
+                    some_runs: ($real | map(select(.found > 0 and .runs_complete < .runs)) | length),
+                    never: ($real | map(select(.found == 0)) | length)}
+      } end
+    )
   + {env: $env[0], models: ([$runs[].claude.modelUsage // {} | keys[]] | unique)}

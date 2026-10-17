@@ -80,3 +80,30 @@ commit() {
     run "$real_dir/repo.sh" acme/shop 0123456789012345678901234567890123456789
     [ "$status" -eq 2 ]
 }
+
+@test "real cases are scored by mode, by date and by how steadily they are found" {
+    out="$BATS_TEST_TMPDIR/out"
+    mkdir -p "$out"
+    jq -n '{
+        a: {title: "a", mode: "introducer", date: "2026-08-01", acceptable: [],
+            bugs: [{rules: ["MONEY-1"], class: "MONEY", file: "x.php", line: 10, end_line: 10, also: []}]},
+        b: {title: "b", mode: "reverse", date: "2025-01-01", acceptable: [],
+            bugs: [{rules: ["RACE-1"], class: "RACE", file: "y.php", line: 5, end_line: 5, also: []}]}
+    }' > "$out/expected.json"
+    echo '{"cutoff": "2026-06-01"}' > "$out/env.json"
+    for run in 1 2; do
+        for c in a b; do
+            mkdir -p "$out/results/$c/$run"
+            jq -n --arg c "$c" --argjson n "$run" '{case: $c, run: $n, exit: 0, seconds: 10}' > "$out/results/$c/$run/meta.json"
+            echo '{"total_cost_usd": 0.1, "num_turns": 3}' > "$out/results/$c/$run/claude.json"
+        done
+        echo '{"findings": [{"rule": "MONEY-1", "severity": "high", "file": "x.php", "line": 10, "title": "t"}]}' > "$out/results/a/$run/report.json"
+    done
+    echo '{"findings": [{"rule": "RACE-1", "severity": "high", "file": "y.php", "line": 6, "title": "t"}]}' > "$out/results/b/1/report.json"
+    echo '{"findings": []}' > "$out/results/b/2/report.json"
+
+    "$BATS_TEST_DIRNAME/../eval/score.sh" "$out" > /dev/null
+    [ "$(jq -c '[.by_mode[] | [.mode, .found, .bugs]]' "$out/summary.json")" = '[["introducer",2,2],["reverse",1,2]]' ]
+    [ "$(jq -c '[.by_date.before.recall, .by_date.after.recall]' "$out/summary.json")" = '[0.5,1]' ]
+    [ "$(jq -c '.stability' "$out/summary.json")" = '{"cases":2,"every_run":1,"some_runs":1,"never":0}' ]
+}

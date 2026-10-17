@@ -58,7 +58,9 @@ eval also shows which families are missing.
 
 The same as the synthetic eval (`eval/score.sh`): file, line within 5 lines of the anchor
 range, and rule. Here the loose recall (right lines, any rule) is the main number,
-because the right rule often does not exist yet. Recall by family is reported by `class`.
+because the right rule often does not exist yet. Recall by family is reported by `class`, and the summary adds recall by mode, before
+and after `EVAL_CUTOFF` (default 2026-06-01, a date after the models' training data),
+and how many bug cases were found in every run, in some runs or never.
 
 ## Running
 

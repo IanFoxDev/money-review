@@ -7,6 +7,8 @@
 # fixed later upstream (see eval/real/README.md). The repository is cloned on
 # the first run; no code of those projects is stored here. Every reviewed run
 # uses your Claude subscription. Results go to .eval-runs/real-<timestamp>.
+# Recall is also split at EVAL_CUTOFF (default 2026-06-01): bugs fixed later
+# than the models' training data cannot be remembered.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -21,7 +23,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --runs) runs="${2:?}"; shift 2 ;;
         --out) out="${2:?}"; shift 2 ;;
-        -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         -*) echo "run: unknown option $1" >&2; exit 2 ;;
         *) cases+=("$1"); shift ;;
     esac
@@ -46,7 +48,8 @@ jq -n \
     --arg version "$(jq -r .version "$root/plugins/money-review/.claude-plugin/plugin.json")" \
     --arg commit "$commit" \
     --argjson runs "$runs" \
-    '{set: "real", date: $date, claude_code: $claude, money_review: $version, commit: $commit, runs_per_case: $runs}' > "$out/env.json"
+    --arg cutoff "${EVAL_CUTOFF:-2026-06-01}" \
+    '{set: "real", date: $date, claude_code: $claude, money_review: $version, commit: $commit, runs_per_case: $runs, cutoff: $cutoff}' > "$out/env.json"
 
 for c in "${cases[@]}"; do
     work="$work_root/$c"

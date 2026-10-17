@@ -28,6 +28,17 @@ def n: if . == null then "n/a" else tostring end;
   "|---|---|---|---|",
   (.by_category[] | "| \(.category) | \(.bugs) | \(.found) | \(.recall | pct) |"),
   "",
+  (if .by_mode then
+     "## Real bugs", "",
+     "| Split | Bugs | Found | Recall |",
+     "|---|---|---|---|",
+     (.by_mode[] | "| \(.mode) | \(.bugs) | \(.found) | \(.recall | pct) |"),
+     "| before \(.by_date.cutoff) | \(.by_date.before.bugs) | \(.by_date.before.found) | \(.by_date.before.recall | pct) |",
+     "| from \(.by_date.cutoff) | \(.by_date.after.bugs) | \(.by_date.after.found) | \(.by_date.after.recall | pct) |",
+     "",
+     "Bug cases found in every run: \(.stability.every_run) of \(.stability.cases); in some runs: \(.stability.some_runs); never: \(.stability.never).",
+     ""
+   else empty end),
   "## By case",
   "",
   "| Case | Runs | Found / bugs | Any rule | False alarms | Skipped | s | USD |",
