@@ -21,6 +21,10 @@ README come from here.
   (a ledger refactor, a correct chargeback webhook), to measure false alarms where
   they hurt most.
 
+Real bugs from open-source projects are a separate set in `eval/real/` (see
+[eval/real/README.md](../eval/real/README.md)): the cases here show whether a rule works,
+that set shows what the tool misses in code nobody wrote for it.
+
 ## case.json
 
 ```json
