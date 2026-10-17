@@ -8,6 +8,8 @@
 # A file is in scope when it passes paths.include/exclude and either matches
 # money_paths or its changed lines (with hunk context) or its path match
 # "signals", in any letter case (Go fields are Amount and Balance).
+# A category matches on the changed lines or on the path of a file in scope;
+# a money_paths file always gets TX, RACE, IDEM and MONEY.
 # Categories are matched only in files that are in scope. Patterns are
 # extended regular expressions; in path globs "*" also matches "/".
 # Private rules ("rules" in the config) are categories named by their prefix.
@@ -21,7 +23,7 @@ diff_file=""
 while [ $# -gt 0 ]; do
     case "$1" in
         --config) config="${2:?--config needs a file}"; shift 2 ;;
-        -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         -*) echo "triage: unknown option $1" >&2; exit 2 ;;
         *) diff_file="$1"; shift ;;
     esac
@@ -105,10 +107,17 @@ while IFS= read -r path; do
 
     for cat in $categories; do
         pattern="$(jq -r --arg c "$cat" '.categories[$c]' <<< "$cfg")"
-        if [ "$why" = "money_paths" ] || grep -Eq -- "$pattern" "$blob"; then
+        # The path counts too: a PostbackController is about provider messages even
+        # when the changed lines do not say so.
+        # A money_paths file always gets the four base checklists; the narrower
+        # ones (provider, reversals, subscriptions, time) only when they match.
+        base=false
+        case "$cat" in TX|RACE|IDEM|MONEY) base=true ;; esac
+        if { [ "$why" = "money_paths" ] && $base; } || grep -Eq -- "$pattern" "$blob" ||
+            printf '%s\n' "$path" | grep -Eq -- "$pattern"; then
             # No pipe into head: where SIGPIPE is ignored (CI runners, some
             # containers) grep then prints "Broken pipe" to stderr.
-            hit="$(grep -Eo -m 1 -- "$pattern" "$blob" || true)"
+            hit="$(grep -Eo -m 1 -- "$pattern" "$blob" || printf '%s\n' "$path" | grep -Eo -m 1 -- "$pattern" || true)"
             hit="${hit%%$'\n'*}"
             reasons="$(jq -c --arg f "$path" --arg c "$cat" --arg w "$why" --arg h "$hit" \
                 '. + [{file: $f, category: $c, scope: $w, match: $h}]' <<< "$reasons")"

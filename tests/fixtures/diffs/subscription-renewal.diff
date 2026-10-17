@@ -1,0 +1,12 @@
+diff --git a/app/Jobs/RenewSubscriptions.php b/app/Jobs/RenewSubscriptions.php
+--- a/app/Jobs/RenewSubscriptions.php
++++ b/app/Jobs/RenewSubscriptions.php
+@@ -20,6 +20,9 @@ class RenewSubscriptions
+     {
+         foreach ($this->subscriptions->dueToday() as $subscription) {
++            $this->gateway->charge($subscription->price_cents, $subscription->currency);
++            $subscription->ends_at = (new DateTimeImmutable())->modify('+1 month');
++            $subscription->save();
+         }
+     }
+ }

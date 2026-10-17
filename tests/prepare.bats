@@ -254,3 +254,11 @@ field() { jq -c "$1" <<< "$output"; }
     git check-ignore -q plugins/money-review/private/any-repo/config.json
     ! git check-ignore -q plugins/money-review/private.example/README.md
 }
+
+@test "every category in the defaults has a checklist file" {
+    refs="$BATS_TEST_DIRNAME/../plugins/money-review/skills/money-review/references"
+    for cat in $(jq -r '.categories | keys[]' "$BATS_TEST_DIRNAME/../plugins/money-review/defaults/config.json"); do
+        f="$(sed -n "s/.*$cat: \"\([a-z]*\.md\)\".*/\1/p" "$BATS_TEST_DIRNAME/../plugins/money-review/scripts/prepare.sh")"
+        [ -n "$f" ] && [ -f "$refs/$f" ] && grep -q "^## $cat-1\. " "$refs/$f"
+    done
+}

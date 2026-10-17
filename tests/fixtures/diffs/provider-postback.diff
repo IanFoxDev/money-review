@@ -1,0 +1,15 @@
+diff --git a/app/Http/PostbackController.php b/app/Http/PostbackController.php
+--- a/app/Http/PostbackController.php
++++ b/app/Http/PostbackController.php
+@@ -10,6 +10,12 @@ class PostbackController
+     public function handle(array $payload): string
+     {
++        $type = match ($payload['action']) {
++            'refund' => EventType::REFUND,
++            'chargeback' => EventType::CHARGEBACK,
++            default => EventType::CHARGE,
++        };
++        $this->purchases->apply($payload['transaction_id'], $type, $payload['amount']);
+         return 'OK';
+     }
+ }

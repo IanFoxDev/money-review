@@ -48,11 +48,11 @@ field() { jq -c "$1" <<< "$output"; }
     [ "$(field .money)" = "false" ]
 }
 
-@test "money_paths put a file in scope for every category" {
+@test "money_paths put a file in scope for the four base categories" {
     run "$triage" --config "$BATS_TEST_DIRNAME/fixtures/money-paths.json" "$diffs/deleted-file.diff"
     [ "$(field .money)" = "true" ]
     [ "$(field .files)" = '["app/Billing/Ledger.php"]' ]
-    [ "$(field .categories)" = '["IDEM","MONEY","PSP","RACE","TX"]' ]
+    [ "$(field .categories)" = '["IDEM","MONEY","RACE","TX"]' ]
     [ "$(field '.reasons[0].scope')" = '"money_paths"' ]
 }
 
@@ -154,4 +154,18 @@ has() { [ "$(field ".categories | index(\"$1\") != null")" = "true" ]; }
     echo '{"rules": [{"prefix": "ACME", "file": "a.md"}, {"prefix": "ACME", "file": "b.md"}]}' > "$BATS_TEST_TMPDIR/c.json"
     run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/withdrawal.diff"
     [ "$status" -eq 2 ]
+}
+
+@test "a provider postback loads the provider and reversal checklists" {
+    run "$triage" "$diffs/provider-postback.diff"
+    [ "$(field .money)" = "true" ]
+    [ "$(field '[.categories[] | select(. == "PSP" or . == "REV")]')" = '["PSP","REV"]' ]
+    [ "$(field '.categories | index("SUB")')" = "null" ]
+}
+
+@test "a renewal job loads the subscription and time checklists" {
+    run "$triage" "$diffs/subscription-renewal.diff"
+    [ "$(field .money)" = "true" ]
+    [ "$(field '[.categories[] | select(. == "SUB" or . == "TIME")]')" = '["SUB","TIME"]' ]
+    [ "$(field '.categories | index("REV")')" = "null" ]
 }
