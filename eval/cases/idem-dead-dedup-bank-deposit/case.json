@@ -1,0 +1,16 @@
+{
+  "app": "app-mongo",
+  "title": "Bank deposit dedup looks up the integer deposit id in a field stored as a string, so every retry credits again",
+  "bugs": [
+    {
+      "rules": ["IDEM-11", "IDEM-1"],
+      "file": "src/Payments/BankDepositHandler.php",
+      "anchor": "findOne\\(\\['provider_deposit_id' => \\$depositId\\]",
+      "also": [{"file": "src/Payments/BankDepositHandler.php", "anchor": "'provider_deposit_id' => \\(string\\) \\$depositId"}],
+      "note": "MongoDB does not match 88123017 against \"88123017\"; the ledger key is the new payment id, so nothing else stops the second credit"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["RACE-5", "IDEM-3"], "file": "src/Payments/BankDepositHandler.php"}
+  ]
+}

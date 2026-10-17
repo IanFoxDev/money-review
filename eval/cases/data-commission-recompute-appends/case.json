@@ -1,0 +1,15 @@
+{
+  "title": "Monthly commission re-run for a corrected month adds new statement lines and credits the whole month again",
+  "bugs": [
+    {
+      "rules": ["DATA-4", "IDEM-5", "IDEM-11"],
+      "file": "app/Jobs/ComputePartnerCommissions.php",
+      "anchor": "insertGetId\\(",
+      "anchor_end": "\"commission-line:\\{\\$lineId\\}\"",
+      "note": "the period is not replaced: each run inserts new lines with new ids, and the ledger key from the new id credits the partner again in full"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["REV-5", "DATA-3", "MONEY-3"], "file": "app/Jobs/ComputePartnerCommissions.php"}
+  ]
+}

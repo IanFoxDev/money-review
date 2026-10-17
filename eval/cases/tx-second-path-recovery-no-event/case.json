@@ -1,0 +1,17 @@
+{
+  "app": "app-mongo",
+  "title": "Recovery of missed payments from the provider report marks them paid without the payment.paid outbox event",
+  "bugs": [
+    {
+      "rules": ["TX-10"],
+      "file": "src/Payments/MissedPaymentRecovery.php",
+      "anchor": "\\$updated = \\$this->payments->updateOne\\(",
+      "anchor_end": "'recovered_from_report' => true,",
+      "note": "confirm() pushes payment.paid to the outbox in the same update; here nothing is pushed, so no commission and no cashback for recovered payments",
+      "also": [{"file": "src/Payments/MissedPaymentRecovery.php", "anchor": "\\$recovered = true;"}]
+    }
+  ],
+  "acceptable": [
+    {"rules": ["PSP-6", "DATA-7"], "file": "src/Payments/MissedPaymentRecovery.php"}
+  ]
+}

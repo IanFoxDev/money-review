@@ -1,0 +1,1 @@
+{"title": "Settlement sync reads every page of a day, books fees once per settlement and moves its cursor after each full day, empty or not", "bugs": [], "acceptable": [{"rules": ["DATA-7", "TIME-2"], "file": "app/Jobs/SyncSettlements.php"}]}

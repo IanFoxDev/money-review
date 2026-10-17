@@ -1,0 +1,15 @@
+{
+  "title": "Compensation job drops the user filter when the list is empty and credits every user",
+  "bugs": [
+    {
+      "rules": ["MONEY-9", "DATA-3"],
+      "file": "app/Jobs/CreditCompensation.php",
+      "anchor": "->when\\(\\$this->userIds !== \\[\\]",
+      "also": [{"file": "app/Console/Commands/CompensateOutage.php", "anchor": "CreditCompensation::dispatch\\("}],
+      "note": "a CSV without a user_id column (or with ids in quotes) gives an empty list, and every user account in the currency is credited"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["IDEM-10"], "file": "app/Jobs/CreditCompensation.php"}
+  ]
+}

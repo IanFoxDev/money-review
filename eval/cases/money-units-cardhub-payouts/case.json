@@ -1,0 +1,16 @@
+{
+  "app": "app-mongo",
+  "title": "CardHub payout adapter converts minor units with a fixed factor of 100, also for JPY",
+  "bugs": [
+    {
+      "rules": ["MONEY-8"],
+      "file": "src/Payouts/CardHubPayoutProvider.php",
+      "anchor": "'amount' => self::toDecimal\\(\\$amount\\)",
+      "also": [{"file": "src/Payouts/CardHubPayoutProvider.php", "anchor": "intdiv\\(\\$minor, 100\\)"}],
+      "note": "JPY has no minor unit: a payout of 50000 yen is sent as 500.00, the partner gets a hundredth"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["PSP-3", "PSP-2", "IDEM-4"], "file": "src/Payouts/CardHubPayoutProvider.php"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "app": "app-mongo",
+  "title": "Monthly referral bonus reads the first 500 payments of the month and stops",
+  "bugs": [
+    {
+      "rules": ["DATA-2"],
+      "file": "go/internal/rewards/referral.go",
+      "anchor": "SetLimit\\(referralBatch\\)",
+      "anchor_end": "r\\.Payments\\.Find\\(ctx, filter, opts\\)",
+      "note": "the batch is never followed by the next one: referrers of payment 501 onwards are not paid, and a re-run reads the same 500"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["TIME-2", "DATA-3", "REV-5"], "file": "go/internal/rewards/referral.go"}
+  ]
+}

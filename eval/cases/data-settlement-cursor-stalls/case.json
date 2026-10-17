@@ -1,0 +1,14 @@
+{
+  "title": "Settlement sync moves its cursor only when a day had rows, so the first empty day stops the import for good",
+  "bugs": [
+    {
+      "rules": ["DATA-1"],
+      "file": "app/Jobs/SyncSettlements.php",
+      "anchor": "if \\(\\$imported > 0\\)",
+      "note": "a day without settlements (a holiday, a provider outage) is asked again every hour; no later day is imported, fees are never booked"
+    }
+  ],
+  "acceptable": [
+    {"rules": ["DATA-7", "TIME-2"], "file": "app/Jobs/SyncSettlements.php"}
+  ]
+}
