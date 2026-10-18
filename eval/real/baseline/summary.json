@@ -1,0 +1,1124 @@
+{
+  "runs": 135,
+  "cases": 45,
+  "precision": 0.933,
+  "recall": 0.614,
+  "loose_recall": 0.754,
+  "true_positives": 70,
+  "false_positives": 5,
+  "missed": 44,
+  "wrong_rule": 19,
+  "duplicates": 1,
+  "acceptable_extras": 19,
+  "clean_runs_with_findings": 0,
+  "clean_runs": 27,
+  "triage_misses": 12,
+  "errors": 0,
+  "by_category": [
+    {
+      "category": "IDEM",
+      "bugs": 6,
+      "found": 5,
+      "recall": 0.833
+    },
+    {
+      "category": "MONEY",
+      "bugs": 27,
+      "found": 26,
+      "recall": 0.963
+    },
+    {
+      "category": "NEW-AGG",
+      "bugs": 6,
+      "found": 0,
+      "recall": 0
+    },
+    {
+      "category": "NEW-DATA",
+      "bugs": 3,
+      "found": 0,
+      "recall": 0
+    },
+    {
+      "category": "NEW-DEDUP",
+      "bugs": 3,
+      "found": 0,
+      "recall": 0
+    },
+    {
+      "category": "NEW-PSP",
+      "bugs": 18,
+      "found": 9,
+      "recall": 0.5
+    },
+    {
+      "category": "NEW-STATE",
+      "bugs": 6,
+      "found": 6,
+      "recall": 1
+    },
+    {
+      "category": "NEW-SUB",
+      "bugs": 21,
+      "found": 7,
+      "recall": 0.333
+    },
+    {
+      "category": "NEW-TIME",
+      "bugs": 6,
+      "found": 6,
+      "recall": 1
+    },
+    {
+      "category": "RACE",
+      "bugs": 12,
+      "found": 6,
+      "recall": 0.5
+    },
+    {
+      "category": "TX",
+      "bugs": 6,
+      "found": 5,
+      "recall": 0.833
+    }
+  ],
+  "cost_usd": {
+    "total": 45.37,
+    "per_reviewed_run": 0.378
+  },
+  "seconds_per_reviewed_run": 102,
+  "cases_detail": [
+    {
+      "case": "alby-jit-invoice-unbounded-lsp-fee",
+      "title": "JIT channel invoices are created with no limit on the opening fee the LSP deducts from the incoming payment",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 1,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2026-06-10",
+      "seconds": 315,
+      "cost": 0.82,
+      "missed": [],
+      "fps": [
+        {
+          "rule": "MONEY-7",
+          "file": "transactions/transactions_service.go",
+          "line": 208,
+          "title": "Pending incoming JIT transaction stores the fee limit as if it were the fee charged"
+        }
+      ]
+    },
+    {
+      "case": "bagisto-grand-total-discount-sign",
+      "title": "Cart totals refactor adds the discount to the grand total instead of subtracting it",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2020-02-04",
+      "seconds": 113,
+      "cost": 0.44,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "bagisto-razorpay-order-amount-truncated",
+      "title": "New Razorpay amount check rounds minor units while the order sent to Razorpay truncates them",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 1,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2026-09-30",
+      "seconds": 117,
+      "cost": 0.56,
+      "missed": [],
+      "fps": [
+        {
+          "rule": "MONEY-0",
+          "file": "packages/Webkul/Razorpay/src/Http/Controllers/RazorpayController.php",
+          "line": 28,
+          "title": "An authorized-only payment is accepted and booked as captured and paid"
+        }
+      ]
+    },
+    {
+      "case": "blnk-balance-at-time-timezone",
+      "title": "Historical balance replays transactions by comparing a plain TIMESTAMP column with a timestamptz snapshot time",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2025-02-24",
+      "seconds": 108,
+      "cost": 0.53,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "blnk-inflight-dryrun-amount",
+      "title": "Inflight commit dry run is handed the raw precise_amount before the plain amount is resolved",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 2,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2026-08-09",
+      "seconds": 192,
+      "cost": 0.93,
+      "missed": [],
+      "fps": [
+        {
+          "rule": "MONEY-0",
+          "file": "transaction_dryrun_inflight.go",
+          "line": 99,
+          "title": "Partial-commit preview shows each leg's full original amount next to the partial precise amount"
+        },
+        {
+          "rule": "MONEY-0",
+          "file": "transaction_dryrun_inflight.go",
+          "line": 82,
+          "title": "Inflight preview reports balances half-changed by a rejected leg"
+        }
+      ]
+    },
+    {
+      "case": "blnk-negative-precise-amount",
+      "title": "Transaction validation lets a negative amount through when precision is also negative",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "reverse",
+      "date": "2026-08-20",
+      "seconds": 104,
+      "cost": 0.42,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "blnk-refund-selects-refund",
+      "title": "Refundable-children query also returns the earlier refund, so a repeated refund reverses the refund",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "reverse",
+      "date": "2026-08-20",
+      "seconds": 100,
+      "cost": 0.43,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "blnk-unlock-request-ctx",
+      "title": "Balance lock release runs on the request context, so a cancelled request leaves the lock held until TTL",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 3,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "reverse",
+      "date": "2026-08-14",
+      "seconds": 0,
+      "cost": 0,
+      "missed": [
+        {
+          "rules": [
+            "RACE-7"
+          ],
+          "file": "internal/lock/lock.go",
+          "line": 107
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "cashier-paddle-stale-transaction-update",
+      "title": "A late transaction.updated webhook overwrites a completed transaction with an older status",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "reverse",
+      "date": "2026-08-05",
+      "seconds": 70,
+      "cost": 0.29,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "cashier-stripe-balance-type-field",
+      "title": "Balance transaction helpers read a field Stripe does not send",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "introducer",
+      "date": "2025-06-07",
+      "seconds": 17,
+      "cost": 0.09,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-7",
+            "IDEM-10"
+          ],
+          "file": "src/CustomerBalanceTransaction.php",
+          "line": 166
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "cashier-stripe-trial-end-not-cleared",
+      "title": "Subscription webhook keeps the local trial end when Stripe sends trial_end as null",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 3,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "reverse",
+      "date": "2026-06-17",
+      "seconds": 0,
+      "cost": 0,
+      "missed": [
+        {
+          "rules": [
+            "IDEM-10",
+            "MONEY-7"
+          ],
+          "file": "src/Http/Controllers/WebhookController.php",
+          "line": 160
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "control-alby-jit-lsp-fee-limit",
+      "title": "JIT channel invoices cap the LSP opening fee from the advertised fee menu and an absolute ceiling",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2026-08-12",
+      "seconds": 22,
+      "cost": 0.12,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-bagisto-razorpay-round",
+      "title": "Razorpay order amount rounded to minor units like the payment check",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2026-10-13",
+      "seconds": 20,
+      "cost": 0.12,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-blnk-inflight-dryrun-fix",
+      "title": "Inflight dry run moved after amount resolution so preview and real commit use the same amount",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2026-08-21",
+      "seconds": 22,
+      "cost": 0.12,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-fossbilling-offline-approval-fix",
+      "title": "Offline approval keeps the transaction in processing until settlement finishes",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2026-10-03",
+      "seconds": 27,
+      "cost": 0.12,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-invoiceninja-paid-guard-fix",
+      "title": "Double-payment guards fixed to read status_id",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2021-10-11",
+      "seconds": 29,
+      "cost": 0.11,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-laravel-wallet-float-fix",
+      "title": "Float setter rounds to the nearest minor unit before storing the integer amount",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2020-03-07",
+      "seconds": 324,
+      "cost": 0.1,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-midaz-pending-lock-kept-after-success",
+      "title": "Pending transition keeps its lock until the TTL after a success and releases it at once only on failure",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2026-10-13",
+      "seconds": 19,
+      "cost": 0.1,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-openmeter-flatfee-manual-edit-proration-off",
+      "title": "Manual flat-fee line edits turn proration off, since the edited amount already includes it",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 3,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2026-10-06",
+      "seconds": 0,
+      "cost": 0,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "control-paymenter-paid-after-commit",
+      "title": "Paid-invoice processing and notifications deferred until the payment commits",
+      "runs": 3,
+      "bugs": 0,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "control",
+      "date": "2026-08-18",
+      "seconds": 111,
+      "cost": 0.42,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "firefly-currency-precedence",
+      "title": "Same-currency check binds as a ?? (null === b), so every transaction gets its own amount as the native amount",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2025-07-27",
+      "seconds": 80,
+      "cost": 0.32,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "fossbilling-balance-gateway-precedence",
+      "title": "Automated cast removal turns the client balance gateway check into a ?? b !== 0",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "introducer",
+      "date": "2026-08-18",
+      "seconds": 25,
+      "cost": 0.11,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-7"
+          ],
+          "file": "src/library/Payment/Adapter/ClientBalance.php",
+          "line": 115
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "fossbilling-offline-approval-reclaim",
+      "title": "Offline payment approval claims the transaction, then writes back a status the claim accepts again",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 1,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2026-10-03",
+      "seconds": 150,
+      "cost": 0.74,
+      "missed": [],
+      "fps": [
+        {
+          "rule": "MONEY-0",
+          "file": "src/library/Payment/Adapter/Custom.php",
+          "line": 117,
+          "title": "Approve credits the invoice total even when the invoice is already paid"
+        }
+      ]
+    },
+    {
+      "case": "fossbilling-renewal-after-scheduled-cancel",
+      "title": "Cancel at period end marks the order but the renewal query still picks it up",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 2,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "introducer",
+      "date": "2026-07-14",
+      "seconds": 133,
+      "cost": 0.61,
+      "missed": [
+        {
+          "rules": [
+            "IDEM-10"
+          ],
+          "file": "src/modules/Order/Service.php",
+          "line": 322
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "fossbilling-stacked-promo-renewal",
+      "title": "Renewal discount of the primary promo is derived from the order's combined checkout discount",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "reverse",
+      "date": "2026-09-23",
+      "seconds": 81,
+      "cost": 0.32,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "fossbilling-stripe-renewal-paid-skip",
+      "title": "Stripe renewal payments are dropped because the first invoice of the subscription is already paid",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "reverse",
+      "date": "2026-10-16",
+      "seconds": 69,
+      "cost": 0.28,
+      "missed": [
+        {
+          "rules": [
+            "IDEM-10",
+            "MONEY-7"
+          ],
+          "file": "src/library/Payment/Adapter/Stripe.php",
+          "line": 945
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "invoiceninja-increase-price-rounded-rate",
+      "title": "Recurring price increase rounds the percentage to two decimals of a fraction",
+      "runs": 3,
+      "bugs": 2,
+      "found": 5,
+      "loose_found": 5,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 2,
+      "mode": "introducer",
+      "date": "2023-03-15",
+      "seconds": 92,
+      "cost": 0.48,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-7"
+          ],
+          "file": "app/Services/Recurring/UpdatePrices.php",
+          "line": 41
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "invoiceninja-negative-payment",
+      "title": "Payment validation accepts a negative amount applied to a positive invoice",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "reverse",
+      "date": "2025-11-28",
+      "seconds": 88,
+      "cost": 0.34,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "invoiceninja-paid-guard-typo",
+      "title": "Double-payment guard in MarkPaid reads a misspelled attribute and never fires",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2020-07-15",
+      "seconds": 480,
+      "cost": 0.44,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "invoiceninja-refund-float-compare",
+      "title": "Refund limit checks sum and compare amounts as PHP floats",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "reverse",
+      "date": "2026-08-28",
+      "seconds": 74,
+      "cost": 0.35,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "laravel-wallet-float-amount",
+      "title": "Float setter on Transaction writes the unrounded float product into the integer amount",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2020-01-20",
+      "seconds": 75,
+      "cost": 0.27,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "midaz-batch-hold-skips-fees",
+      "title": "Hold items of a v2 atomic batch pass their pending flag where the fee step expects the annotation flag, so no fee is charged",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "introducer",
+      "date": "2026-09-17",
+      "seconds": 77,
+      "cost": 0.43,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-7"
+          ],
+          "file": "components/ledger/internal/services/command/create_atomic_transaction_batch_v2.go",
+          "line": 373
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "midaz-completion-events-lost-on-projection-retry",
+      "title": "Completion publishes transaction and balance events only after the metadata and fee-debt projections, so a projection failure loses them",
+      "runs": 3,
+      "bugs": 1,
+      "found": 2,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 2,
+      "mode": "reverse",
+      "date": "2026-10-09",
+      "seconds": 88,
+      "cost": 0.38,
+      "missed": [
+        {
+          "rules": [
+            "TX-2"
+          ],
+          "file": "components/ledger/internal/services/command/transaction_completion_service.go",
+          "line": 126
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "midaz-counter-expiry-from-reservation-ttl",
+      "title": "Reserve writes the reservation's own short lifetime as the expiry of the limit's usage counter",
+      "runs": 3,
+      "bugs": 2,
+      "found": 6,
+      "loose_found": 6,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2026-06-05",
+      "seconds": 115,
+      "cost": 0.67,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "midaz-fee-debt-collect-without-idempotency",
+      "title": "New fee debt collect endpoint moves money with no idempotency key, so a retried request collects again",
+      "runs": 3,
+      "bugs": 1,
+      "found": 2,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 2,
+      "mode": "introducer",
+      "date": "2026-09-29",
+      "seconds": 111,
+      "cost": 0.58,
+      "missed": [
+        {
+          "rules": [
+            "IDEM-3",
+            "IDEM-1"
+          ],
+          "file": "components/ledger/internal/adapters/http/in/fee_debt_collect_handler.go",
+          "line": 33
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "midaz-fee-debt-open-total-above-opened",
+      "title": "Debtor open total sums raw remaining, which can exceed the opened amount while out-of-order changes converge",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "introducer",
+      "date": "2026-09-28",
+      "seconds": 31,
+      "cost": 0.16,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-0"
+          ],
+          "file": "components/ledger/internal/adapters/mongodb/fees/fee_debt/repository.go",
+          "line": 280
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "midaz-idempotency-slot-replays-other-request",
+      "title": "An idempotency key hit replays whatever transaction holds the slot, without checking it came from the same request",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "reverse",
+      "date": "2026-09-28",
+      "seconds": 78,
+      "cost": 0.51,
+      "missed": [
+        {
+          "rules": [
+            "IDEM-1"
+          ],
+          "file": "components/ledger/internal/services/command/create_transaction_idempotency.go",
+          "line": 78
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "midaz-pending-lock-released-after-success",
+      "title": "Pending commit and cancel release the per-transaction lock on success, which lets an unguarded release apply the opposite transition",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "introducer",
+      "date": "2026-10-08",
+      "seconds": 22,
+      "cost": 0.13,
+      "missed": [
+        {
+          "rules": [
+            "RACE-1",
+            "RACE-3"
+          ],
+          "file": "components/ledger/internal/services/command/commit_transaction.go",
+          "line": 201
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "midaz-reserve-grouping-from-replica",
+      "title": "Limit reserve reads the source account's segment and portfolio through a read that goes to the replica",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2026-10-16",
+      "seconds": 107,
+      "cost": 0.57,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "openmeter-added-item-invoice-currency",
+      "title": "Item added to a running custom-currency subscription without a currency is priced in the fiat invoice currency",
+      "runs": 3,
+      "bugs": 1,
+      "found": 1,
+      "loose_found": 1,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 1,
+      "mode": "introducer",
+      "date": "2026-08-13",
+      "seconds": 56,
+      "cost": 0.24,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-2"
+          ],
+          "file": "openmeter/subscription/workflow/service/subscription.go",
+          "line": 170
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "openmeter-flatfee-manual-edit-prorated-twice",
+      "title": "Manual edit of a flat-fee line stores the shown, already prorated amount as the amount before proration and keeps proration on",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "introducer",
+      "date": "2026-06-27",
+      "seconds": 96,
+      "cost": 0.56,
+      "missed": [
+        {
+          "rules": [
+            "MONEY-7"
+          ],
+          "file": "openmeter/billing/charges/flatfee/service/manualedit.go",
+          "line": 56
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "openmeter-reset-keeps-later-snapshots",
+      "title": "Usage reset saves its snapshot but leaves the balance snapshots taken after the reset time valid",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 3,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "reverse",
+      "date": "2026-08-03",
+      "seconds": 0,
+      "cost": 0,
+      "missed": [
+        {
+          "rules": [
+            "RACE-8"
+          ],
+          "file": "openmeter/credit/balance.go",
+          "line": 316
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "paymenter-payment-rolled-back-by-mail",
+      "title": "Recording a gateway payment now runs in a transaction that also holds the paid-invoice side effects",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "introducer",
+      "date": "2026-07-06",
+      "seconds": 169,
+      "cost": 0.7,
+      "missed": [],
+      "fps": []
+    },
+    {
+      "case": "sylius-payment-amount-after-capture",
+      "title": "Order processing rewrites the payment amount while a gateway capture is already running",
+      "runs": 3,
+      "bugs": 1,
+      "found": 0,
+      "loose_found": 0,
+      "false_positives": 0,
+      "triage_skipped": 3,
+      "errors": 0,
+      "runs_complete": 0,
+      "mode": "reverse",
+      "date": "2026-09-02",
+      "seconds": 0,
+      "cost": 0,
+      "missed": [
+        {
+          "rules": [
+            "RACE-3",
+            "MONEY-7"
+          ],
+          "file": "src/Sylius/Component/Core/OrderProcessing/OrderPaymentProcessor.php",
+          "line": 53
+        }
+      ],
+      "fps": []
+    },
+    {
+      "case": "sylius-percentage-discount-truncation",
+      "title": "Percentage catalog discount casts the float price to int instead of rounding it",
+      "runs": 3,
+      "bugs": 1,
+      "found": 3,
+      "loose_found": 3,
+      "false_positives": 0,
+      "triage_skipped": 0,
+      "errors": 0,
+      "runs_complete": 3,
+      "mode": "reverse",
+      "date": "2022-12-22",
+      "seconds": 70,
+      "cost": 0.25,
+      "missed": [],
+      "fps": []
+    }
+  ],
+  "by_mode": [
+    {
+      "mode": "introducer",
+      "bugs": 72,
+      "found": 47,
+      "recall": 0.653
+    },
+    {
+      "mode": "reverse",
+      "bugs": 42,
+      "found": 23,
+      "recall": 0.548
+    }
+  ],
+  "by_date": {
+    "cutoff": "2026-06-01",
+    "before": {
+      "bugs": 30,
+      "found": 26,
+      "recall": 0.867
+    },
+    "after": {
+      "bugs": 84,
+      "found": 44,
+      "recall": 0.524
+    }
+  },
+  "stability": {
+    "cases": 36,
+    "every_run": 19,
+    "some_runs": 4,
+    "never": 13
+  },
+  "env": {
+    "set": "real",
+    "date": "2026-10-17",
+    "claude_code": "2.1.302",
+    "money_review": "0.8.3",
+    "commit": "d2f8054",
+    "runs_per_case": 3,
+    "cutoff": "2026-06-01"
+  },
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5"
+  ]
+}
