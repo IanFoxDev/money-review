@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- A finding whose file is an absolute path inside the repository is reported with the
+  relative path, so comments land on the file and suppressions match it.
+
 ## [0.8.3] - 2026-10-17
 
 ### Added

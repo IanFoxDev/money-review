@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Corrects line numbers of findings. Models sometimes count lines in the diff
-# instead of the file: line 33 in a 30-line file, or line 1 for a bug further down.
+# Corrects file paths and line numbers of findings. A path under the repository
+# root written as an absolute path (/private/var/.../app/Fee.php) becomes
+# relative. Models sometimes count lines in the diff instead of the file: line 33 in a 30-line file, or line 1 for a bug further down.
 # GitLab then refuses the comment and a reader looks in the wrong place.
 #
 # A finding with "code" (the text of its line) moves to the line of the file that
@@ -38,6 +39,16 @@ set_line() { # index line
     jq --argjson i "$1" --argjson l "$2" '.findings[$i].line = $l' "$report" > "$report.tmp"
     mv "$report.tmp" "$report"
 }
+
+# macOS names the same directory /var/... and /private/var/..., so both forms go.
+roots="$(printf '%s\n' "$PWD" "$(pwd -P)" | awk '{ print; if (sub(/^\/private\//, "/")) print; else print "/private" $0 }')"
+jq --arg roots "$roots" '
+    ($roots | split("\n") | map(select(. != "") + "/")) as $r
+    | .findings |= map(.file as $f
+        | ([$r[] | select(. as $p | $f | startswith($p))] | first) as $p
+        | if $p then .file = $f[($p | length):] else . end)
+' "$report" > "$report.tmp"
+mv "$report.tmp" "$report"
 
 count="$(jq '.findings | length' "$report")"
 i=0

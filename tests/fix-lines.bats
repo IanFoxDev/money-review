@@ -106,3 +106,18 @@ with_code() { # line code
     run "$fix" report.json change.diff
     [ "$(jq '.findings[0].line' report.json)" = "2" ]
 }
+
+@test "an absolute path inside the repository becomes relative" {
+    report 4
+    jq --arg f "$(pwd -P)/app/Fee.php" '.findings[0].file = $f' report.json > r.tmp && mv r.tmp report.json
+    run "$fix" report.json change.diff
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.findings[0].file' report.json)" = "app/Fee.php" ]
+}
+
+@test "an absolute path outside the repository is left alone" {
+    report 4
+    jq '.findings[0].file = "/etc/app/Fee.php"' report.json > r.tmp && mv r.tmp report.json
+    run "$fix" report.json change.diff
+    [ "$(jq -r '.findings[0].file' report.json)" = "/etc/app/Fee.php" ]
+}
