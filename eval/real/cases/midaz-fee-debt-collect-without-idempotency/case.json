@@ -17,7 +17,10 @@
   "title": "New fee debt collect endpoint moves money with no idempotency key, so a retried request collects again",
   "bugs": [
     {
-      "rules": ["IDEM-3", "IDEM-1"],
+      "rules": [
+        "IDEM-3",
+        "IDEM-1"
+      ],
       "class": "IDEM",
       "file": "components/ledger/internal/adapters/http/in/fee_debt_collect_handler.go",
       "anchor": "type CollectFeeDebtRequest struct",
@@ -26,6 +29,14 @@
         {
           "file": "components/ledger/internal/services/command/collect_fee_debt.go",
           "anchor": "type CollectFeeDebtInput struct"
+        },
+        {
+          "file": "components/ledger/internal/services/command/collect_fee_debt.go",
+          "anchor": "outcome, err := ExecutePreparedEngine\\(ctx, uc\\.Engine, execution\\)"
+        },
+        {
+          "file": "components/ledger/internal/services/command/collect_fee_debt.go",
+          "anchor": "idempotencyTTL: pkgHTTP\\.ParseIdempotencyTTL\\(\"\"\\)"
         }
       ],
       "note": "Every other money-moving POST of the ledger takes X-Idempotency and replays the first answer. The collect request has no key and the command builds a new transaction id for each call, so a client that retries after a lost response settles the debtor's fee debts a second time from its available balance, as long as debt remains open."

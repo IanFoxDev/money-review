@@ -15,7 +15,10 @@
   "title": "Offline payment approval claims the transaction, then writes back a status the claim accepts again",
   "bugs": [
     {
-      "rules": ["RACE-3", "RACE-2"],
+      "rules": [
+        "RACE-3",
+        "RACE-2"
+      ],
       "class": "RACE",
       "file": "src/modules/Invoice/ServiceTransaction.php",
       "anchor": "\\$model->setStatus\\(Transaction::STATUS_APPROVED\\);",
@@ -28,5 +31,13 @@
       "note": "approveTransaction takes the row with the conditional UPDATE to processing, and then sets and flushes approved before settling. The same change adds approved to the statuses claimForProcessing accepts, so a second admin request (double click, second tab) arriving while the first is still settling claims the row again and settles the same offline payment a second time: the invoice is paid or the client credited twice."
     }
   ],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "TX-3",
+        "IDEM-6"
+      ],
+      "file": "src/library/Payment/Adapter/Custom.php"
+    }
+  ]
 }

@@ -11,5 +11,13 @@
   ],
   "title": "Paid-invoice processing and notifications deferred until the payment commits",
   "bugs": [],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "TX-2",
+        "TX-3"
+      ],
+      "file": "app/Observers/InvoiceObserver.php"
+    }
+  ]
 }

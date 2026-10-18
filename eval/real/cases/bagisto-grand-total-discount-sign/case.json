@@ -35,9 +35,16 @@
     {
       "rules": [
         "MONEY-3",
-        "MONEY-1"
+        "MONEY-1",
+        "MONEY-4"
       ],
       "file": "packages/Webkul/Tax/src/Helpers/Tax.php"
+    },
+    {
+      "rules": [
+        "MONEY-0"
+      ],
+      "file": "packages/Webkul/Shop/src/Resources/views/emails/sales/new-refund.blade.php"
     }
   ]
 }

@@ -14,7 +14,10 @@
   "title": "Recording a gateway payment now runs in a transaction that also holds the paid-invoice side effects",
   "bugs": [
     {
-      "rules": ["TX-1", "TX-2"],
+      "rules": [
+        "TX-1",
+        "TX-2"
+      ],
       "class": "TX",
       "file": "app/Helpers/ExtensionHelper.php",
       "anchor": "\\$transaction = DB::transaction\\(function \\(\\) use \\(\\$invoice, \\$gateway",
@@ -22,5 +25,12 @@
       "note": "addPayment wraps the insert of the invoice transaction in DB::transaction. Creating that row fires observers that mark the invoice paid, run the paid-invoice service and send the invoice mail with a PDF written to disk, all inside the transaction. Any failure there (a full disk, a mail error) rolls back the payment row and the paid status: the gateway has the money, Paymenter has no record of it, the webhook answers 500 and every retry repeats the notifications."
     }
   ],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "RACE-6"
+      ],
+      "file": "app/Classes/Cart.php"
+    }
+  ]
 }

@@ -15,11 +15,22 @@
   "title": "Recurring price increase rounds the percentage to two decimals of a fraction",
   "bugs": [
     {
-      "rules": ["MONEY-3"],
+      "rules": [
+        "MONEY-3"
+      ],
       "class": "NEW-SUB",
       "file": "app/Services/Recurring/IncreasePrices.php",
       "anchor": "\\$line_item->cost \\* \\(1 \\+ round\\(\\(\\$this->percentage / 100\\), 2\\)\\)",
       "note": "The rate is percentage / 100 and that fraction is rounded to two places, which is whole percent: a 2.5 percent increase becomes 3 percent, 0.4 becomes 0, 1.5 becomes 2. Every line of every selected recurring invoice is repriced with the wrong factor, and all later invoices generated from it bill the wrong amount."
+    },
+    {
+      "rules": [
+        "MONEY-7"
+      ],
+      "class": "MONEY",
+      "file": "app/Services/Recurring/UpdatePrices.php",
+      "anchor": "\\$line_items\\[\\$key\\]->cost = \\$product->cost;",
+      "note": "A line item cost is the selling price, but the new update-prices action copies the product purchase cost into it. Every later invoice of the recurring series bills the purchase cost, zero when the product has none. Fixed upstream in 1863da082."
     }
   ],
   "acceptable": []

@@ -16,7 +16,9 @@
   "title": "Cancel at period end marks the order but the renewal query still picks it up",
   "bugs": [
     {
-      "rules": ["IDEM-10"],
+      "rules": [
+        "IDEM-10"
+      ],
       "class": "NEW-SUB",
       "file": "src/modules/Order/Service.php",
       "anchor": "public function getSoonExpiringActiveOrdersQuery",
@@ -30,5 +32,14 @@
       "note": "A scheduled cancellation keeps the order active and only records a cancel_at_period_end meta row. The cron query that selects active orders close to expiry for renewal invoices does not look at that row, so the client gets a renewal invoice for the period after the one they cancelled; with credit on the account it is paid from the balance and the order is renewed."
     }
   ],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-0",
+        "IDEM-10",
+        "SUB-5"
+      ],
+      "file": "src/modules/Invoice/ServiceSubscription.php"
+    }
+  ]
 }

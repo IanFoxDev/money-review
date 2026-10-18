@@ -13,7 +13,10 @@
   "title": "New Razorpay amount check rounds minor units while the order sent to Razorpay truncates them",
   "bugs": [
     {
-      "rules": ["MONEY-3", "MONEY-1"],
+      "rules": [
+        "MONEY-3",
+        "MONEY-1"
+      ],
       "class": "NEW-PSP",
       "file": "packages/Webkul/Razorpay/src/Http/Controllers/RazorpayController.php",
       "anchor": "return \\$payment\\['amount'\\] === \\(int\\) round\\(\\$cart->base_grand_total \\* 100\\);",
@@ -26,5 +29,19 @@
       "note": "paymentCoversCart compares the captured amount with round(total * 100), but the Razorpay order is created with (int)(total * 100), which truncates. For totals like 19.99 the float product is 1998.99..., so the order asks for 1998 paise and the check expects 1999: the buyer is charged, the check refuses the payment and no order is placed."
     }
   ],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "IDEM-4"
+      ],
+      "file": "packages/Webkul/Razorpay/src/Payment/RazorpayPayment.php"
+    },
+    {
+      "rules": [
+        "RACE-5",
+        "IDEM-2"
+      ],
+      "file": "packages/Webkul/Razorpay/src/Http/Controllers/RazorpayController.php"
+    }
+  ]
 }

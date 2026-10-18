@@ -26,5 +26,12 @@
       "note": "The dry-run branch returns before the request amount is converted with the transaction precision, so a caller that sends only amount gets nil, which means commit the full remaining hold. The preview then reports success for a commit larger than the hold that the real path rejects."
     }
   ],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-0"
+      ],
+      "file": "transaction_dryrun_bulk.go"
+    }
+  ]
 }
