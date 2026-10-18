@@ -37,7 +37,10 @@ for c in "$@"; do
         while [ "$k" -lt "$n_also" ]; do
             a_file="$(jq -r ".also[$k].file" <<< "$bug")"
             a_line="$(line "$bare" "$head" "$c" "$a_file" "$(jq -r ".also[$k].anchor" <<< "$bug")")"
-            also="$(jq -c --arg f "$a_file" --argjson l "$a_line" '. + [{file: $f, line: $l, end_line: $l}]' <<< "$also")"
+            a_end="$a_line"
+            a_anchor_end="$(jq -r ".also[$k].anchor_end // empty" <<< "$bug")"
+            [ -z "$a_anchor_end" ] || a_end="$(line "$bare" "$head" "$c" "$a_file" "$a_anchor_end" "$a_line")"
+            also="$(jq -c --arg f "$a_file" --argjson l "$a_line" --argjson e "$a_end" '. + [{file: $f, line: $l, end_line: $e}]' <<< "$also")"
             k=$((k + 1))
         done
         bugs="$(jq -c --argjson b "$bug" --argjson l "$start" --argjson e "$end" --argjson a "$also" \

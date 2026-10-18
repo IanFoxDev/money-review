@@ -24,7 +24,11 @@ def bug_category: .class // (.rules[0] | category);
 
 def score_run($exp; $r):
   ($exp.bugs) as $bugs
-  | (($r.report // {}).findings // []) as $fs
+  # Runs made before fix-lines.sh made paths relative can hold absolute ones that
+  # end in the case's working copy: .../<case>/app/Fee.php.
+  | ((($r.report // {}).findings // []) | map(.file |= (
+      if type == "string" and startswith("/") and contains("/" + $r.case + "/")
+      then split("/" + $r.case + "/")[1:] | join("/" + $r.case + "/") else . end))) as $fs
   | (reduce $fs[] as $f (
       {matched: [], loose: [], tp: 0, fp: 0, duplicate: 0, acceptable: 0, wrong_rule: 0, fps: []};
       . as $s0

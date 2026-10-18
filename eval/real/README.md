@@ -29,9 +29,11 @@ working copy and runs money-review on it.
       "file": "api/transactions.go",
       "anchor": "regex, first match in the file at head",
       "anchor_end": "optional regex, end of the range (first match after anchor)",
+      "also": [{"file": "another place where the bug can fairly be reported", "anchor": "regex", "anchor_end": "optional"}],
       "note": "the mechanism, in our words"
     }
-  ]
+  ],
+  "acceptable": [{"rules": ["TX-3"], "file": "a real issue the case is not about: neither a hit nor a false alarm"}]
 }
 ```
 
