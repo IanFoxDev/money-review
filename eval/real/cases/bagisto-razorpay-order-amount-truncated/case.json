@@ -42,6 +42,15 @@
         "IDEM-2"
       ],
       "file": "packages/Webkul/Razorpay/src/Http/Controllers/RazorpayController.php"
+    },
+    {
+      "rules": [
+        "PSP-3",
+        "MONEY-0"
+      ],
+      "file": "packages/Webkul/Razorpay/src/Http/Controllers/RazorpayController.php",
+      "anchor": "private const PAID_STATUSES = \\[.captured., .authorized.\\];",
+      "anchor_end": "in_array\\(\\$payment\\[.status.\\], self::PAID_STATUSES, true\\)"
     }
   ]
 }

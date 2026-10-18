@@ -12,7 +12,9 @@
     "components/ledger/internal/adapters/http/in/fee_debt_collect_routes.go",
     "components/ledger/internal/services/command/collect_fee_debt.go",
     "components/ledger/internal/services/command/engine_fee_debt_translation.go",
-    "components/ledger/internal/services/command/transaction_completion_fee_debt.go"
+    "components/ledger/internal/services/command/transaction_completion_fee_debt.go",
+    "components/ledger/internal/services/command/revert_fee_debt.go",
+    "pkg/constant/metadata.go"
   ],
   "title": "New fee debt collect endpoint moves money with no idempotency key, so a retried request collects again",
   "bugs": [
@@ -37,6 +39,10 @@
         {
           "file": "components/ledger/internal/services/command/collect_fee_debt.go",
           "anchor": "idempotencyTTL: pkgHTTP\\.ParseIdempotencyTTL\\(\"\"\\)"
+        },
+        {
+          "file": "components/ledger/internal/services/command/collect_fee_debt.go",
+          "anchor": "^func \\(uc \\*UseCase\\) CollectFeeDebt\\("
         }
       ],
       "note": "Every other money-moving POST of the ledger takes X-Idempotency and replays the first answer. The collect request has no key and the command builds a new transaction id for each call, so a client that retries after a lost response settles the debtor's fee debts a second time from its available balance, as long as debt remains open."

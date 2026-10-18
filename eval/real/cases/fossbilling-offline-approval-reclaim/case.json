@@ -38,6 +38,13 @@
         "IDEM-6"
       ],
       "file": "src/library/Payment/Adapter/Custom.php"
+    },
+    {
+      "rules": [
+        "IDEM-6",
+        "TX-3"
+      ],
+      "file": "src/modules/Invoice/ServiceTransaction.php"
     }
   ]
 }

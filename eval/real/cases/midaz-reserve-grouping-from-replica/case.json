@@ -16,12 +16,22 @@
   "title": "Limit reserve reads the source account's segment and portfolio through a read that goes to the replica",
   "bugs": [
     {
-      "rules": ["RACE-8"],
+      "rules": [
+        "RACE-8"
+      ],
       "class": "RACE",
       "file": "components/ledger/internal/services/command/transaction_reservation_scope.go",
       "anchor": "found, err := uc\\.AccountRepo\\.Find\\(ctx, organizationID, ledgerID, nil, accountID",
       "note": "The grouping decides which spending limits the reserve is counted against, enforce mode included. Find is routed to the read replica and ignores the primary-read intent, so right after an account moves to another portfolio or segment a lagging replica returns the old grouping: the spend is counted against the old limit and the new one is not checked. An account not yet replicated reserves with no grouping at all."
     }
   ],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-0",
+        "RACE-8"
+      ],
+      "file": "components/ledger/internal/services/command/transaction_reservation_scope.go"
+    }
+  ]
 }

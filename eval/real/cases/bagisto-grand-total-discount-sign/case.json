@@ -45,6 +45,12 @@
         "MONEY-0"
       ],
       "file": "packages/Webkul/Shop/src/Resources/views/emails/sales/new-refund.blade.php"
+    },
+    {
+      "rules": [
+        "MONEY-0"
+      ],
+      "file": "packages/Webkul/Shop/src/Resources/views/emails/sales/new-invoice.blade.php"
     }
   ]
 }
