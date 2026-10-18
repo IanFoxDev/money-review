@@ -6,7 +6,8 @@
 # A finding is a true positive when file, rule and line (within 5 lines of the
 # anchor, or of the anchor_end range) match an expected bug. A finding on the right lines with another rule
 # counts towards the loose recall, not the strict one. A finding that matches an
-# "acceptable" entry (a real but secondary issue) is neither TP nor FP. Anything
+# "acceptable" entry (a real but secondary issue, in its lines or anywhere in its
+# file) is neither TP nor FP. Anything
 # else is a false positive. A second finding for an already matched bug is a
 # duplicate.
 #
@@ -16,6 +17,9 @@
 def near_one($b; $f): $f.file == $b.file and $f.line >= $b.line - 5 and $f.line <= ($b.end_line // $b.line) + 5;
 # A bug may name other places where it can fairly be reported ("also" in case.json).
 def near($b; $f): near_one($b; $f) or any(($b.also // [])[]; near_one(.; $f));
+# An acceptable entry with a line (eval/real: an anchor) covers those lines, else the file.
+def acceptable_ok($a; $f): (if $a.line == null then $a.file == $f.file else near_one($a; $f) end)
+  and ($f.rule == null or ($a.rules | index($f.rule)) != null);
 def rule_ok($b; $f): $f.rule == null or ($b.rules | index($f.rule)) != null;
 def ratio($a; $b): if $b == 0 then null else ($a / $b * 1000 | round / 1000) end;
 def category: split("-")[0];
@@ -39,7 +43,7 @@ def score_run($exp; $r):
       | if $i != null then
           (if (.matched | index($i)) != null then .duplicate += 1 else .matched += [$i] | .tp += 1 end)
         elif $j != null then .wrong_rule += 1 | .loose += [$j]
-        elif ($exp.acceptable | any(.file == $f.file and ($f.rule == null or (.rules | index($f.rule)) != null))) then .acceptable += 1
+        elif ($exp.acceptable | any(acceptable_ok(.; $f))) then .acceptable += 1
         else .fp += 1 | .fps += [{rule: $f.rule, file: $f.file, line: $f.line, title: $f.title}]
         end
     )) as $s

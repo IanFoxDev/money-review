@@ -107,3 +107,19 @@ commit() {
     [ "$(jq -c '[.by_date.before.recall, .by_date.after.recall]' "$out/summary.json")" = '[0.5,1]' ]
     [ "$(jq -c '.stability' "$out/summary.json")" = '{"cases":2,"every_run":1,"some_runs":1,"never":0}' ]
 }
+
+@test "an acceptable entry with lines covers those lines only" {
+    out="$BATS_TEST_TMPDIR/out"
+    mkdir -p "$out/results/a/1"
+    jq -n '{a: {title: "a", mode: "introducer", date: "2026-08-01",
+        bugs: [{rules: ["MONEY-1"], class: "MONEY", file: "x.php", line: 10, end_line: 10, also: []}],
+        acceptable: [{rules: ["TX-3"], file: "y.php", line: 20, end_line: 22}, {rules: ["RACE-6"], file: "z.php"}]}}' > "$out/expected.json"
+    jq -n '{case: "a", run: 1, exit: 0, seconds: 10}' > "$out/results/a/1/meta.json"
+    jq -n '{findings: [
+        {rule: "TX-3", severity: "high", file: "y.php", line: 25, title: "near"},
+        {rule: "TX-3", severity: "high", file: "y.php", line: 60, title: "far"},
+        {rule: "RACE-6", severity: "high", file: "z.php", line: 300, title: "file"}]}' > "$out/results/a/1/report.json"
+    "$BATS_TEST_DIRNAME/../eval/score.sh" "$out" > /dev/null
+    [ "$(jq -c '[.acceptable_extras, .false_positives]' "$out/summary.json")" = '[2,1]' ]
+    [ "$(jq -r '.cases_detail[0].fps[0].title' "$out/summary.json")" = "far" ]
+}

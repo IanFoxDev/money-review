@@ -33,7 +33,8 @@ working copy and runs money-review on it.
       "note": "the mechanism, in our words"
     }
   ],
-  "acceptable": [{"rules": ["TX-3"], "file": "a real issue the case is not about: neither a hit nor a false alarm"}]
+  "acceptable": [{"rules": ["TX-3"], "file": "a real issue the case is not about: neither a hit nor a false alarm",
+                  "anchor": "optional regex: only these lines, as for a bug", "anchor_end": "optional"}]
 }
 ```
 

@@ -47,7 +47,25 @@ for c in "$@"; do
             '. + [$b + {line: $l, end_line: $e, also: $a}]' <<< "$bugs")"
         i=$((i + 1))
     done
-    result="$(jq -c --arg c "$c" --argjson s "$spec" --argjson b "$bugs" \
-        '. + {($c): {title: $s.title, repo: $s.repo, mode: $s.mode, date: $s.date, bugs: $b, acceptable: ($s.acceptable // [])}}' <<< "$result")"
+    # An acceptable entry with an anchor covers those lines only, without one the whole file.
+    acceptable="[]"
+    n_acc="$(jq '.acceptable // [] | length' <<< "$spec")"
+    k=0
+    while [ "$k" -lt "$n_acc" ]; do
+        acc="$(jq -c ".acceptable[$k]" <<< "$spec")"
+        anchor="$(jq -r '.anchor // empty' <<< "$acc")"
+        if [ -n "$anchor" ]; then
+            a_file="$(jq -r .file <<< "$acc")"
+            a_line="$(line "$bare" "$head" "$c" "$a_file" "$anchor")"
+            a_end="$a_line"
+            anchor_end="$(jq -r '.anchor_end // empty' <<< "$acc")"
+            [ -z "$anchor_end" ] || a_end="$(line "$bare" "$head" "$c" "$a_file" "$anchor_end" "$a_line")"
+            acc="$(jq -c --argjson l "$a_line" --argjson e "$a_end" '. + {line: $l, end_line: $e}' <<< "$acc")"
+        fi
+        acceptable="$(jq -c --argjson a "$acc" '. + [$a]' <<< "$acceptable")"
+        k=$((k + 1))
+    done
+    result="$(jq -c --arg c "$c" --argjson s "$spec" --argjson b "$bugs" --argjson a "$acceptable" \
+        '. + {($c): {title: $s.title, repo: $s.repo, mode: $s.mode, date: $s.date, bugs: $b, acceptable: $a}}' <<< "$result")"
 done
 jq . <<< "$result"
