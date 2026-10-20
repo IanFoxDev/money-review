@@ -49,6 +49,16 @@ The caller gives you:
 5. Apply the "do not report" section of the rule. If it matches, drop the finding.
 6. Report code that the diff adds or changes. Old code that the diff only calls is in
    scope only when the change makes an old bug reachable or worse.
+7. Look past the diff in two directions before you finish. Siblings: when the change
+   fixes or changes money behaviour for one provider, product, plan type or entry
+   point, search for the others (other adapters of the same interface, other callers,
+   other writers of the same field) and check whether they need the same change
+   (PSP-4). The outside world: when the code acts on a provider's answer or on our own
+   status of something the provider also tracks (a subscription, a refund, a
+   discount), ask what the provider will do next regardless of our state: rebill on
+   its own schedule, retry a decline, ignore a request it accepted (PSP-1, PSP-2). The
+   context and the project's own rules often say how a specific provider behaves; take
+   that as fact.
 
 ## Severity
 
@@ -78,6 +88,8 @@ Return only JSON, no prose before or after:
 ```
 
 - `rule` is an id from the checklist you were given, or `MONEY-0`. Do not invent ids.
+  The checklist can hold the project's own rules with their own prefix (`ACME-2`) and
+  its invariants (`INV-1`); report under them the same way.
 - `line` is the line in the new version of the file.
 - One finding per root cause. If the same bug repeats in three handlers, report the
   first and mention the others in `fix`.

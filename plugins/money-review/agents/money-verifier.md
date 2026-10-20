@@ -17,7 +17,9 @@ The caller gives you:
 - `diff`: path to the unified diff of the change;
 - `candidates`: JSON with candidate findings (`rule`, `severity`, `file`, `line`,
   `title`, `scenario`, `fix`);
-- `checklist`: the checklist file the reviewer used, with every rule that applies.
+- `checklist`: the checklist file the reviewer used, with every rule that applies,
+  including the project's own rules (their own prefix) and invariants (`INV-n`);
+- `context` (optional): notes from the project config.
 
 ## For each candidate
 
@@ -34,6 +36,14 @@ The caller gives you:
    - a dedup or idempotency layer in a base class, middleware or queue config;
    - a guard on the current state;
    - the value is not money at all (a ratio, a display string, test code).
+
+   A scenario that depends on what a payment provider does (rebills on its own
+   schedule, retries a decline, ignores a request it accepted, sends more notification
+   types than the handler expects) cannot be walked in our code alone. Take the
+   provider behaviour stated in the context or in the project's rules as fact. Without
+   such a statement, keep the finding when the code gives the provider room to do it
+   and nothing on our side checks; do not reject it only because the provider's side is
+   not visible.
 4. Decide:
    - the scenario can happen as written: keep it. Fix the `line`, `severity` or
      wording if the reviewer got them wrong. Make `scenario` concrete if it is vague.

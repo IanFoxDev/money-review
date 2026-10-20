@@ -66,6 +66,7 @@ decided, without a model, which checklists apply:
    ```
    diff: <diff>
    checklist: <checklist>
+   context: <context, or "none">
    candidates: {"candidates": <the combined list, unchanged>}
    ```
 

@@ -1,0 +1,16 @@
+diff --git a/app/Http/Controllers/AppStoreNotificationController.php b/app/Http/Controllers/AppStoreNotificationController.php
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/app/Http/Controllers/AppStoreNotificationController.php
+@@ -0,0 +1,12 @@
++<?php
++final class AppStoreNotificationController
++{
++    public function __invoke(array $payload): void
++    {
++        $type = $payload['notificationType'];
++        $this->purchases->recordRenewal($payload['transactionId'], $payload['price']);
++        $this->subscriptions->extend($payload['originalTransactionId']);
++    }
++}

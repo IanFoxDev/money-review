@@ -17,10 +17,15 @@ Every rule has:
 | `races.md` | RACE | concurrent requests, workers and callbacks on the same row or document; Redis locks, stale reads |
 | `idempotency.md` | IDEM | retries, duplicate deliveries, re-runs of jobs; broker consumers, offsets and acks, ordering |
 | `arithmetic.md` | MONEY | amounts, currencies, rounding, splitting; amounts in BSON and decoded JSON |
+| `providers.md` | PSP | the provider as a second ledger: requests it accepts and ignores, charges after our expiry, notification types, fixes for one provider only |
 
 Each file starts with the rules in SQL terms, then a section that maps them to
 MongoDB, Redis and message brokers and adds the rules that only exist there. Rules
-added later (TX-9, IDEM-10, MONEY-7) come at the end of their file.
+added later (TX-9, IDEM-10, IDEM-11, MONEY-7) come at the end of their file.
 
 `MONEY-0` has no entry: it is a money bug that no rule covers, reported only with a
 concrete failure scenario (see `agents/money-reviewer.md`).
+
+A project adds its own checklists with `rules` in its config, and its invariants with
+`invariants` (`INV-n`); see [docs/config.md](../../../../../docs/config.md). Those rules
+stay with the project, not here.

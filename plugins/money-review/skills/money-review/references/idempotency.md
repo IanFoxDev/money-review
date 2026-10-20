@@ -243,3 +243,40 @@ Good: every outcome has a path. Success: mark it done. Decline: mark it failed a
 release the funds. Timeout: keep it pending and resolve it later (IDEM-4). Money that
 has already left (a chargeback, a fee the provider took): book it to an account that may
 go negative and alert, do not refuse it.
+
+## IDEM-11. Dedup key with a field that is filled later
+
+Look for: a key that is meant to keep one row per money event (a unique index, the
+filter of an upsert, `ON CONFLICT`, the `ORDER BY` of a ClickHouse `ReplacingMergeTree`
+or `CollapsingMergeTree`, a cache or map key) that includes a field that can be empty in
+the first version of the record and set later: a subscription id assigned after the
+payment, a status, an updated amount, an external id that arrives with a later
+callback.
+
+Failure scenario: a purchase is projected into the analytics table when it is paid. The
+subscription is attached a moment later, and the next projection of the same purchase
+(a refund, a re-run) carries the subscription id. The table's key is
+`(project, purchase_id, entity_type, entity_id)`, so the two versions are two rows, not
+one replaced by the other. The gross for the day is doubled for that purchase, and
+partner commission computed from the table is paid twice.
+
+```sql
+-- bad: entity_id is '' on the first projection and set on the next one
+CREATE TABLE purchases (...)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (project, purchase_id, entity_type, entity_id);
+
+-- good: the key is the identity of the event, the rest are columns
+CREATE TABLE purchases (...)
+ENGINE = ReplacingMergeTree(version)
+ORDER BY (project, purchase_id);
+```
+
+Also look for: a producer change that publishes an event earlier than before (before
+the related record exists), when a consumer keys on a field from that record.
+
+Good: the key holds only fields that are fixed when the event is born; fields that
+arrive later are columns that the newer version overwrites.
+
+Do not report: a key field that the code sets before the first write and never changes;
+say where it is set.
