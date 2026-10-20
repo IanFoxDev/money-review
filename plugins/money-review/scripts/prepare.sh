@@ -130,7 +130,10 @@ if [ -n "$config" ]; then
         | {(.prefix): (if (.file // "") | startswith("/") then .file else $d + "/" + (.file // "") end)}]
         | add // {}' "$config")"
     while IFS= read -r f; do
-        [ -r "$f" ] && [ -f "$f" ] || { echo "prepare: cannot read rule file $f" >&2; exit 2; }
+        if [ ! -f "$f" ] || [ ! -r "$f" ]; then
+            echo "prepare: cannot read rule file $f" >&2
+            exit 2
+        fi
     done < <(jq -r '.[]' <<< "$private")
     invariants="$(jq -c '.invariants // [] | map(select(type == "string" and . != ""))' "$config")"
 fi
