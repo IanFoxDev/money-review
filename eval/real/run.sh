@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Runs money-review over the real-bug cases and scores the result.
 #
-# Usage: eval/real/run.sh [--runs N] [--out DIR] [CASE...]
+# Usage: eval/real/run.sh [--runs N] [--out DIR] [--resume] [CASE...]
+#
+# --resume with the --out of a run that stopped keeps the runs that finished
+# (meta.json with exit 0) and does only the rest.
 #
 # A case is a commit from an open-source project that introduced a money bug,
 # fixed later upstream (see eval/real/README.md). The repository is cloned on
@@ -17,13 +20,15 @@ cases_dir="${EVAL_REAL_CASES:-$real_dir/cases}"
 bin="$root/plugins/money-review/bin/money-review"
 runs=1
 out=""
+resume=0
 cases=()
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --runs) runs="${2:?}"; shift 2 ;;
         --out) out="${2:?}"; shift 2 ;;
-        -h|--help) sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        --resume) resume=1; shift ;;
+        -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         -*) echo "run: unknown option $1" >&2; exit 2 ;;
         *) cases+=("$1"); shift ;;
     esac
@@ -59,6 +64,11 @@ for c in "${cases[@]}"; do
     n=1
     while [ "$n" -le "$runs" ]; do
         result="$out/results/$c/$n"
+        if [ "$resume" = 1 ] && [ "$(jq -r '.exit' "$result/meta.json" 2>/dev/null)" = 0 ]; then
+            echo "eval: $c run $n: kept" >&2
+            n=$((n + 1))
+            continue
+        fi
         rm -rf "$result"
         mkdir -p "$result"
         started=$(date +%s)
