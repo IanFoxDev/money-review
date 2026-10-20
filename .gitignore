@@ -3,3 +3,6 @@
 .vscode/
 /.eval-runs/
 /.eval-repos/
+
+# Private rules and configs of your own projects: never committed (see private.example/)
+/plugins/money-review/private/

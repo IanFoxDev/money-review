@@ -5,7 +5,7 @@
 #    "categories": [...], "checklists": [...], "files": [...], "context": "...",
 #    "groups": [{"diff", "checklists", "checklist", "files", "lines"}], "checklist": "...",
 #    "second_pass": true, "coverage": {...},
-#    "ignore": [...], "secrets": [...]}
+#    "ignore": [...], "secrets": [...], "private_config": "..."}
 # A change bigger than review.group_lines changed lines is split into groups of
 # files, each reviewed on its own (see split.sh); a copy goes to OUT/prepared.json.
 #
@@ -16,7 +16,9 @@
 # too. Without --base the base is origin/HEAD, then master, then main.
 # --commits takes one commit or a range (A..B, A..) and reviews only what is
 # committed there; see range.sh. The config defaults to .money-review.json in
-# the repository root when it exists.
+# the repository root when it exists. Its "rules" add checklists of your own and its
+# "invariants" one more checklist; private/<repository name>/config.json next to the
+# plugin adds more of both and is never committed. See docs/config.md.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -34,7 +36,7 @@ while [ $# -gt 0 ]; do
         --diff) diff_in="${2:?--diff needs a file}"; shift 2 ;;
         --config) config="${2:?--config needs a file}"; shift 2 ;;
         --out) out="${2:?--out needs a directory}"; shift 2 ;;
-        -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "prepare: unknown argument $1" >&2; exit 2 ;;
     esac
 done
@@ -72,9 +74,31 @@ else
     done
 fi
 
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 if [ -z "$config" ]; then
-    root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
     [ -f "$root/.money-review.json" ] && config="$root/.money-review.json"
+fi
+
+# Private rules live next to the plugin, out of git: private/<repository name>/config.json
+# (see private.example/), or the directory in MONEY_REVIEW_PRIVATE. That config goes
+# over the project config; its rules and invariants are added to the project's.
+private_config="${MONEY_REVIEW_PRIVATE:-$here/../private/$(basename "$root")}/config.json"
+if [ -f "$private_config" ]; then
+    with_abs_rules() { # config file -> JSON with absolute rule file paths
+        local d
+        d="$(cd "$(dirname "$1")" && pwd)"
+        jq --arg d "$d" '.rules = [.rules // [] | .[]
+            | .file = (if (.file // "") | startswith("/") then .file else $d + "/" + (.file // "") end)]' "$1"
+    }
+    project_cfg="{}"
+    [ -n "$config" ] && project_cfg="$(with_abs_rules "$config")"
+    jq -n --argjson a "$project_cfg" --argjson b "$(with_abs_rules "$private_config")" \
+        '($a * $b) + {rules: (($a.rules // []) + ($b.rules // [])),
+                      invariants: (($a.invariants // []) + ($b.invariants // []))}' > "$out/config.json"
+    config="$out/config.json"
+    private_config="$(cd "$(dirname "$private_config")" && pwd)/config.json"
+else
+    private_config=""
 fi
 
 # Files that may hold secrets leave the diff here, before triage and before any
@@ -96,11 +120,41 @@ triage_args=()
 [ -n "$config" ] && triage_args=(--config "$config")
 triage="$("$here/triage.sh" ${triage_args[@]+"${triage_args[@]}"} "$diff_file")"
 
+# Private rules and invariants come from the project config. A rule file path is
+# relative to the config file.
+private="{}"
+invariants="[]"
+if [ -n "$config" ]; then
+    config_dir="$(cd "$(dirname "$config")" && pwd)"
+    private="$(jq -c --arg d "$config_dir" '[.rules // [] | .[]
+        | {(.prefix): (if (.file // "") | startswith("/") then .file else $d + "/" + (.file // "") end)}]
+        | add // {}' "$config")"
+    while IFS= read -r f; do
+        [ -r "$f" ] && [ -f "$f" ] || { echo "prepare: cannot read rule file $f" >&2; exit 2; }
+    done < <(jq -r '.[]' <<< "$private")
+    invariants="$(jq -c '.invariants // [] | map(select(type == "string" and . != ""))' "$config")"
+fi
+
+# Invariants become one more checklist, INV-1, INV-2, ..., given to every reviewer.
+invariants_file=""
+if [ "$(jq length <<< "$invariants")" -gt 0 ]; then
+    invariants_file="$out/invariants.md"
+    {
+        printf '# Invariants of this project (INV)\n\n'
+        printf 'The team says these statements about money always hold. For each one, ask: can\n'
+        printf 'this change make it false, directly or by making an old path reachable? Report under\n'
+        printf 'the INV id with a concrete scenario, the same bar as any other rule. Do not report an\n'
+        printf 'invariant that the change does not touch.\n'
+        jq -r 'to_entries[] | "\n## INV-\(.key + 1). \(.value)"' <<< "$invariants"
+    } > "$invariants_file"
+fi
+
 checklists_of() { # categories JSON -> checklist paths JSON
-    jq -c --arg refs "$refs" 'map({
+    jq -c --arg refs "$refs" --argjson p "$private" --arg inv "$invariants_file" 'map({
         TX: "transactions.md", RACE: "races.md",
-        IDEM: "idempotency.md", MONEY: "arithmetic.md"
-    }[.] // empty) | map($refs + "/" + .)' <<< "$1"
+        IDEM: "idempotency.md", MONEY: "arithmetic.md", PSP: "providers.md"
+    }[.] as $b | if $b then $refs + "/" + $b else $p[.] // empty end)
+    | if length > 0 and $inv != "" then . + [$inv] else . end' <<< "$1"
 }
 
 if [ -n "$config" ]; then
@@ -186,6 +240,7 @@ jq -n \
     --argjson secrets "$secrets" \
     --argjson secrets_excluded "$secrets_excluded" \
     --argjson review "$review" \
+    --arg private_config "$private_config" \
     '{
         base: $base,
         diff: $diff,
@@ -206,5 +261,6 @@ jq -n \
             secrets_excluded: $secrets_excluded
         },
         ignore: $ignore,
-        secrets: $secrets
+        secrets: $secrets,
+        private_config: $private_config
     }' | tee "$out/prepared.json"

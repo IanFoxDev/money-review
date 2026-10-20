@@ -178,3 +178,64 @@ field() { jq -c "$1" <<< "$output"; }
     run "$prepare" --diff "$diffs/readme-only.diff" --out "$BATS_TEST_TMPDIR/out"
     [ "$(jq -r '.checklist' <<< "$output")" = "" ]
 }
+
+@test "a private rule file is resolved next to the config and joins the checklist" {
+    mkdir -p "$BATS_TEST_TMPDIR/private/rules"
+    printf '# Acme (ACME)\n\n## ACME-1. Plan cycle must match\n' > "$BATS_TEST_TMPDIR/private/rules/acme.md"
+    echo '{"rules": [{"prefix": "ACME", "file": "rules/acme.md"}]}' > "$BATS_TEST_TMPDIR/private/config.json"
+    run "$prepare" --diff "$diffs/withdrawal.diff" --config "$BATS_TEST_TMPDIR/private/config.json" --out "$BATS_TEST_TMPDIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(field '.checklists | map(select(endswith("/private/rules/acme.md"))) | length')" = "1" ]
+    grep -q '^## ACME-1\.' "$(jq -r '.groups[0].checklist' <<< "$output")"
+}
+
+@test "a missing private rule file is an error" {
+    echo '{"rules": [{"prefix": "ACME", "file": "nowhere.md"}]}' > .money-review.json
+    run "$prepare" --diff "$diffs/withdrawal.diff"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"cannot read rule file"* ]]
+}
+
+@test "invariants become a numbered checklist for every group" {
+    echo '{"invariants": ["A user has at most one active subscription", "A refund never exceeds its payment"]}' > .money-review.json
+    run "$prepare" --diff "$diffs/withdrawal.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$status" -eq 0 ]
+    [ -f "$BATS_TEST_TMPDIR/out/invariants.md" ]
+    grep -q '^## INV-2\. A refund never exceeds its payment$' "$BATS_TEST_TMPDIR/out/invariants.md"
+    grep -q '^## INV-1\.' "$(jq -r '.groups[0].checklist' <<< "$output")"
+}
+
+@test "no money, no invariants" {
+    echo '{"invariants": ["A user has at most one active subscription"]}' > .money-review.json
+    run "$prepare" --diff "$diffs/readme-only.diff"
+    [ "$(field .checklists)" = "[]" ]
+}
+
+@test "a private config adds its rules and invariants to the project's" {
+    mkdir -p "$BATS_TEST_TMPDIR/private/rules" rules
+    printf '# Acme (ACME)\n\n## ACME-1. One\n' > "$BATS_TEST_TMPDIR/private/rules/acme.md"
+    printf '# Team (TEAM)\n\n## TEAM-1. Two\n' > rules/team.md
+    echo '{"rules": [{"prefix": "TEAM", "file": "rules/team.md"}], "invariants": ["project one"], "context": "project"}' > .money-review.json
+    echo '{"rules": [{"prefix": "ACME", "file": "rules/acme.md"}], "invariants": ["private one"], "context": "private"}' > "$BATS_TEST_TMPDIR/private/config.json"
+    MONEY_REVIEW_PRIVATE="$BATS_TEST_TMPDIR/private" run "$prepare" --diff "$diffs/withdrawal.diff" --out "$BATS_TEST_TMPDIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(field .private_config)" = "\"$BATS_TEST_TMPDIR/private/config.json\"" ]
+    [ "$(field .context)" = '"private"' ]
+    f="$(jq -r '.groups[0].checklist' <<< "$output")"
+    grep -q '^## ACME-1\.' "$f"
+    grep -q '^## TEAM-1\.' "$f"
+    grep -q '^## INV-1\. project one$' "$f"
+    grep -q '^## INV-2\. private one$' "$f"
+}
+
+@test "no private config, nothing changes" {
+    MONEY_REVIEW_PRIVATE="$BATS_TEST_TMPDIR/none" run "$prepare" --diff "$diffs/withdrawal.diff"
+    [ "$status" -eq 0 ]
+    [ "$(field .private_config)" = '""' ]
+}
+
+@test "the private folder of the plugin is ignored by git" {
+    cd "$BATS_TEST_DIRNAME/.."
+    git check-ignore -q plugins/money-review/private/any-repo/config.json
+    ! git check-ignore -q plugins/money-review/private.example/README.md
+}

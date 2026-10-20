@@ -179,7 +179,7 @@ produce a report, also after one more try (`--retries N` to change that), or ran
 
 ## What it checks
 
-Four checklists, 34 rules. Each rule has what to look for, a failure scenario, a bad
+Five checklists, 39 rules. Each rule has what to look for, a failure scenario, a bad
 and a good example, and a "do not report" section that keeps false alarms down. Every
 checklist covers SQL databases and MongoDB; transactions and idempotency also cover
 Kafka, Redpanda and RabbitMQ consumers and producers.
@@ -188,8 +188,9 @@ Kafka, Redpanda and RabbitMQ consumers and producers.
 |---|---|
 | [Transaction boundaries (TX)](plugins/money-review/skills/money-review/references/transactions.md) | provider calls inside a transaction, side effects after commit with no record (including a database write followed by a Kafka produce), debit and credit in separate transactions, swallowed exceptions, nested transactions, one transaction around a batch, MongoDB calls that miss the session, side effects in a retried transaction callback, events that stop carrying what money consumers read |
 | [Races (RACE)](plugins/money-review/skills/money-review/references/races.md) | check-then-act (including `findOne` then `updateOne`), lost updates, state transitions without a guard, lock order, uniqueness enforced only in code, limits checked under READ COMMITTED, Redis locks that do not hold, money decisions read from a secondary or a cache |
-| [Idempotency (IDEM)](plugins/money-review/skills/money-review/references/idempotency.md) | callbacks and consumers without a dedup key, dedup outside the transaction, outgoing calls without a stable idempotency key, timeouts treated as failures, batches that are not safe to re-run, retries around non-idempotent code, offset commits and acks before the work, events of one account out of order, a duplicate key caught inside a MongoDB transaction, provider declines and business errors with no path |
+| [Idempotency (IDEM)](plugins/money-review/skills/money-review/references/idempotency.md) | callbacks and consumers without a dedup key, dedup outside the transaction, outgoing calls without a stable idempotency key, timeouts treated as failures, batches that are not safe to re-run, retries around non-idempotent code, offset commits and acks before the work, events of one account out of order, a duplicate key caught inside a MongoDB transaction, provider declines and business errors with no path, a dedup key (unique index, upsert filter, `ReplacingMergeTree` key) with a field that is filled later |
 | [Money arithmetic (MONEY)](plugins/money-review/skills/money-review/references/arithmetic.md) | floats, amounts without a currency, rounding without a rule, splits that do not add up, signs of refunds and fees, negative input amounts, reversals booked in the wrong direction, balances changed without a ledger entry, an amount taken from the wrong source (the full amount after a partial refund) |
+| [Payment providers (PSP)](plugins/money-review/skills/money-review/references/providers.md) | a change at the provider marked done because the request was accepted, our "expired" taken as "the provider will not charge" (second subscriptions, rebills after our expiry), notifications turned into payments whatever their type, a fix for one provider or path while the others keep the bug |
 
 A money bug that no rule covers is still reported, as `MONEY-0`, when the reviewer can
 write a concrete failure scenario for it. Style, naming and general code quality are out
@@ -236,11 +237,95 @@ config:
 // money-review: ignore RACE-1 the caller holds lockForUpdate on the wallet
 ```
 
+What is true only for your system goes into your own rules and invariants, kept with
+your config and out of this repository:
+
+```json
+{
+  "rules": [{"prefix": "ACME", "file": ".money-review/rules/acme.md", "match": "Subscription|rebill"}],
+  "invariants": ["A user has at most one subscription that any provider can still charge."]
+}
+```
+
+A rule file has the shape of the built-in checklists, with its own prefix (`ACME-1`).
+Invariants become `INV-1`, `INV-2`, ...: the reviewer asks of each whether the change
+can break it. The built-in rules find what any billing code can get wrong; your rules
+carry what the code does not show, such as how your providers really behave. Rules you
+do not want in the reviewed repository either go to the private folder (next section).
+
 Files that may hold secrets (`.env`, keys, certificates) are cut from the diff and
 denied to the review agents, in the shell command and inside Claude Code alike; the
 list is `secrets` in the config.
 
 Every field is described in [docs/config.md](docs/config.md).
+
+## Private rules
+
+Some rules must not be committed anywhere public: how your providers behave, what went
+wrong last quarter, which tables hold money. Keep them in `plugins/money-review/private/`
+of your clone. That folder is in `.gitignore`; money-review reads it, git never sees it.
+
+```
+plugins/money-review/
+  private.example/            committed template, copy it to private/
+  private/                    in .gitignore
+    payments-api/             named after the reviewed repository's top directory
+      config.json             same fields as .money-review.json
+      rules/
+        acme-providers.md     ACME-1, ACME-2, ...
+        acme-refunds.md       REF-1, ...
+    revenue-reports/
+      config.json
+      rules/stats.md
+```
+
+For a repository called `payments-api`, money-review loads
+`private/payments-api/config.json` over the project's `.money-review.json`: its
+`rules` and `invariants` are added to the project's, other fields win over the project's.
+`MONEY_REVIEW_PRIVATE=/some/dir` points at another directory instead. A plugin installed
+from the marketplace is replaced on update, so with an installed plugin keep the folder
+outside and use `MONEY_REVIEW_PRIVATE`.
+
+### How a bug becomes a rule
+
+```mermaid
+flowchart TD
+    A[Money bug found: incident, data check, audit, a review that missed it] --> B{Can a reviewer see it in a diff?}
+    B -- "no: it lives in data or ops" --> Z[Data check or alert, not a review rule]
+    B -- yes --> C{Is it true for any billing code?}
+    C -- yes --> D[Public rule: a checklist in references/, eval case, pull request]
+    C -- "no: our provider, our tables, our history" --> E{Is it a statement that must always hold?}
+    E -- yes --> F[Invariant: one sentence in private/&lt;repo&gt;/config.json]
+    E -- "no: a pattern to look for" --> G[Private rule: private/&lt;repo&gt;/rules/&lt;file&gt;.md]
+    F --> H[Check: triage.sh --config shows the category, retro-run on the PR that brought the bug]
+    G --> H
+    H --> I{Caught, no new noise on a few clean PRs?}
+    I -- no --> J[Make the rule more concrete: a fact, a name, a failure scenario with values] --> H
+    I -- yes --> K[Keep it; note the source of the rule in its text]
+```
+
+A private rule has the same parts as a built-in one, plus where it comes from:
+
+```markdown
+## ACME-3. <what goes wrong, in a few words>
+
+Source: <incident, ticket or data check, date>.
+
+<The fact the code does not show, stated as a fact.>
+
+Look for: <the code shape in a diff>.
+
+Failure scenario: <who does what, in which order, with which amounts, and the money result>.
+
+Good: <what correct code does>.
+
+Do not report: <when the same shape is safe>.
+```
+
+Prefixes are capital letters and digits, one per file, not a built-in one (`TX`, `RACE`,
+`IDEM`, `MONEY`, `PSP`, `INV`). Write the rule so it would have caught the bug in the PR
+that introduced it, then check that it does: a rule tuned on a known bug proves little
+until it also stays quiet on clean PRs and catches the next one.
 
 ## How good is it
 

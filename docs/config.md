@@ -48,7 +48,7 @@ whole expression: a string replaces the default.
 ### `categories`
 
 An object from checklist prefix to an extended regular expression: `TX`, `RACE`,
-`IDEM`, `MONEY`. A checklist is loaded when a file in scope matches its expression.
+`IDEM`, `MONEY`, `PSP`. A checklist is loaded when a file in scope matches its expression.
 The defaults cover Laravel (`DB::transaction`, `lockForUpdate`, `ShouldQueue`), the
 MongoDB drivers for PHP and Go (`updateOne`, `findOneAndUpdate`, `$inc`, sessions and
 `withTransaction`), Kafka and RabbitMQ clients (`produce`, `WriteMessages`,
@@ -95,6 +95,78 @@ Say where the things live that a reviewer would otherwise have to guess:
   "context": "Amounts are integer cents with a currency. Balances change only through App\\Ledger\\Ledger::transfer, which locks both accounts in id order. Provider calls go through App\\Psp\\Gateway and take an idempotency key. Incoming provider events are deduplicated by the DeduplicateEvent job middleware with a unique index on processed_events."
 }
 ```
+
+### `rules`
+
+Your own checklists, next to the built-in ones. The built-in rules describe money bugs
+that any code base can have; a rule file of your own says what is true only for yours:
+how your providers behave, which flows must agree with each other, what went wrong
+before. Keep it wherever the config lives: in the repository (`.money-review/rules/`)
+when the team shares it, or in a private directory next to a `--config` file when it
+must not be committed with the code.
+
+```json
+{
+  "rules": [
+    {"prefix": "ACME", "file": ".money-review/rules/acme-providers.md", "match": "Subscription|rebill|cancel"},
+    {"prefix": "LEDGER", "file": ".money-review/rules/ledger.md"}
+  ]
+}
+```
+
+- `prefix`: capital letters and digits, unique, not a built-in one (`TX`, `RACE`, `IDEM`,
+  `MONEY`, `PSP`, `INV`). Findings under the rule carry it (`ACME-2`), and `ignore`
+  entries and comments take it like any other rule.
+- `file`: a Markdown checklist, relative to the config file (or absolute).
+- `match` (optional): an extended regular expression, case-sensitive, like a built-in
+  category. The file is loaded when a money file in the change matches it. Without
+  `match` it is loaded for every change that touches money.
+
+A rule file has the shape of the built-in ones: a title with the prefix, then one
+section per rule with what to look for, a failure scenario, what is good and when not
+to report. Write the facts the reviewer cannot read in the code as facts:
+
+```markdown
+# Acme providers (ACME)
+
+## ACME-1. Provider X ignores a billing cycle it did not create
+
+Provider X keeps the billing cycle a subscription was created with. A modify request
+with another cycle is answered with 200 and does nothing. Subscriptions created before
+2025-03 have a monthly cycle; later ones a cycle in days.
+
+Look for: a modify, discount or retention request to provider X that builds the cycle
+from current settings instead of the subscription's own.
+
+Failure scenario: the user accepts 50% off, the request is ignored, the next rebill
+charges the full price and the user files a chargeback.
+
+Do not report: requests that read the cycle from the subscription.
+```
+
+Rules that must stay out of the reviewed repository go to the private folder of your
+money-review clone, `plugins/money-review/private/<repository name>/` (in `.gitignore`);
+see [Private rules](../README.md#private-rules) and `plugins/money-review/private.example/`.
+
+### `invariants`
+
+Statements about money that must always hold in your system, one sentence each. They
+become one more checklist, `INV-1`, `INV-2`, ..., given to every review that touches
+money; the reviewer asks of each whether the change can make it false.
+
+```json
+{
+  "invariants": [
+    "A user has at most one subscription that any provider can still charge.",
+    "A refund is booked with the amount the provider returned, never more than was paid.",
+    "Every paid purchase appears exactly once in the revenue table."
+  ]
+}
+```
+
+Keep them few and checkable. Invariants you already check on data, for example with
+[money-checks](https://github.com/IanFoxDev/money-checks), are good candidates: the
+data check finds the broken rows, the review stops the change that would break them.
 
 ### `secrets`
 
@@ -157,6 +229,15 @@ so it does not change what the review costs. Suppressed findings do not count fo
 `--fail-on`, are not posted as merge request comments, and are listed in a folded
 section of the report with their reason, so an ignore that hides a real bug can still
 be found.
+
+## Private config
+
+`plugins/money-review/private/<repository name>/config.json`, when it exists, goes over
+the project config (`.money-review.json` or `--config`): fields merge as above, except
+`rules` and `invariants`, which are added to the project's. Rule file paths in each
+config are relative to that config. `MONEY_REVIEW_PRIVATE` names another directory
+that holds `config.json`. The prepared JSON says which private config was used
+(`private_config`).
 
 ## Checking what triage does
 

@@ -52,7 +52,7 @@ field() { jq -c "$1" <<< "$output"; }
     run "$triage" --config "$BATS_TEST_DIRNAME/fixtures/money-paths.json" "$diffs/deleted-file.diff"
     [ "$(field .money)" = "true" ]
     [ "$(field .files)" = '["app/Billing/Ledger.php"]' ]
-    [ "$(field .categories)" = '["IDEM","MONEY","RACE","TX"]' ]
+    [ "$(field .categories)" = '["IDEM","MONEY","PSP","RACE","TX"]' ]
     [ "$(field '.reasons[0].scope')" = '"money_paths"' ]
 }
 
@@ -115,4 +115,43 @@ has() { [ "$(field ".categories | index(\"$1\") != null")" = "true" ]; }
     run "$triage" "$diffs/php-produce-without-key.diff"
     has IDEM
     has TX
+}
+
+@test "a provider notification loads the provider checklist" {
+    run "$triage" "$diffs/appstore-notification.diff"
+    [ "$status" -eq 0 ]
+    [ "$(field '.categories | index("PSP") != null')" = "true" ]
+}
+
+@test "a private rule with a pattern is a category of its own" {
+    echo '{"rules": [{"prefix": "ACME", "file": "acme.md", "match": "recordRenewal"}]}' > "$BATS_TEST_TMPDIR/c.json"
+    run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/appstore-notification.diff"
+    [ "$status" -eq 0 ]
+    [ "$(field '.categories | index("ACME") != null')" = "true" ]
+    [ "$(field '[.reasons[] | select(.category == "ACME") | .match][0]')" = '"recordRenewal"' ]
+}
+
+@test "a private rule that does not match is not loaded" {
+    echo '{"rules": [{"prefix": "ACME", "file": "acme.md", "match": "nothingLikeThis"}]}' > "$BATS_TEST_TMPDIR/c.json"
+    run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/appstore-notification.diff"
+    [ "$(field '.categories | index("ACME")')" = "null" ]
+}
+
+@test "a private rule without a pattern applies to every money file" {
+    echo '{"rules": [{"prefix": "ACME", "file": "acme.md"}]}' > "$BATS_TEST_TMPDIR/c.json"
+    run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/withdrawal.diff"
+    [ "$(field '.categories | index("ACME") != null')" = "true" ]
+    run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/avatar.diff"
+    [ "$(field .money)" = "false" ]
+}
+
+@test "a private rule cannot take a built-in or malformed prefix" {
+    for p in PSP INV acme A-1 ""; do
+        echo "{\"rules\": [{\"prefix\": \"$p\", \"file\": \"x.md\"}]}" > "$BATS_TEST_TMPDIR/c.json"
+        run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/withdrawal.diff"
+        [ "$status" -eq 2 ]
+    done
+    echo '{"rules": [{"prefix": "ACME", "file": "a.md"}, {"prefix": "ACME", "file": "b.md"}]}' > "$BATS_TEST_TMPDIR/c.json"
+    run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/withdrawal.diff"
+    [ "$status" -eq 2 ]
 }

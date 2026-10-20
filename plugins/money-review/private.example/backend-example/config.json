@@ -1,0 +1,10 @@
+{
+  "context": "Payments go through two providers, X and Y. Subscriptions live in the subscriptions table; our expires_at is the end of the paid period, not the provider's renewal date.",
+  "rules": [
+    {"prefix": "ACME", "file": "rules/acme-providers.md", "match": "[Ss]ubscription|[Rr]enew|[Rr]etention|[Dd]iscount"}
+  ],
+  "invariants": [
+    "A user has at most one subscription that any provider can still charge.",
+    "A refund is booked with the amount the provider returned, never more than was paid."
+  ]
+}

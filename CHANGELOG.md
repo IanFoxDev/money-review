@@ -6,6 +6,30 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Payment providers checklist (PSP): a provider change marked done because the request
+  was accepted (PSP-1), our expiry or status taken as "the provider will not charge"
+  (PSP-2), notifications turned into payments whatever their type (PSP-3), a fix for one
+  provider or path while the siblings keep the bug (PSP-4).
+- IDEM-11: a dedup key (unique index, upsert filter, `ReplacingMergeTree` key) with a
+  field that is filled later, so two versions of one event become two rows.
+- Private rules: `rules` in the config adds your own checklists with their own prefix,
+  loaded by a pattern or for every money change; the file stays with your config.
+- Private folder: `plugins/money-review/private/<repository name>/config.json` (in
+  `.gitignore`, template in `private.example/`) goes over the project config and adds its
+  rules and invariants; `MONEY_REVIEW_PRIVATE` points at another directory. The README
+  shows how a bug becomes a public rule, a private rule or an invariant.
+- Invariants: `invariants` in the config become a checklist (`INV-1`, ...) that every
+  review checks the change against.
+- The reviewer looks for siblings of a provider-specific change and for what the
+  provider does regardless of our state; the verifier gets the config context and takes
+  provider behaviour stated there or in the project's rules as fact.
+- Eval: cases for PSP-1, PSP-2, PSP-3 and IDEM-11 and a clean retention case; on the
+  real-bug set recall stays at 61%, cost per run 0.39 USD
+  ([results](docs/eval-results/2026-10-19-providers.md)).
+- `eval/real/run.sh --resume` keeps the finished runs of a stopped run.
+
 ### Fixed
 
 - A finding whose file is an absolute path inside the repository is reported with the

@@ -2,8 +2,9 @@
 # PreToolUse hook: stops the money-review agents from opening files that may hold
 # secrets, in every way the plugin is used (the /money-review command inside Claude
 # Code cannot set deny rules for its session). Other agents and the main session are
-# not touched. The patterns are "secrets" from the project's .money-review.json, or
-# the plugin defaults.
+# not touched. The patterns are "secrets" from the private config of the repository
+# (private/<name>/config.json), else from the project's .money-review.json, else the
+# plugin defaults.
 #
 # Input: the hook JSON on stdin. Output: a deny decision, or nothing.
 set -euo pipefail
@@ -21,6 +22,10 @@ root="$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null || echo "${cwd:
 patterns="$(jq -c '.secrets // []' "$here/../defaults/config.json")"
 if [ -f "$root/.money-review.json" ]; then
     patterns="$(jq -c --argjson d "$patterns" '.secrets // $d' "$root/.money-review.json" 2>/dev/null || echo "$patterns")"
+fi
+private_config="${MONEY_REVIEW_PRIVATE:-$here/../private/$(basename "$root")}/config.json"
+if [ -f "$private_config" ]; then
+    patterns="$(jq -c --argjson d "$patterns" '.secrets // $d' "$private_config" 2>/dev/null || echo "$patterns")"
 fi
 
 is_secret() { # path relative to the root, or a glob -> 0 when a pattern matches it

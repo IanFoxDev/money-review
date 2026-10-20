@@ -33,7 +33,9 @@ the decision, the checklist paths and the project context.
 the config (see [config.md](config.md)). A file is in scope when it matches
 `money_paths` or its changed lines match `signals`. Removed lines count: dropping a
 `lockForUpdate()` is a reason to look for races. Checklists are chosen only from files
-in scope.
+in scope. The project's own rule files (`rules` in the config) are categories like the
+built-in ones, matched by their own pattern; its `invariants` become one more checklist
+that goes to every review of a money change.
 
 **Groups.** When the money files of a change have more than `review.group_lines`
 changed lines (800 by default), `scripts/split.sh` splits them into groups of files in
@@ -53,7 +55,8 @@ earlier in the transaction, a unique index, an outer transaction opened by the c
 dedup in a middleware, a guard on the current state. Every candidate ends up either in
 `findings` or in `rejected`, with the code that prevents it. It does not add findings
 of its own. When the guard may live outside the repository it keeps the finding with
-a lower severity and says what to check.
+a lower severity and says what to check. It also gets the context: what a provider does
+is not in the code, so behaviour stated there or in the project's rules counts as fact.
 
 **finish.sh** makes the last changes to the report without a model: it moves a
 finding that points past the end of its file to a line that exists, and moves

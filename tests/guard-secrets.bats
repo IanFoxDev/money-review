@@ -50,3 +50,12 @@ decide() {
     out="$(jq -nc --arg r "$repo" '{agent_type: "money-review:money-reviewer", tool_name: "Read", tool_input: {file_path: ($r + "/.env")}, cwd: $r}' | "$guard")"
     [[ "$(jq -r .hookSpecificOutput.permissionDecisionReason <<< "$out")" == *"/.env"*"secrets"* ]]
 }
+
+@test "the private config replaces the patterns of the project" {
+    echo '{"secrets": ["*.vault"]}' > "$repo/.money-review.json"
+    mkdir -p "$BATS_TEST_TMPDIR/private"
+    echo '{"secrets": ["config/payment.php"]}' > "$BATS_TEST_TMPDIR/private/config.json"
+    export MONEY_REVIEW_PRIVATE="$BATS_TEST_TMPDIR/private"
+    [ "$(decide money-review:money-reviewer Read "$(read_of config/payment.php)")" = deny ]
+    [ "$(decide money-review:money-reviewer Read "$(read_of prod.vault)")" = allow ]
+}

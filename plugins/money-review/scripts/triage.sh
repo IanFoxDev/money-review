@@ -10,6 +10,7 @@
 # "signals", in any letter case (Go fields are Amount and Balance).
 # Categories are matched only in files that are in scope. Patterns are
 # extended regular expressions; in path globs "*" also matches "/".
+# Private rules ("rules" in the config) are categories named by their prefix.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,7 +21,7 @@ diff_file=""
 while [ $# -gt 0 ]; do
     case "$1" in
         --config) config="${2:?--config needs a file}"; shift 2 ;;
-        -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         -*) echo "triage: unknown option $1" >&2; exit 2 ;;
         *) diff_file="$1"; shift ;;
     esac
@@ -34,6 +35,18 @@ if [ -n "$config" ]; then
 else
     cfg="$(cat "$defaults")"
 fi
+
+# Private rules from the project config add their own categories: a rule file with
+# prefix ACME is matched by its "match" pattern, or by every file in scope without one.
+bad_prefix="$(jq -r '[.rules // [] | .[] | .prefix // ""
+    | select(test("^[A-Z][A-Z0-9]*$") | not) ] + [.rules // [] | .[] | .prefix
+    | select(. == "TX" or . == "RACE" or . == "IDEM" or . == "MONEY" or . == "PSP" or . == "INV")]
+    | .[0] // empty' <<< "$cfg")"
+if [ -n "$bad_prefix" ] || jq -e '[.rules // [] | .[] | .prefix // ""] | (length != (unique | length)) or any(. == "")' <<< "$cfg" >/dev/null; then
+    echo "triage: rules need distinct prefixes of capital letters and digits, not a built-in one (TX, RACE, IDEM, MONEY, PSP, INV)${bad_prefix:+: $bad_prefix}" >&2
+    exit 2
+fi
+cfg="$(jq '.categories += ([.rules // [] | .[] | {(.prefix): (.match // ".")}] | add // {})' <<< "$cfg")"
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
