@@ -1,0 +1,16 @@
+{
+  "title": "Subscriptions expire on our side while the provider keeps renewing them",
+  "bugs": [
+    {
+      "rules": ["PSP-2"],
+      "file": "app/Jobs/ExpireSubscriptions.php",
+      "anchor": "update\\(\\['status' => 'expired'\\]\\)",
+      "anchor_end": "update\\(\\['status' => 'expired'\\]\\)",
+      "note": "no cancel at the provider; a declined renewal is retried for 7 days, the user subscribes again and pays twice",
+      "also": [{"file": "app/Services/SubscriptionService.php", "anchor": "Subscription::create"}]
+    }
+  ],
+  "acceptable": [
+    {"rules": ["RACE-3", "IDEM-5"], "file": "app/Jobs/ExpireSubscriptions.php"}
+  ]
+}

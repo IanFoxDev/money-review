@@ -1,0 +1,16 @@
+{
+  "title": "Every App Store notification becomes a successful payment",
+  "bugs": [
+    {
+      "rules": ["PSP-3", "IDEM-1", "MONEY-0"],
+      "file": "app/Http/Controllers/AppStoreNotificationController.php",
+      "anchor": "Payment::create\\(",
+      "anchor_end": "'psp_reference' =>",
+      "note": "notificationType is read and not used: expiry, refund and renewal-flag notifications are booked as payments; several notifications of one transaction are several payments",
+      "also": [{"file": "app/Http/Controllers/AppStoreNotificationController.php", "anchor": "\\$type = "}]
+    }
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-1", "MONEY-3", "MONEY-7", "PSP-2"], "file": "app/Http/Controllers/AppStoreNotificationController.php"}
+  ]
+}

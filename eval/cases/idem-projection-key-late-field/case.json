@@ -1,0 +1,15 @@
+{
+  "title": "Revenue projection keyed on a subscription id that arrives later",
+  "bugs": [
+    {
+      "rules": ["IDEM-11", "IDEM-5", "MONEY-0"],
+      "file": "database/migrations/2026_10_02_000000_create_revenue_rows.php",
+      "anchor": "unique\\(\\['payment_id', 'subscription_id'\\]\\)",
+      "note": "the run on subscription.linked inserts a second row instead of replacing the first; revenue is doubled",
+      "also": [{"file": "app/Jobs/ProjectRevenue.php", "anchor": "\\['payment_id', 'subscription_id'\\],"}]
+    }
+  ],
+  "acceptable": [
+    {"rules": ["MONEY-7", "RACE-3"], "file": "app/Jobs/ProjectRevenue.php"}
+  ]
+}

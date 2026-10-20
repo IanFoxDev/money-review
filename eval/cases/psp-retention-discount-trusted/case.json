@@ -1,0 +1,30 @@
+{
+  "title": "Retention discount recorded as applied because the provider accepted the request",
+  "bugs": [
+    {
+      "rules": [
+        "PSP-1"
+      ],
+      "file": "app/Services/RetentionService.php",
+      "anchor": "'discount_status' => 'applied'",
+      "note": "accepted is not applied: nothing checks the provider's next amount"
+    }
+  ],
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-3",
+        "MONEY-7"
+      ],
+      "file": "app/Services/RetentionService.php"
+    },
+    {
+      "rules": [
+        "MONEY-0",
+        "MONEY-7"
+      ],
+      "file": "database/migrations/2026_10_01_000000_add_provider_fields_to_subscriptions.php",
+      "note": "price_cents defaults to 0 for old subscriptions; the case does not backfill it"
+    }
+  ]
+}

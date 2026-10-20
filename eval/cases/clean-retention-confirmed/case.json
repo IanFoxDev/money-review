@@ -1,0 +1,12 @@
+{
+  "title": "Retention discount confirmed from the provider before it counts as applied",
+  "bugs": [],
+  "acceptable": [
+    {
+      "rules": [
+        "MONEY-3"
+      ],
+      "file": "app/Services/RetentionService.php"
+    }
+  ]
+}
