@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-10-20
+
+### Fixed
+
+- `--pr`, `--mr` and `--commits` did not load the private config: the review runs in a
+  temporary worktree, and the private folder was looked up by the worktree's directory
+  name instead of the repository's. Any linked worktree now uses the main checkout's name.
+
 ## [0.9.0] - 2026-10-20
 
 ### Added
@@ -277,7 +285,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/IanFoxDev/money-review/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/IanFoxDev/money-review/compare/v0.8.3...v0.9.0
 [0.8.3]: https://github.com/IanFoxDev/money-review/compare/v0.8.2...v0.8.3
 [0.8.2]: https://github.com/IanFoxDev/money-review/compare/v0.8.1...v0.8.2

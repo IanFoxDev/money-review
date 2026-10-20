@@ -82,7 +82,14 @@ fi
 # Private rules live next to the plugin, out of git: private/<repository name>/config.json
 # (see private.example/), or the directory in MONEY_REVIEW_PRIVATE. That config goes
 # over the project config; its rules and invariants are added to the project's.
-private_config="${MONEY_REVIEW_PRIVATE:-$here/../private/$(basename "$root")}/config.json"
+# A linked worktree (--pr, --mr and --commits review in one) is named after the main
+# checkout, not after its own directory.
+repo_name="$(basename "$root")"
+common_dir="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+case "$common_dir" in
+    */.git) repo_name="$(basename "$(dirname "$common_dir")")" ;;
+esac
+private_config="${MONEY_REVIEW_PRIVATE:-$here/../private/$repo_name}/config.json"
 if [ -f "$private_config" ]; then
     with_abs_rules() { # config file -> JSON with absolute rule file paths
         local d

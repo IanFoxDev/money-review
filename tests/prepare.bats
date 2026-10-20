@@ -234,6 +234,21 @@ field() { jq -c "$1" <<< "$output"; }
     [ "$(field .private_config)" = '""' ]
 }
 
+@test "a linked worktree finds the private config of its main checkout" {
+    plugin="$BATS_TEST_TMPDIR/plugin"
+    cp -R "$BATS_TEST_DIRNAME/../plugins/money-review" "$plugin"
+    rm -rf "$plugin/private"
+    mkdir -p "$plugin/private/repo"
+    echo '{"context": "private"}' > "$plugin/private/repo/config.json"
+    git worktree add -q --detach "$BATS_TEST_TMPDIR/out/worktree"
+    cd "$BATS_TEST_TMPDIR/out/worktree"
+    unset MONEY_REVIEW_PRIVATE
+    run "$plugin/scripts/prepare.sh" --diff "$diffs/withdrawal.diff" --out "$BATS_TEST_TMPDIR/prep"
+    [ "$status" -eq 0 ]
+    [ "$(field .private_config)" = "\"$plugin/private/repo/config.json\"" ]
+    [ "$(field .context)" = '"private"' ]
+}
+
 @test "the private folder of the plugin is ignored by git" {
     cd "$BATS_TEST_DIRNAME/.."
     git check-ignore -q plugins/money-review/private/any-repo/config.json
