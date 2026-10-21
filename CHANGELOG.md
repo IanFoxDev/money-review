@@ -6,8 +6,25 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Four checklists: refunds and reversals (REV), subscription lifecycle (SUB), periods
+  and dates (TIME), data completeness for syncs, backfills and aggregates (DATA).
+- The provider checklist reads provider messages too: loose values (PSP-5), pending
+  results taken as final (PSP-6), amounts not checked against the order (PSP-7),
+  unsigned messages (PSP-8), late events (PSP-9), events acknowledged and never applied
+  (PSP-10); PSP-3 also covers a default branch that maps unknown events to a charge.
+- MONEY-8 (amounts in different units or scales), MONEY-9 (a missing value that
+  defaults to moving money), IDEM-12 (a dedup check that can never match), TX-10 (a
+  second write path that skips the side effects of the main one).
+- A category also matches on the path of a file in scope, so a `PostbackController.php`
+  gets the provider checklist when the changed lines do not name the provider.
+
 ### Changed
 
+- A file in scope only through `money_paths` gets the four base checklists (TX, RACE,
+  IDEM, MONEY); the others load when the file matches their patterns.
+- `REV`, `SUB`, `TIME` and `DATA` are built-in prefixes and cannot name private rules.
 - Eval: a finding with the right rule counts when its line is within 10 lines of the
   anchor range (was 5). Reviews that point at the start of the function or the
   missing guard were scored as false alarms. The stored runs of the real set
