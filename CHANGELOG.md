@@ -49,7 +49,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- Shell command: `--quiet` suppresses the usage summary on stderr.
+- Shell command: `--quiet` suppresses the usage summary on stderr. Thanks @Sinkleberg (#9).
 
 ## [0.8.2] - 2026-10-13
 
