@@ -3,7 +3,7 @@
   "title": "Paywise callback reads the form field approved=false as true",
   "bugs": [
     {
-      "rules": ["PSP-2"],
+      "rules": ["PSP-5"],
       "file": "src/Payments/PaywiseCallback.php",
       "anchor": "\\$approved = \\(bool\\)",
       "anchor_end": "if \\(\\$approved\\)",
@@ -11,7 +11,7 @@
     }
   ],
   "acceptable": [
-    {"rules": ["PSP-4"], "file": "src/Payments/PaywiseCallback.php"},
-    {"rules": ["PSP-5"], "file": "src/Payments/PaywiseCallback.php"}
+    {"rules": ["PSP-7"], "file": "src/Payments/PaywiseCallback.php"},
+    {"rules": ["PSP-8"], "file": "src/Payments/PaywiseCallback.php"}
   ]
 }

@@ -2,7 +2,7 @@
   "title": "CardHub IPN credits the order total without comparing the reported amount and currency",
   "bugs": [
     {
-      "rules": ["PSP-4", "MONEY-7"],
+      "rules": ["PSP-7", "MONEY-7"],
       "file": "app/Http/Controllers/CardHubIpnController.php",
       "anchor": "if \\(\\$status === 'completed'\\)",
       "anchor_end": "\\$payment->amount_cents,",
@@ -10,6 +10,6 @@
     }
   ],
   "acceptable": [
-    {"rules": ["PSP-5"], "file": "app/Http/Controllers/CardHubIpnController.php"}
+    {"rules": ["PSP-8"], "file": "app/Http/Controllers/CardHubIpnController.php"}
   ]
 }

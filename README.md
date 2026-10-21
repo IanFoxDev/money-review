@@ -179,7 +179,7 @@ produce a report, also after one more try (`--retries N` to change that), or ran
 
 ## What it checks
 
-Nine checklists, 69 rules. Each rule has what to look for, a failure scenario, a bad
+Nine checklists, 73 rules. Each rule has what to look for, a failure scenario, a bad
 and a good example, and a "do not report" section that keeps false alarms down. Every
 checklist covers SQL databases and MongoDB; transactions and idempotency also cover
 Kafka, Redpanda and RabbitMQ consumers and producers.
@@ -327,7 +327,7 @@ Do not report: <when the same shape is safe>.
 ```
 
 Prefixes are capital letters and digits, one per file, not a built-in one (`TX`, `RACE`,
-`IDEM`, `MONEY`, `PSP`, `INV`). Write the rule so it would have caught the bug in the PR
+`IDEM`, `MONEY`, `PSP`, `REV`, `SUB`, `TIME`, `DATA`, `INV`). Write the rule so it would have caught the bug in the PR
 that introduced it, then check that it does: a rule tuned on a known bug proves little
 until it also stays quiet on clean PRs and catches the next one.
 

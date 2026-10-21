@@ -122,7 +122,7 @@ must not be committed with the code.
 ```
 
 - `prefix`: capital letters and digits, unique, not a built-in one (`TX`, `RACE`, `IDEM`,
-  `MONEY`, `PSP`, `INV`). Findings under the rule carry it (`ACME-2`), and `ignore`
+  `MONEY`, `PSP`, `REV`, `SUB`, `TIME`, `DATA`, `INV`). Findings under the rule carry it (`ACME-2`), and `ignore`
   entries and comments take it like any other rule.
 - `file`: a Markdown checklist, relative to the config file (or absolute).
 - `match` (optional): an extended regular expression, case-sensitive, like a built-in

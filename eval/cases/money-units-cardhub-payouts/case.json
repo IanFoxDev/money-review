@@ -11,6 +11,6 @@
     }
   ],
   "acceptable": [
-    {"rules": ["PSP-3", "PSP-2", "IDEM-4"], "file": "src/Payouts/CardHubPayoutProvider.php"}
+    {"rules": ["PSP-6", "PSP-5", "IDEM-4"], "file": "src/Payouts/CardHubPayoutProvider.php"}
   ]
 }

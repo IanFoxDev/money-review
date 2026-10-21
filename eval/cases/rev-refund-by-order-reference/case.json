@@ -11,6 +11,6 @@
   ],
   "acceptable": [
     {"rules": ["REV-5"], "file": "app/Http/Controllers/ProviderRefundWebhookController.php"},
-    {"rules": ["PSP-7"], "file": "app/Http/Controllers/ProviderRefundWebhookController.php"}
+    {"rules": ["PSP-10"], "file": "app/Http/Controllers/ProviderRefundWebhookController.php"}
   ]
 }

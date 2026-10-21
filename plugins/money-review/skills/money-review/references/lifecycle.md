@@ -91,7 +91,7 @@ Look for: "cancel at period end" implemented as an immediate cancel (paid days l
 an immediate cancel implemented as end-of-period (charged again); a cancel or expire
 write without a condition on the current state, so it overwrites `refunded`,
 `charged_back` or `lifetime`; cancel requests sent twice to the provider; a provider's
-deferred cancel treated as done (see PSP-3); provider-side reactivations never recorded.
+deferred cancel treated as done (see PSP-6); provider-side reactivations never recorded.
 
 Failure scenario: an `expire` webhook for a subscription that was already upgraded to
 lifetime sets `status = expired` by id. The lifetime customer loses access and asks for a
@@ -143,6 +143,6 @@ rounding rule (MONEY-3), and the credit stored as a line linked to the original 
 
 - When the provider is the source of truth for renewals, our state is a copy: every
   provider event that changes the agreement (rebill, cancel, reactivate, change of
-  plan) needs a handler, or the copy drifts (see PSP-7).
+  plan) needs a handler, or the copy drifts (see PSP-10).
 - A denormalised copy of subscriptions on the user document (a list rewritten in full
   by a hook) loses entries when two writes race (RACE-2).

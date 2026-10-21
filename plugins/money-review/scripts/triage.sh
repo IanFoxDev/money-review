@@ -42,10 +42,10 @@ fi
 # prefix ACME is matched by its "match" pattern, or by every file in scope without one.
 bad_prefix="$(jq -r '[.rules // [] | .[] | .prefix // ""
     | select(test("^[A-Z][A-Z0-9]*$") | not) ] + [.rules // [] | .[] | .prefix
-    | select(. == "TX" or . == "RACE" or . == "IDEM" or . == "MONEY" or . == "PSP" or . == "INV")]
+    | select(IN("TX", "RACE", "IDEM", "MONEY", "PSP", "REV", "SUB", "TIME", "DATA", "INV"))]
     | .[0] // empty' <<< "$cfg")"
 if [ -n "$bad_prefix" ] || jq -e '[.rules // [] | .[] | .prefix // ""] | (length != (unique | length)) or any(. == "")' <<< "$cfg" >/dev/null; then
-    echo "triage: rules need distinct prefixes of capital letters and digits, not a built-in one (TX, RACE, IDEM, MONEY, PSP, INV)${bad_prefix:+: $bad_prefix}" >&2
+    echo "triage: rules need distinct prefixes of capital letters and digits, not a built-in one (TX, RACE, IDEM, MONEY, PSP, REV, SUB, TIME, DATA, INV)${bad_prefix:+: $bad_prefix}" >&2
     exit 2
 fi
 cfg="$(jq '.categories += ([.rules // [] | .[] | {(.prefix): (.match // ".")}] | add // {})' <<< "$cfg")"

@@ -12,6 +12,6 @@
     }
   ],
   "acceptable": [
-    {"rules": ["PSP-6", "DATA-7"], "file": "src/Payments/MissedPaymentRecovery.php"}
+    {"rules": ["PSP-9", "DATA-7"], "file": "src/Payments/MissedPaymentRecovery.php"}
   ]
 }

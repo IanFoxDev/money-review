@@ -146,7 +146,7 @@ has() { [ "$(field ".categories | index(\"$1\") != null")" = "true" ]; }
 }
 
 @test "a private rule cannot take a built-in or malformed prefix" {
-    for p in PSP INV acme A-1 ""; do
+    for p in PSP DATA INV acme A-1 ""; do
         echo "{\"rules\": [{\"prefix\": \"$p\", \"file\": \"x.md\"}]}" > "$BATS_TEST_TMPDIR/c.json"
         run "$triage" --config "$BATS_TEST_TMPDIR/c.json" "$diffs/withdrawal.diff"
         [ "$status" -eq 2 ]

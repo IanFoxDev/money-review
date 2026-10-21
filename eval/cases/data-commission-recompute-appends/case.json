@@ -2,7 +2,7 @@
   "title": "Monthly commission re-run for a corrected month adds new statement lines and credits the whole month again",
   "bugs": [
     {
-      "rules": ["DATA-4", "IDEM-5", "IDEM-11"],
+      "rules": ["DATA-4", "IDEM-5", "IDEM-12"],
       "file": "app/Jobs/ComputePartnerCommissions.php",
       "anchor": "insertGetId\\(",
       "anchor_end": "\"commission-line:\\{\\$lineId\\}\"",
