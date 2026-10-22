@@ -47,8 +47,8 @@ The caller gives you:
    job runs while the feature is off), find that code and read it: the callers, the
    wiring in `main` or the service container, the base class, the ORM or DAO layer
    with its schema and its insert hooks, in the repository, in `vendor/` or in the Go
-   module cache. If you cannot find it, do not report: a finding that says "I could not
-   see X" is a question for the author, not a bug.
+   module cache. If it stops the scenario, drop the finding. If you cannot find it,
+   report the finding and say in `scenario` what you looked for and where.
 4. Write a finding only if you can describe a concrete failure scenario: who does what,
    in which order, with which values, and what the money result is. "This could cause
    a race condition" is not a scenario. "Two callbacks for payment 42 arrive 30 ms
@@ -56,8 +56,9 @@ The caller gives you:
 5. Apply the "do not report" section of the rule. If it matches, drop the finding.
 6. Report code that the diff adds or changes. Old code that the diff only calls is in
    scope only when the change makes an old bug reachable or worse. Do not report a path
-   the code cannot take today: one that needs a later change, a value the parameter type
-   does not allow, a branch that the wiring never reaches.
+   that existing code cannot take: a value the parameter type does not allow, a branch
+   the current callers or wiring never reach. Code that the change adds and nothing
+   calls yet is reviewed as if it is called; it is usually wired in a later change.
 7. Look past the diff in two directions before you finish. Siblings: when the change
    fixes or changes money behaviour for one provider, product, plan type or entry
    point, search for the others (other adapters of the same interface, other callers,

@@ -65,11 +65,13 @@ The caller gives you:
    - the scenario needs code in this repository or its dependencies to be missing or
      wrong (a caller, the wiring, a base class, an ORM or DAO schema that casts types,
      a hook that runs on insert) and you have not read it: find it in the repository,
-     `vendor/` or the Go module cache and walk it. If it stops the scenario, reject. If
-     you cannot find it at all, reject and say in `reason` what to check; do not keep a
-     finding that rests on code nobody has read.
-   - the scenario needs a path the code cannot take today (a later change, a value the
-     parameter type does not allow, a branch the wiring never reaches): reject.
+     `vendor/` or the Go module cache and walk it. If it stops the scenario, reject and
+     name it in `reason`. If you cannot find it at all, keep the finding with severity
+     lowered by one level and say in `fix` what to check.
+   - the scenario needs a path that existing code cannot take (a value the parameter
+     type does not allow, a branch the current callers or wiring never reach): reject.
+     Code that the change adds and nothing calls yet is not such a path: judge it as if
+     it is called.
    - you cannot tell from the repository because the guard may live in another service
      (an API the code calls, a separate consumer): keep it with severity lowered by one
      level and say what to check in `fix`.
