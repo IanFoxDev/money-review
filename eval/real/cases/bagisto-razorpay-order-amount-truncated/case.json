@@ -46,7 +46,8 @@
     {
       "rules": [
         "PSP-3",
-        "MONEY-0"
+        "MONEY-0",
+        "PSP-6"
       ],
       "file": "packages/Webkul/Razorpay/src/Http/Controllers/RazorpayController.php",
       "anchor": "private const PAID_STATUSES = \\[.captured., .authorized.\\];",

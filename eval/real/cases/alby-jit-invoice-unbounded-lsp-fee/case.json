@@ -37,6 +37,13 @@
         "MONEY-0"
       ],
       "file": "lnclient/ldk/ldk.go"
+    },
+    {
+      "rules": [
+        "MONEY-0",
+        "MONEY-7"
+      ],
+      "file": "transactions/transactions_service.go"
     }
   ]
 }
