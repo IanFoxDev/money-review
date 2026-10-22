@@ -387,7 +387,11 @@ every caller opens an outer transaction, and breaks with the first one that does
 - Triage works on words and paths. A money change that uses none of the configured
   words is skipped; add its paths to `money_paths`.
 - It reads the repository it runs in. A guard that lives in another service is
-  invisible to it; the verifier lowers the severity when it cannot tell.
+  invisible to it; the verifier lowers the severity when it cannot tell. The same goes
+  for a package that is not installed in the checkout: on a work codebase whose data
+  layer lives in a private SDK (a DAO that casts types on insert, hooks that update
+  the parent row), about one run in ten had a false alarm of this kind.
+  Install dependencies before the review, or say what the SDK does in `context`.
 - Running it in CI needs a token tied to one person's subscription
   (`claude setup-token`). Check that your plan allows that before you set it up for a
   team. Until then, the reviewer runs it by hand ([docs/team.md](docs/team.md)).

@@ -25,6 +25,9 @@ All notable changes to this project are documented here. The format follows
 - A file in scope only through `money_paths` gets the four base checklists (TX, RACE,
   IDEM, MONEY); the others load when the file matches their patterns.
 - `REV`, `SUB`, `TIME` and `DATA` are built-in prefixes and cannot name private rules.
+- "Do not report" cases for DATA-5 (a migration the default branch has not run),
+  SUB-4 (an expired subscription renewed from now with no access in the gap), MONEY-9
+  (a fallback that money paths cannot reach) and IDEM-12 (a type the write layer casts).
 - Eval: a finding with the right rule counts when its line is within 10 lines of the
   anchor range (was 5). Reviews that point at the start of the function or the
   missing guard were scored as false alarms. The stored runs of the real set
