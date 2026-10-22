@@ -109,6 +109,9 @@ Good: read with `FINAL` or `argMax` by version, or aggregate into a table whose 
 gives the right sum on insert; keys of replacement rows equal the keys of the rows they
 replace; partitions on immutable columns.
 
+Do not report: a change to a migration that the default branch has not run yet (the
+migration is new in this branch); say how you checked its history.
+
 ## DATA-6. A write acknowledged before it is stored
 
 Look for: ClickHouse `async_insert=1` with `wait_for_async_insert=0` (or the client's

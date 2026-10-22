@@ -83,7 +83,8 @@ Good: the new end is the old end plus one billing period in the provider's unit;
 the provider tells the next charge date, access is bounded by it.
 
 Do not report: a product rule that deliberately restarts the period on payment
-(prepaid packs), documented as such.
+(prepaid packs), documented as such; a subscription that had already expired, renewed
+from now, when the user had no access in the gap and the paid period is counted in full.
 
 ## SUB-5. Cancellation applied with the wrong timing or to a final state
 

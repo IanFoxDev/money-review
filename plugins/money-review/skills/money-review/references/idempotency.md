@@ -304,5 +304,7 @@ event id, or our own stable operation id), normalised to the stored type; it is
 enforced by a unique index that has no nullable parts; a test sends the same event twice.
 
 Do not report: a key that is random by design because the operation is not retried
-(a one-off admin action behind a confirmation), if nothing calls it in a loop.
+(a one-off admin action behind a confirmation), if nothing calls it in a loop; a type
+difference that the write layer removes (an ORM or DAO schema that casts the field on
+insert): read the schema before you report a type mismatch.
 

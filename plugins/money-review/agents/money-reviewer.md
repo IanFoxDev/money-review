@@ -42,13 +42,22 @@ The caller gives you:
    function, its callers, the transaction wrapper, the migration for the table, the
    middleware or base class of a handler. Most false positives come from not seeing a
    lock, a unique index or an outer transaction that is outside the hunk.
+   When the scenario needs some code to be missing or wrong (nobody sets the flag, the
+   lookup type differs from the stored type, nothing throws when the row is absent, the
+   job runs while the feature is off), find that code and read it: the callers, the
+   wiring in `main` or the service container, the base class, the ORM or DAO layer
+   with its schema and its insert hooks, in the repository, in `vendor/` or in the Go
+   module cache. If you cannot find it, do not report: a finding that says "I could not
+   see X" is a question for the author, not a bug.
 4. Write a finding only if you can describe a concrete failure scenario: who does what,
    in which order, with which values, and what the money result is. "This could cause
    a race condition" is not a scenario. "Two callbacks for payment 42 arrive 30 ms
    apart, both read status pending, both credit 50 EUR, the wallet gets 100" is.
 5. Apply the "do not report" section of the rule. If it matches, drop the finding.
 6. Report code that the diff adds or changes. Old code that the diff only calls is in
-   scope only when the change makes an old bug reachable or worse.
+   scope only when the change makes an old bug reachable or worse. Do not report a path
+   the code cannot take today: one that needs a later change, a value the parameter type
+   does not allow, a branch that the wiring never reaches.
 7. Look past the diff in two directions before you finish. Siblings: when the change
    fixes or changes money behaviour for one provider, product, plan type or entry
    point, search for the others (other adapters of the same interface, other callers,

@@ -148,7 +148,9 @@ Good: required money fields are required: a missing value is an error; empty fil
 return nothing, explicitly; missing configuration fails at start-up.
 
 Do not report: a default that is the documented, intended behaviour and does not move
-money (a display currency).
+money (a display currency); a fallback that money paths cannot reach because their
+callers pass a non-null typed value or the feature does not start without the value
+(name the caller or the wiring).
 
 ## MongoDB, Go and JSON
 

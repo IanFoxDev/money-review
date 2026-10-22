@@ -62,8 +62,17 @@ The caller gives you:
      say what breaks when that outside code changes (a new caller, a refactor of the
      other layer); in `fix` name the code that protects it today and how to make the
      changed code safe on its own.
-   - you cannot tell from the repository (the guard may live in another service):
-     keep it with severity lowered by one level and say what to check in `fix`.
+   - the scenario needs code in this repository or its dependencies to be missing or
+     wrong (a caller, the wiring, a base class, an ORM or DAO schema that casts types,
+     a hook that runs on insert) and you have not read it: find it in the repository,
+     `vendor/` or the Go module cache and walk it. If it stops the scenario, reject. If
+     you cannot find it at all, reject and say in `reason` what to check; do not keep a
+     finding that rests on code nobody has read.
+   - the scenario needs a path the code cannot take today (a later change, a value the
+     parameter type does not allow, a branch the wiring never reaches): reject.
+   - you cannot tell from the repository because the guard may live in another service
+     (an API the code calls, a separate consumer): keep it with severity lowered by one
+     level and say what to check in `fix`.
 5. Check `line`: it must be a line that exists in `file`, inside or next to the
    changed code it is about. Read the file to confirm; never guess a number. Line
    numbers in the diff file are not line numbers in `file`. Copy the text of that line,
