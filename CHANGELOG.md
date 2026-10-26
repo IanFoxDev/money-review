@@ -22,6 +22,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- The verifier treats a scenario that a comment at the code states as a decision (a
+  paid purchase stands, only the counter is capped) as already weighed: it keeps only
+  what the decision leaves out, such as money with no trace in data or a docblock that
+  promises the opposite, with severity `low`, and rejects the rest.
+
 - A file in scope only through `money_paths` gets the four base checklists (TX, RACE,
   IDEM, MONEY); the others load when the file matches their patterns.
 - `REV`, `SUB`, `TIME` and `DATA` are built-in prefixes and cannot name private rules.

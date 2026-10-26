@@ -62,6 +62,14 @@ The caller gives you:
      say what breaks when that outside code changes (a new caller, a refactor of the
      other layer); in `fix` name the code that protects it today and how to make the
      changed code safe on its own.
+   - the scenario can happen, but a comment at that code states it as a decision (a
+     paid purchase stands while only the counter is capped; a grant is kept when the
+     old sale fails to cancel). The team has already weighed it. Keep only what the
+     decision leaves out: the money it leaves with no trace in data (only a log line),
+     a contract, docblock or doc that promises the opposite, a case the comment does not
+     mention. Severity `low`, unless that part alone loses money in a realistic case.
+     In `scenario` quote the comment and say what it does not cover. When nothing is
+     left out, reject it and quote the comment in `reason`.
    - you cannot tell from the repository (the guard may live in another service):
      keep it with severity lowered by one level and say what to check in `fix`.
 5. Check `line`: it must be a line that exists in `file`, inside or next to the
