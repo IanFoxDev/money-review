@@ -13,7 +13,8 @@
     {
       "rules": [
         "MONEY-6",
-        "MONEY-0"
+        "MONEY-0",
+        "TX-10"
       ],
       "file": "app/Services/WithdrawalService.php",
       "anchor": "balance_cents -= \\$amountCents",

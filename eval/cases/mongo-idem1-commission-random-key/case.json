@@ -5,7 +5,8 @@
     {
       "rules": [
         "IDEM-1",
-        "IDEM-3"
+        "IDEM-3",
+        "IDEM-12"
       ],
       "file": "src/Events/CommissionConsumer.php",
       "anchor": "'commission:' \\. bin2hex\\(random_bytes\\(8\\)\\)"

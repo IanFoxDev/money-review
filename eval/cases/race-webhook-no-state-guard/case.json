@@ -1,7 +1,7 @@
 {
   "title": "payment.failed overwrites any status, including succeeded",
   "bugs": [
-    {"rules": ["RACE-3"], "file": "app/Http/Controllers/PspWebhookController.php", "anchor": "payment->status = 'failed'"}
+    {"rules": ["RACE-3", "PSP-9"], "file": "app/Http/Controllers/PspWebhookController.php", "anchor": "payment->status = 'failed'"}
   ],
   "acceptable": []
 }

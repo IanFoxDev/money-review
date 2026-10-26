@@ -27,7 +27,8 @@
         "IDEM-3",
         "MONEY-2",
         "MONEY-5",
-        "MONEY-7"
+        "MONEY-7",
+        "REV-3"
       ],
       "file": "app/Http/Controllers/ChargebackWebhookController.php"
     }

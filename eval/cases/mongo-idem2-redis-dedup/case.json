@@ -19,7 +19,8 @@
         "IDEM-1",
         "RACE-7",
         "IDEM-7",
-        "IDEM-3"
+        "IDEM-3",
+        "IDEM-12"
       ],
       "file": "go/internal/credits/store.go"
     }
