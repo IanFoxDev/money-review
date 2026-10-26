@@ -1,0 +1,7 @@
+{
+  "title": "A sale paid past the promo limit stands, but leaves only a log line while the docblock says the limit cannot be passed",
+  "bugs": [
+    {"rules": ["MONEY-0"], "file": "app/Services/PromoActivations.php", "anchor": "if \\(\\$promo->isUsedUp\\(\\)\\)", "anchor_end": "purchase paid over the limit"}
+  ],
+  "acceptable": []
+}

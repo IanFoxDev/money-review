@@ -1,0 +1,5 @@
+{
+  "title": "Promo activations counted after payment; a paid sale past the limit stands and is stored as over_limit",
+  "bugs": [],
+  "acceptable": []
+}
