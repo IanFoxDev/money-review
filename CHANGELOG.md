@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Eval: a finding with the right rule counts when its line is within 10 lines of the
+  anchor range (was 5). Reviews that point at the start of the function or the
+  missing guard were scored as false alarms. The stored runs of the real set
+  (0.8.3 baseline, 0.9.1) score the same with the new window.
+
 ## [0.9.1] - 2026-10-20
 
 ### Fixed

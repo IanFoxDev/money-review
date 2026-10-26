@@ -58,9 +58,11 @@ the file is the bug's line, so cases can be edited without counting lines.
 ## Scoring
 
 A finding is a true positive when its file matches, its rule is one of the bug's
-`rules`, and its line is within 5 lines of the anchor (or of the anchor range).
+`rules`, and its line is within 10 lines of the anchor (or of the anchor range).
+Reviewers often point at the start of the function or at the missing guard, a few
+lines above the anchor; until 2026-10-26 the window was 5 lines.
 
-- right lines, other rule: counted in "recall, any rule", not in recall. It usually
+- within 5 lines, other rule: counted in "recall, any rule", not in recall. It usually
   means a checklist rule is unclear;
 - matches an `acceptable` entry: neither true nor false positive;
 - a second finding for an already found bug: duplicate;
