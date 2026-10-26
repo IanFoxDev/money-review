@@ -58,6 +58,14 @@ summary() { jq -c "$1" "$out/summary.json"; }
     [ "$(summary '[.true_positives, .false_positives, .missed]')" = "[0,1,3]" ]
 }
 
+@test "the right rule a few lines off the range finds the bug, another rule there does not" {
+    w=app/Services/WithdrawalService.php
+    result race-withdraw-no-lock 1 0 "{\"findings\": [$(finding RACE-1 $w 37), $(finding IDEM-3 $w 37)], \"rejected\": []}" '{}'
+    "$eval_dir/expected.sh" race-withdraw-no-lock > "$out/expected.json"
+    run "$eval_dir/score.sh" "$out"
+    [ "$(summary '[.true_positives, .false_positives, .wrong_rule]')" = "[1,1,0]" ]
+}
+
 @test "a bug case that triage skipped is counted" {
     "$eval_dir/expected.sh" race-withdraw-no-lock > "$out/expected.json"
     result race-withdraw-no-lock 1 0 '{"findings": [], "rejected": []}'

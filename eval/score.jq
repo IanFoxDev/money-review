@@ -3,9 +3,11 @@
 #   $runs      [{case, run, exit, seconds, report, claude}]
 #   $env       what the run was measured with (eval/run.sh writes it)
 #
-# A finding is a true positive when file, rule and line (within 5 lines of the
-# anchor, or of the anchor_end range) match an expected bug. A finding on the right lines with another rule
-# counts towards the loose recall, not the strict one. A finding that matches an
+# A finding is a true positive when file, rule and line (within 10 lines of the
+# anchor, or of the anchor_end range) match an expected bug: a reviewer often
+# points at the start of the function or the guard that is missing, a few lines
+# above the anchor. A finding within 5 lines with another rule counts towards the
+# loose recall, not the strict one. A finding that matches an
 # "acceptable" entry (a real but secondary issue, in its lines or anywhere in its
 # file) is neither TP nor FP. Anything
 # else is a false positive. A second finding for an already matched bug is a
@@ -14,11 +16,11 @@
 # A finding without a rule (eval/bare.sh: a plain review prompt knows no rules)
 # matches a bug by file and line, and an "acceptable" entry by file.
 
-def near_one($b; $f): $f.file == $b.file and $f.line >= $b.line - 5 and $f.line <= ($b.end_line // $b.line) + 5;
+def near_one($b; $f; $n): $f.file == $b.file and $f.line >= $b.line - $n and $f.line <= ($b.end_line // $b.line) + $n;
 # A bug may name other places where it can fairly be reported ("also" in case.json).
-def near($b; $f): near_one($b; $f) or any(($b.also // [])[]; near_one(.; $f));
+def near($b; $f; $n): near_one($b; $f; $n) or any(($b.also // [])[]; near_one(.; $f; $n));
 # An acceptable entry with a line (eval/real: an anchor) covers those lines, else the file.
-def acceptable_ok($a; $f): (if $a.line == null then $a.file == $f.file else near_one($a; $f) end)
+def acceptable_ok($a; $f): (if $a.line == null then $a.file == $f.file else near_one($a; $f; 5) end)
   and ($f.rule == null or ($a.rules | index($f.rule)) != null);
 def rule_ok($b; $f): $f.rule == null or ($b.rules | index($f.rule)) != null;
 def ratio($a; $b): if $b == 0 then null else ($a / $b * 1000 | round / 1000) end;
@@ -37,9 +39,9 @@ def score_run($exp; $r):
       {matched: [], loose: [], tp: 0, fp: 0, duplicate: 0, acceptable: 0, wrong_rule: 0, fps: []};
       . as $s0
       # A bug not found yet wins over one already found, when several fit.
-      | ([range(0; $bugs | length) | select(near($bugs[.]; $f) and rule_ok($bugs[.]; $f))]) as $fit
+      | ([range(0; $bugs | length) | select(near($bugs[.]; $f; 10) and rule_ok($bugs[.]; $f))]) as $fit
       | (([$fit[] | select(. as $k | $s0.matched | index($k) | not)] | first) // ($fit | first)) as $i
-      | ([range(0; $bugs | length) | select(near($bugs[.]; $f))] | first) as $j
+      | ([range(0; $bugs | length) | select(near($bugs[.]; $f; 5))] | first) as $j
       | if $i != null then
           (if (.matched | index($i)) != null then .duplicate += 1 else .matched += [$i] | .tp += 1 end)
         elif $j != null then .wrong_rule += 1 | .loose += [$j]
