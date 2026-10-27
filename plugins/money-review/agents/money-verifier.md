@@ -28,7 +28,10 @@ The caller gives you:
    scenario that loses, duplicates or misstates money.
 2. Read the code at `file:line` and around it: the whole function, the caller chain up
    to the entry point (controller, job, consumer, command), the transaction wrapper,
-   the model and its migration, middleware and base classes.
+   the model and its migration, middleware and base classes. When the scenario turns
+   on whether a behaviour is intended (an admin override, a game rule, a limit), also
+   read the module's own notes: a README, CLAUDE.md or `docs/` page next to the code,
+   even when the diff does not touch them.
 3. Walk the scenario step by step against the real code. Look for what stops it:
    - a row lock or a conditional update earlier in the same transaction;
    - a unique index or constraint in a migration;
