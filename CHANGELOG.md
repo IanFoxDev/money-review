@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-27
+
 ### Added
 
 - Four checklists: refunds and reversals (REV), subscription lifecycle (SUB), periods
@@ -25,18 +27,30 @@ All notable changes to this project are documented here. The format follows
 - The verifier treats a scenario that a comment at the code states as a decision (a
   paid purchase stands, only the counter is capped) as already weighed: it keeps only
   what the decision leaves out, such as money with no trace in data or a docblock that
-  promises the opposite, with severity `low`, and rejects the rest.
-
+  promises the opposite, with severity `low`, and rejects the rest. A rule stated in a
+  repository doc (README, a module's notes, `docs/`) or in a named constant counts the
+  same, and the verifier reads the module's notes before it calls a behaviour
+  unintended, also when the diff does not touch them.
+- IDEM-1 covers an API endpoint that moves money with no idempotency key while the
+  other money endpoints of the same API take one, and a stored key whose saved answer
+  is replayed for a request with a different body.
 - A file in scope only through `money_paths` gets the four base checklists (TX, RACE,
   IDEM, MONEY); the others load when the file matches their patterns.
 - `REV`, `SUB`, `TIME` and `DATA` are built-in prefixes and cannot name private rules.
 - "Do not report" cases for DATA-5 (a migration the default branch has not run),
   SUB-4 (an expired subscription renewed from now with no access in the gap), MONEY-9
-  (a fallback that money paths cannot reach) and IDEM-12 (a type the write layer casts).
+  (a fallback that money paths cannot reach), IDEM-12 (a type the write layer casts),
+  IDEM-5 (an action a person starts by hand, where running it again is a new request)
+  and PSP-3 (a handler behind a provider setting that sends one event type, when the
+  code or its configuration shows that setting).
 - Eval: a finding with the right rule counts when its line is within 10 lines of the
   anchor range (was 5). Reviews that point at the start of the function or the
   missing guard were scored as false alarms. The stored runs of the real set
   (0.8.3 baseline, 0.9.1) score the same with the new window.
+- Eval: new baselines for both sets from a full run before this release
+  ([docs/eval-results/2026-10-27-1.0.md](docs/eval-results/2026-10-27-1.0.md)). Gaps in
+  the synthetic cases that the reviewer found are fixed in the cases; findings that
+  are the same bug under a newer rule are accepted.
 
 ## [0.9.1] - 2026-10-20
 
@@ -317,7 +331,8 @@ First release.
 - A finding that points past the end of its file moves to the first added line of
   that file.
 
-[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/IanFoxDev/money-review/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/IanFoxDev/money-review/compare/v0.9.1...v1.0.0
 [0.9.1]: https://github.com/IanFoxDev/money-review/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/IanFoxDev/money-review/compare/v0.8.3...v0.9.0
 [0.8.3]: https://github.com/IanFoxDev/money-review/compare/v0.8.2...v0.8.3
