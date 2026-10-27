@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
  * Instant payment notifications from CardHub hosted checkout, used for top-ups. We
  * create a pending payment, send the customer to the hosted page with
  * merchant_order_id = payments.id, and CardHub posts the result here.
+ * A hosted order takes one card attempt: after declined, canceled or expired CardHub
+ * accepts no further payment on it, and a retry is a new order with a new payment.
  * The signature is checked by the VerifyCardHubSignature middleware.
  */
 final class CardHubIpnController
