@@ -19,12 +19,15 @@ final class SubscriptionService
 
     /**
      * Self-serve cancel: the user keeps what they paid for until the end of the
-     * period, then ExpireSubscriptions ends it and the agreement.
+     * period, then ExpireSubscriptions ends it and the agreement. Only while the period
+     * is running: once it has ended, RenewSubscriptions owns it until the charge is
+     * settled, and false tells the caller to ask the user to cancel again after that.
      */
-    public function cancelAtPeriodEnd(Subscription $subscription): void
+    public function cancelAtPeriodEnd(Subscription $subscription): bool
     {
-        Subscription::whereKey($subscription->id)->where('status', 'active')
-            ->update(['cancel_at_period_end' => true]);
+        return Subscription::whereKey($subscription->id)->where('status', 'active')
+            ->where('current_period_end', '>', now())
+            ->update(['cancel_at_period_end' => true]) === 1;
     }
 
     /** Undo of a self-serve cancel, while the period is still running. */

@@ -11,6 +11,6 @@
     }
   ],
   "acceptable": [
-    {"rules": ["IDEM-10", "MONEY-9", "REV-4"], "file": "src/Events/CommissionConsumer.php"}
+    {"rules": ["IDEM-10", "MONEY-9", "REV-4", "REV-3"], "file": "src/Events/CommissionConsumer.php"}
   ]
 }

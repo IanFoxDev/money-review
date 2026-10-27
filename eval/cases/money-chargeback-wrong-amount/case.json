@@ -27,7 +27,8 @@
         "IDEM-10",
         "IDEM-8",
         "RACE-3",
-        "MONEY-0"
+        "MONEY-0",
+        "PSP-10"
       ],
       "file": "app/Http/Controllers/ChargebackWebhookController.php"
     }

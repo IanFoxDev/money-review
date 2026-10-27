@@ -2,6 +2,6 @@
 
 namespace App\Exceptions;
 
-final class DailyPayoutLimitExceeded extends \RuntimeException
+final class PayoutBatchLimitExceeded extends \RuntimeException
 {
 }

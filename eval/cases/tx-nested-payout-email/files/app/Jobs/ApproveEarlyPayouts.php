@@ -2,20 +2,21 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\DailyPayoutLimitExceeded;
+use App\Exceptions\PayoutBatchLimitExceeded;
 use App\Models\Payout;
 use App\Services\PayoutApproval;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Approves the early payout requests of the day as one batch: either all of them or
- * none, so finance never sees a half-approved day. SendApprovedPayouts then pays the
- * approved ones through the provider.
+ * Approves the early payout requests waiting right now as one batch: either all of them
+ * or none, so finance never sees a half-approved batch. The limit caps one batch; it is
+ * not a daily limit. SendApprovedPayouts then pays the approved ones through the
+ * provider.
  */
 final class ApproveEarlyPayouts implements ShouldQueue
 {
-    private const DAILY_LIMIT_CENTS = 5_000_000;
+    private const BATCH_LIMIT_CENTS = 5_000_000;
 
     public function __construct(public string $currency)
     {
@@ -32,8 +33,8 @@ final class ApproveEarlyPayouts implements ShouldQueue
                 $approval->approve($payout);
 
                 $total += $payout->amount_cents;
-                if ($total > self::DAILY_LIMIT_CENTS) {
-                    throw new DailyPayoutLimitExceeded("Early payouts over the daily limit in {$this->currency}");
+                if ($total > self::BATCH_LIMIT_CENTS) {
+                    throw new PayoutBatchLimitExceeded("Early payouts over the batch limit in {$this->currency}");
                 }
             }
         });

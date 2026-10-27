@@ -10,6 +10,6 @@
     }
   ],
   "acceptable": [
-    {"rules": ["PSP-8"], "file": "app/Http/Controllers/CardHubIpnController.php"}
+    {"rules": ["PSP-8", "PSP-10", "MONEY-0"], "file": "app/Http/Controllers/CardHubIpnController.php"}
   ]
 }

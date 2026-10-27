@@ -62,6 +62,8 @@ func (r *ReferralRun) PayMonth(ctx context.Context, monthStart time.Time) (int, 
 		if err := cur.Decode(&p); err != nil {
 			return paid, err
 		}
+		// Rounded down per payment, as the referral terms say: the fraction stays with
+		// the platform, and a payment too small for a whole minor unit pays nothing.
 		bonus := p.Amount * referralBasisPoints / 10_000
 		if bonus == 0 {
 			continue

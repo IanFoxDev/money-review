@@ -11,6 +11,6 @@
     }
   ],
   "acceptable": [
-    {"rules": ["TX-1", "TX-4", "IDEM-4", "SUB-7", "RACE-1"], "file": "app/Services/SubscriptionService.php"}
+    {"rules": ["TX-1", "TX-4", "IDEM-4", "SUB-7", "RACE-1", "MONEY-0", "SUB-1"], "file": "app/Services/SubscriptionService.php"}
   ]
 }

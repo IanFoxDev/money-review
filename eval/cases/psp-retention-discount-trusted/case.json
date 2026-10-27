@@ -14,14 +14,16 @@
     {
       "rules": [
         "MONEY-3",
-        "MONEY-7"
+        "MONEY-7",
+        "IDEM-4"
       ],
       "file": "app/Services/RetentionService.php"
     },
     {
       "rules": [
         "MONEY-0",
-        "MONEY-7"
+        "MONEY-7",
+        "MONEY-9"
       ],
       "file": "database/migrations/2026_10_01_000000_add_provider_fields_to_subscriptions.php",
       "note": "price_cents defaults to 0 for old subscriptions; the case does not backfill it"

@@ -9,6 +9,6 @@
     }
   ],
   "acceptable": [
-    {"rules": ["PSP-7", "PSP-10", "SUB-5", "REV-4"], "file": "app/Http/Controllers/RebillWebhookController.php"}
+    {"rules": ["PSP-7", "PSP-10", "SUB-5", "REV-4", "PSP-2"], "file": "app/Http/Controllers/RebillWebhookController.php"}
   ]
 }

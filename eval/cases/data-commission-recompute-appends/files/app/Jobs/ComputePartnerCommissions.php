@@ -38,7 +38,7 @@ final class ComputePartnerCommissions implements ShouldQueue
             ->where('paid_at', '>=', $from)
             ->where('paid_at', '<', $to)
             ->groupBy('partner_id', 'currency')
-            ->selectRaw('partner_id, currency, SUM(amount_cents) AS base_cents')
+            ->selectRaw('partner_id, currency, SUM(amount_cents - refunded_cents) AS base_cents')
             ->orderBy('partner_id')
             ->get();
 
