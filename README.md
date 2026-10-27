@@ -333,22 +333,26 @@ until it also stays quiet on clean PRs and catches the next one.
 
 ## How good is it
 
-The repository has an eval with two apps and 50 merge requests on top of them. Most
-have one planted bug, eleven have a second, quieter one next to it, and twelve have none
+The repository has an eval with two apps and 79 merge requests on top of them. Most
+have one planted bug, some have a second, quieter one next to it, and 19 have none
 (clean cases, some of them touching money code correctly). See
 [docs/eval.md](docs/eval.md), and [docs/eval-results/](docs/eval-results/) for full
-reports. The table is every case three times, run on 2026-10-12 with Claude Code
-2.1.296, `claude-sonnet-5-5` as the reviewer and `claude-opus-5-5` as the verifier
-([2026-10-12-checklist-file.md](docs/eval-results/2026-10-12-checklist-file.md)).
+reports. The table is every case three times, run on 2026-10-27 with Claude Code
+2.1.311, `claude-sonnet-5-5` as the reviewer and `claude-opus-5-5` as the verifier
+([2026-10-27-1.0.md](docs/eval-results/2026-10-27-1.0.md)).
 
 | | Laravel app on SQL | PHP and Go on MongoDB, Kafka, Redis |
 |---|---|---|
-| Cases | 32 (24 with bugs, 32 bugs; 8 clean) | 18 (14 with bugs, 21 bugs; 4 clean) |
-| Precision | 100% (91 of 91) | 100% (58 of 58) |
-| Recall | 95% (91 of 96) | 92% (58 of 63) |
-| False alarms on clean cases | 0 in 24 runs | 0 in 12 runs |
-| Time per review (median) | 67 s | 80 s |
-| API-equivalent cost per review | 0.32 USD | 0.34 USD |
+| Cases | 55 (40 with bugs, 48 bugs; 15 clean) | 24 (20 with bugs, 27 bugs; 4 clean) |
+| Precision | 97% (138 of 143) | 100% (76 of 76) |
+| Recall | 96% (138 of 144) | 94% (76 of 81) |
+| False alarms on clean cases | 1 in 45 runs | 0 in 12 runs |
+| Time per review (median) | 85 s | 99 s |
+| API-equivalent cost per review | 0.39 USD | 0.38 USD |
+
+The five false alarms in this run pointed at gaps in the cases (a column added with no
+backfill, a provider contract the code relied on but did not state). The cases were
+fixed and a rerun of them was clean.
 
 The same cases through a plain "review this change" prompt with no plugin
 ([2026-10-07-plain-prompt.md](docs/eval-results/2026-10-07-plain-prompt.md) for the
@@ -369,10 +373,24 @@ and giving the reviewer its checklists as one file to read in full took it to 94
 false alarm added. What it still misses is mostly a second money bug on the same
 lines as the first: the sign of an input amount, a balance changed without a ledger entry.
 
-The checklists and the cases were written by the same person, so these numbers show
-that the rules work as intended, not how the tool does on someone else's code. The eval
-runs again on every minor release and every model change, and is compared with the last
-accepted run (`eval/baseline/`).
+The checklists and the synthetic cases were written by the same person, so those numbers
+show that the rules work as intended. For someone else's code there is a second set,
+`eval/real/`: 45 changes from open-source billing and ledger projects (36 with a
+money bug the project fixed later, 9 controls). Same date, models
+and three runs each:
+
+| | Real set |
+|---|---|
+| Recall, right rule | 68% (61% on bugs fixed from June 2026) |
+| Recall, any rule | 86% |
+| Precision | 100% (77 of 77, after each finding was checked against the code) |
+| False alarms on controls | 0 in 27 runs |
+| API-equivalent cost per review | 0.44 USD |
+
+Arithmetic, transactions, idempotency, states and dates are found almost always. Provider
+events, subscriptions and aggregates over many rows are where the misses are: fewer than
+half of those bugs are found. Both sets run again on every minor release and every model change, and are
+compared with the last accepted run (`eval/baseline/`, `eval/real/baseline/`).
 
 Bugs that only the current callers hide are reported as `low`, with the code that
 protects them today: a ledger transfer split over two transactions is safe while

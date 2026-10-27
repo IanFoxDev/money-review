@@ -1,18 +1,18 @@
 {
   "runs": 135,
   "cases": 45,
-  "precision": 0.946,
-  "recall": 0.614,
-  "loose_recall": 0.754,
-  "true_positives": 70,
-  "false_positives": 4,
-  "missed": 44,
-  "wrong_rule": 19,
-  "duplicates": 1,
-  "acceptable_extras": 20,
+  "precision": 1,
+  "recall": 0.675,
+  "loose_recall": 0.86,
+  "true_positives": 77,
+  "false_positives": 0,
+  "missed": 37,
+  "wrong_rule": 25,
+  "duplicates": 2,
+  "acceptable_extras": 27,
   "clean_runs_with_findings": 0,
   "clean_runs": 27,
-  "triage_misses": 12,
+  "triage_misses": 3,
   "errors": 0,
   "by_category": [
     {
@@ -30,8 +30,8 @@
     {
       "category": "NEW-AGG",
       "bugs": 6,
-      "found": 0,
-      "recall": 0
+      "found": 1,
+      "recall": 0.167
     },
     {
       "category": "NEW-DATA",
@@ -42,14 +42,14 @@
     {
       "category": "NEW-DEDUP",
       "bugs": 3,
-      "found": 0,
-      "recall": 0
+      "found": 3,
+      "recall": 1
     },
     {
       "category": "NEW-PSP",
       "bugs": 18,
-      "found": 9,
-      "recall": 0.5
+      "found": 8,
+      "recall": 0.444
     },
     {
       "category": "NEW-STATE",
@@ -60,8 +60,8 @@
     {
       "category": "NEW-SUB",
       "bugs": 21,
-      "found": 7,
-      "recall": 0.333
+      "found": 10,
+      "recall": 0.476
     },
     {
       "category": "NEW-TIME",
@@ -78,40 +78,41 @@
     {
       "category": "TX",
       "bugs": 6,
-      "found": 5,
-      "recall": 0.833
+      "found": 6,
+      "recall": 1
     }
   ],
   "cost_usd": {
-    "total": 45.37,
-    "per_reviewed_run": 0.378
+    "total": 58.01,
+    "per_reviewed_run": 0.439
   },
-  "seconds_per_reviewed_run": 102,
+  "seconds_per_reviewed_run": 107.947,
   "cases_detail": [
     {
       "case": "alby-jit-invoice-unbounded-lsp-fee",
       "title": "JIT channel invoices are created with no limit on the opening fee the LSP deducts from the incoming payment",
       "runs": 3,
       "bugs": 1,
-      "found": 3,
+      "found": 2,
       "loose_found": 3,
-      "false_positives": 1,
+      "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 3,
+      "runs_complete": 2,
       "mode": "introducer",
       "date": "2026-06-10",
-      "seconds": 315,
-      "cost": 0.82,
-      "missed": [],
-      "fps": [
+      "seconds": 311,
+      "cost": 0.98,
+      "missed": [
         {
-          "rule": "MONEY-7",
-          "file": "transactions/transactions_service.go",
-          "line": 208,
-          "title": "Pending incoming JIT transaction stores the fee limit as if it were the fee charged"
+          "rules": [
+            "MONEY-0"
+          ],
+          "file": "lnclient/ldk/ldk.go",
+          "line": 802
         }
-      ]
+      ],
+      "fps": []
     },
     {
       "case": "bagisto-grand-total-discount-sign",
@@ -126,8 +127,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2020-02-04",
-      "seconds": 113,
-      "cost": 0.44,
+      "seconds": 120,
+      "cost": 0.48,
       "missed": [],
       "fps": []
     },
@@ -144,8 +145,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2026-09-30",
-      "seconds": 117,
-      "cost": 0.56,
+      "seconds": 144,
+      "cost": 0.62,
       "missed": [],
       "fps": []
     },
@@ -162,8 +163,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2025-02-24",
-      "seconds": 108,
-      "cost": 0.53,
+      "seconds": 176,
+      "cost": 0.81,
       "missed": [],
       "fps": []
     },
@@ -172,31 +173,26 @@
       "title": "Inflight commit dry run is handed the raw precise_amount before the plain amount is resolved",
       "runs": 3,
       "bugs": 1,
-      "found": 3,
+      "found": 2,
       "loose_found": 3,
-      "false_positives": 2,
+      "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 3,
+      "runs_complete": 2,
       "mode": "introducer",
       "date": "2026-08-09",
-      "seconds": 192,
-      "cost": 0.93,
-      "missed": [],
-      "fps": [
+      "seconds": 238,
+      "cost": 1.14,
+      "missed": [
         {
-          "rule": "MONEY-0",
-          "file": "transaction_dryrun_inflight.go",
-          "line": 99,
-          "title": "Partial-commit preview shows each leg's full original amount next to the partial precise amount"
-        },
-        {
-          "rule": "MONEY-0",
-          "file": "transaction_dryrun_inflight.go",
-          "line": 82,
-          "title": "Inflight preview reports balances half-changed by a rejected leg"
+          "rules": [
+            "MONEY-7"
+          ],
+          "file": "api/transactions.go",
+          "line": 468
         }
-      ]
+      ],
+      "fps": []
     },
     {
       "case": "blnk-negative-precise-amount",
@@ -211,8 +207,8 @@
       "runs_complete": 3,
       "mode": "reverse",
       "date": "2026-08-20",
-      "seconds": 104,
-      "cost": 0.42,
+      "seconds": 90,
+      "cost": 0.34,
       "missed": [],
       "fps": []
     },
@@ -229,8 +225,8 @@
       "runs_complete": 3,
       "mode": "reverse",
       "date": "2026-08-20",
-      "seconds": 100,
-      "cost": 0.43,
+      "seconds": 117,
+      "cost": 0.47,
       "missed": [],
       "fps": []
     },
@@ -273,8 +269,8 @@
       "runs_complete": 3,
       "mode": "reverse",
       "date": "2026-08-05",
-      "seconds": 70,
-      "cost": 0.29,
+      "seconds": 104,
+      "cost": 0.35,
       "missed": [],
       "fps": []
     },
@@ -291,8 +287,8 @@
       "runs_complete": 0,
       "mode": "introducer",
       "date": "2025-06-07",
-      "seconds": 17,
-      "cost": 0.09,
+      "seconds": 26,
+      "cost": 0.12,
       "missed": [
         {
           "rules": [
@@ -311,20 +307,22 @@
       "runs": 3,
       "bugs": 1,
       "found": 0,
-      "loose_found": 0,
+      "loose_found": 3,
       "false_positives": 0,
-      "triage_skipped": 3,
+      "triage_skipped": 0,
       "errors": 0,
       "runs_complete": 0,
       "mode": "reverse",
       "date": "2026-06-17",
-      "seconds": 0,
-      "cost": 0,
+      "seconds": 95,
+      "cost": 0.36,
       "missed": [
         {
           "rules": [
             "IDEM-10",
-            "MONEY-7"
+            "MONEY-7",
+            "SUB-6",
+            "SUB-5"
           ],
           "file": "src/Http/Controllers/WebhookController.php",
           "line": 160
@@ -345,8 +343,8 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2026-08-12",
-      "seconds": 22,
-      "cost": 0.12,
+      "seconds": 31,
+      "cost": 0.17,
       "missed": [],
       "fps": []
     },
@@ -363,8 +361,8 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2026-10-13",
-      "seconds": 20,
-      "cost": 0.12,
+      "seconds": 31,
+      "cost": 0.13,
       "missed": [],
       "fps": []
     },
@@ -381,7 +379,7 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2026-08-21",
-      "seconds": 22,
+      "seconds": 34,
       "cost": 0.12,
       "missed": [],
       "fps": []
@@ -399,8 +397,8 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2026-10-03",
-      "seconds": 27,
-      "cost": 0.12,
+      "seconds": 38,
+      "cost": 0.16,
       "missed": [],
       "fps": []
     },
@@ -417,8 +415,8 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2021-10-11",
-      "seconds": 29,
-      "cost": 0.11,
+      "seconds": 50,
+      "cost": 0.2,
       "missed": [],
       "fps": []
     },
@@ -435,7 +433,7 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2020-03-07",
-      "seconds": 324,
+      "seconds": 27,
       "cost": 0.1,
       "missed": [],
       "fps": []
@@ -453,8 +451,8 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2026-10-13",
-      "seconds": 19,
-      "cost": 0.1,
+      "seconds": 72,
+      "cost": 0.17,
       "missed": [],
       "fps": []
     },
@@ -466,13 +464,13 @@
       "found": 0,
       "loose_found": 0,
       "false_positives": 0,
-      "triage_skipped": 3,
+      "triage_skipped": 0,
       "errors": 0,
       "runs_complete": 3,
       "mode": "control",
       "date": "2026-10-06",
-      "seconds": 0,
-      "cost": 0,
+      "seconds": 47,
+      "cost": 0.14,
       "missed": [],
       "fps": []
     },
@@ -489,8 +487,8 @@
       "runs_complete": 3,
       "mode": "control",
       "date": "2026-08-18",
-      "seconds": 111,
-      "cost": 0.42,
+      "seconds": 136,
+      "cost": 0.4,
       "missed": [],
       "fps": []
     },
@@ -507,8 +505,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2025-07-27",
-      "seconds": 80,
-      "cost": 0.32,
+      "seconds": 103,
+      "cost": 0.3,
       "missed": [],
       "fps": []
     },
@@ -525,8 +523,8 @@
       "runs_complete": 0,
       "mode": "introducer",
       "date": "2026-08-18",
-      "seconds": 25,
-      "cost": 0.11,
+      "seconds": 40,
+      "cost": 0.13,
       "missed": [
         {
           "rules": [
@@ -545,48 +543,33 @@
       "bugs": 1,
       "found": 3,
       "loose_found": 3,
-      "false_positives": 1,
+      "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2026-10-03",
-      "seconds": 150,
-      "cost": 0.74,
+      "seconds": 134,
+      "cost": 0.82,
       "missed": [],
-      "fps": [
-        {
-          "rule": "MONEY-0",
-          "file": "src/library/Payment/Adapter/Custom.php",
-          "line": 117,
-          "title": "Approve credits the invoice total even when the invoice is already paid"
-        }
-      ]
+      "fps": []
     },
     {
       "case": "fossbilling-renewal-after-scheduled-cancel",
       "title": "Cancel at period end marks the order but the renewal query still picks it up",
       "runs": 3,
       "bugs": 1,
-      "found": 0,
-      "loose_found": 2,
+      "found": 3,
+      "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 0,
+      "runs_complete": 3,
       "mode": "introducer",
       "date": "2026-07-14",
-      "seconds": 133,
-      "cost": 0.61,
-      "missed": [
-        {
-          "rules": [
-            "IDEM-10"
-          ],
-          "file": "src/modules/Order/Service.php",
-          "line": 322
-        }
-      ],
+      "seconds": 213,
+      "cost": 0.84,
+      "missed": [],
       "fps": []
     },
     {
@@ -602,8 +585,8 @@
       "runs_complete": 3,
       "mode": "reverse",
       "date": "2026-09-23",
-      "seconds": 81,
-      "cost": 0.32,
+      "seconds": 89,
+      "cost": 0.37,
       "missed": [],
       "fps": []
     },
@@ -612,21 +595,22 @@
       "title": "Stripe renewal payments are dropped because the first invoice of the subscription is already paid",
       "runs": 3,
       "bugs": 1,
-      "found": 0,
+      "found": 2,
       "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 0,
+      "runs_complete": 2,
       "mode": "reverse",
       "date": "2026-10-16",
-      "seconds": 69,
-      "cost": 0.28,
+      "seconds": 99,
+      "cost": 0.35,
       "missed": [
         {
           "rules": [
             "IDEM-10",
-            "MONEY-7"
+            "MONEY-7",
+            "PSP-10"
           ],
           "file": "src/library/Payment/Adapter/Stripe.php",
           "line": 945
@@ -640,22 +624,22 @@
       "runs": 3,
       "bugs": 2,
       "found": 5,
-      "loose_found": 5,
+      "loose_found": 6,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
       "runs_complete": 2,
       "mode": "introducer",
       "date": "2023-03-15",
-      "seconds": 92,
-      "cost": 0.48,
+      "seconds": 108,
+      "cost": 0.58,
       "missed": [
         {
           "rules": [
-            "MONEY-7"
+            "MONEY-3"
           ],
-          "file": "app/Services/Recurring/UpdatePrices.php",
-          "line": 41
+          "file": "app/Services/Recurring/IncreasePrices.php",
+          "line": 37
         }
       ],
       "fps": []
@@ -673,8 +657,8 @@
       "runs_complete": 3,
       "mode": "reverse",
       "date": "2025-11-28",
-      "seconds": 88,
-      "cost": 0.34,
+      "seconds": 111,
+      "cost": 0.36,
       "missed": [],
       "fps": []
     },
@@ -691,8 +675,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2020-07-15",
-      "seconds": 480,
-      "cost": 0.44,
+      "seconds": 123,
+      "cost": 0.5,
       "missed": [],
       "fps": []
     },
@@ -709,8 +693,8 @@
       "runs_complete": 3,
       "mode": "reverse",
       "date": "2026-08-28",
-      "seconds": 74,
-      "cost": 0.35,
+      "seconds": 99,
+      "cost": 0.41,
       "missed": [],
       "fps": []
     },
@@ -727,8 +711,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2020-01-20",
-      "seconds": 75,
-      "cost": 0.27,
+      "seconds": 99,
+      "cost": 0.29,
       "missed": [],
       "fps": []
     },
@@ -745,8 +729,8 @@
       "runs_complete": 0,
       "mode": "introducer",
       "date": "2026-09-17",
-      "seconds": 77,
-      "cost": 0.43,
+      "seconds": 134,
+      "cost": 0.51,
       "missed": [
         {
           "rules": [
@@ -763,25 +747,17 @@
       "title": "Completion publishes transaction and balance events only after the metadata and fee-debt projections, so a projection failure loses them",
       "runs": 3,
       "bugs": 1,
-      "found": 2,
+      "found": 3,
       "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 2,
+      "runs_complete": 3,
       "mode": "reverse",
       "date": "2026-10-09",
-      "seconds": 88,
-      "cost": 0.38,
-      "missed": [
-        {
-          "rules": [
-            "TX-2"
-          ],
-          "file": "components/ledger/internal/services/command/transaction_completion_service.go",
-          "line": 126
-        }
-      ],
+      "seconds": 91,
+      "cost": 0.42,
+      "missed": [],
       "fps": []
     },
     {
@@ -789,17 +765,26 @@
       "title": "Reserve writes the reservation's own short lifetime as the expiry of the limit's usage counter",
       "runs": 3,
       "bugs": 2,
-      "found": 6,
-      "loose_found": 6,
+      "found": 5,
+      "loose_found": 5,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 3,
+      "runs_complete": 2,
       "mode": "introducer",
       "date": "2026-06-05",
-      "seconds": 115,
-      "cost": 0.67,
-      "missed": [],
+      "seconds": 166,
+      "cost": 0.89,
+      "missed": [
+        {
+          "rules": [
+            "IDEM-1",
+            "IDEM-2"
+          ],
+          "file": "components/tracer/internal/adapters/postgres/usage_reservation_repository.go",
+          "line": 101
+        }
+      ],
       "fps": []
     },
     {
@@ -807,26 +792,17 @@
       "title": "New fee debt collect endpoint moves money with no idempotency key, so a retried request collects again",
       "runs": 3,
       "bugs": 1,
-      "found": 2,
+      "found": 3,
       "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 2,
+      "runs_complete": 3,
       "mode": "introducer",
       "date": "2026-09-29",
-      "seconds": 111,
-      "cost": 0.58,
-      "missed": [
-        {
-          "rules": [
-            "IDEM-3",
-            "IDEM-1"
-          ],
-          "file": "components/ledger/internal/adapters/http/in/fee_debt_collect_handler.go",
-          "line": 33
-        }
-      ],
+      "seconds": 119,
+      "cost": 0.57,
+      "missed": [],
       "fps": []
     },
     {
@@ -834,16 +810,16 @@
       "title": "Debtor open total sums raw remaining, which can exceed the opened amount while out-of-order changes converge",
       "runs": 3,
       "bugs": 1,
-      "found": 0,
-      "loose_found": 0,
+      "found": 1,
+      "loose_found": 1,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 0,
+      "runs_complete": 1,
       "mode": "introducer",
       "date": "2026-09-28",
-      "seconds": 31,
-      "cost": 0.16,
+      "seconds": 82,
+      "cost": 0.32,
       "missed": [
         {
           "rules": [
@@ -860,25 +836,17 @@
       "title": "An idempotency key hit replays whatever transaction holds the slot, without checking it came from the same request",
       "runs": 3,
       "bugs": 1,
-      "found": 0,
+      "found": 3,
       "loose_found": 3,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 0,
+      "runs_complete": 3,
       "mode": "reverse",
       "date": "2026-09-28",
-      "seconds": 78,
-      "cost": 0.51,
-      "missed": [
-        {
-          "rules": [
-            "IDEM-1"
-          ],
-          "file": "components/ledger/internal/services/command/create_transaction_idempotency.go",
-          "line": 78
-        }
-      ],
+      "seconds": 98,
+      "cost": 0.57,
+      "missed": [],
       "fps": []
     },
     {
@@ -894,8 +862,8 @@
       "runs_complete": 0,
       "mode": "introducer",
       "date": "2026-10-08",
-      "seconds": 22,
-      "cost": 0.13,
+      "seconds": 44,
+      "cost": 0.19,
       "missed": [
         {
           "rules": [
@@ -921,8 +889,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2026-10-16",
-      "seconds": 107,
-      "cost": 0.57,
+      "seconds": 145,
+      "cost": 0.66,
       "missed": [],
       "fps": []
     },
@@ -931,16 +899,16 @@
       "title": "Item added to a running custom-currency subscription without a currency is priced in the fiat invoice currency",
       "runs": 3,
       "bugs": 1,
-      "found": 1,
-      "loose_found": 1,
+      "found": 0,
+      "loose_found": 2,
       "false_positives": 0,
       "triage_skipped": 0,
       "errors": 0,
-      "runs_complete": 1,
+      "runs_complete": 0,
       "mode": "introducer",
       "date": "2026-08-13",
-      "seconds": 56,
-      "cost": 0.24,
+      "seconds": 94,
+      "cost": 0.39,
       "missed": [
         {
           "rules": [
@@ -965,8 +933,8 @@
       "runs_complete": 0,
       "mode": "introducer",
       "date": "2026-06-27",
-      "seconds": 96,
-      "cost": 0.56,
+      "seconds": 132,
+      "cost": 0.75,
       "missed": [
         {
           "rules": [
@@ -984,15 +952,15 @@
       "runs": 3,
       "bugs": 1,
       "found": 0,
-      "loose_found": 0,
+      "loose_found": 3,
       "false_positives": 0,
-      "triage_skipped": 3,
+      "triage_skipped": 0,
       "errors": 0,
       "runs_complete": 0,
       "mode": "reverse",
       "date": "2026-08-03",
-      "seconds": 0,
-      "cost": 0,
+      "seconds": 107,
+      "cost": 0.33,
       "missed": [
         {
           "rules": [
@@ -1017,8 +985,8 @@
       "runs_complete": 3,
       "mode": "introducer",
       "date": "2026-07-06",
-      "seconds": 169,
-      "cost": 0.7,
+      "seconds": 225,
+      "cost": 0.88,
       "missed": [],
       "fps": []
     },
@@ -1028,15 +996,15 @@
       "runs": 3,
       "bugs": 1,
       "found": 0,
-      "loose_found": 0,
+      "loose_found": 3,
       "false_positives": 0,
-      "triage_skipped": 3,
+      "triage_skipped": 0,
       "errors": 0,
       "runs_complete": 0,
       "mode": "reverse",
       "date": "2026-09-02",
-      "seconds": 0,
-      "cost": 0,
+      "seconds": 131,
+      "cost": 0.37,
       "missed": [
         {
           "rules": [
@@ -1062,8 +1030,8 @@
       "runs_complete": 3,
       "mode": "reverse",
       "date": "2022-12-22",
-      "seconds": 70,
-      "cost": 0.25,
+      "seconds": 74,
+      "cost": 0.26,
       "missed": [],
       "fps": []
     }
@@ -1072,14 +1040,14 @@
     {
       "mode": "introducer",
       "bugs": 72,
-      "found": 47,
-      "recall": 0.653
+      "found": 48,
+      "recall": 0.667
     },
     {
       "mode": "reverse",
       "bugs": 42,
-      "found": 23,
-      "recall": 0.548
+      "found": 29,
+      "recall": 0.69
     }
   ],
   "by_date": {
@@ -1091,22 +1059,22 @@
     },
     "after": {
       "bugs": 84,
-      "found": 44,
-      "recall": 0.524
+      "found": 51,
+      "recall": 0.607
     }
   },
   "stability": {
     "cases": 36,
-    "every_run": 19,
-    "some_runs": 4,
-    "never": 13
+    "every_run": 20,
+    "some_runs": 6,
+    "never": 10
   },
   "env": {
     "set": "real",
-    "date": "2026-10-17",
-    "claude_code": "2.1.302",
-    "money_review": "0.8.3",
-    "commit": "d2f8054",
+    "date": "2026-10-27",
+    "claude_code": "2.1.311",
+    "money_review": "0.9.1",
+    "commit": "bc0259c",
     "runs_per_case": 3,
     "cutoff": "2026-06-01"
   },
