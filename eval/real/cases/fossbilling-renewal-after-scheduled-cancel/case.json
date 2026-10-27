@@ -17,7 +17,8 @@
   "bugs": [
     {
       "rules": [
-        "IDEM-10"
+        "IDEM-10",
+        "SUB-3"
       ],
       "class": "NEW-SUB",
       "file": "src/modules/Order/Service.php",

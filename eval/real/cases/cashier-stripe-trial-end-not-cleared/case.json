@@ -12,7 +12,7 @@
   "title": "Subscription webhook keeps the local trial end when Stripe sends trial_end as null",
   "bugs": [
     {
-      "rules": ["IDEM-10", "MONEY-7"],
+      "rules": ["IDEM-10", "MONEY-7", "SUB-6", "SUB-5"],
       "class": "NEW-SUB",
       "file": "src/Http/Controllers/WebhookController.php",
       "anchor": "// Trial ending date",

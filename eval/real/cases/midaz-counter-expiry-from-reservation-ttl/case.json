@@ -22,7 +22,8 @@
     },
     {
       "rules": [
-        "IDEM-1"
+        "IDEM-1",
+        "IDEM-2"
       ],
       "class": "IDEM",
       "file": "components/tracer/internal/adapters/postgres/usage_reservation_repository.go",

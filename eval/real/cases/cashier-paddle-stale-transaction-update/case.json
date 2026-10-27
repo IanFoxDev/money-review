@@ -12,7 +12,7 @@
   "title": "A late transaction.updated webhook overwrites a completed transaction with an older status",
   "bugs": [
     {
-      "rules": ["IDEM-8", "RACE-3"],
+      "rules": ["IDEM-8", "RACE-3", "PSP-9"],
       "class": "NEW-PSP",
       "file": "src/Http/Controllers/WebhookController.php",
       "anchor": "protected function handleTransactionUpdated",

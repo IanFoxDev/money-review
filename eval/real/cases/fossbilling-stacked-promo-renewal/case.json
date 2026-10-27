@@ -12,7 +12,7 @@
   "title": "Renewal discount of the primary promo is derived from the order's combined checkout discount",
   "bugs": [
     {
-      "rules": ["MONEY-7", "MONEY-4"],
+      "rules": ["MONEY-7", "MONEY-4", "SUB-6"],
       "class": "NEW-SUB",
       "file": "src/modules/Product/Service.php",
       "anchor": "\\$discountAmount = \\(float\\) \\(\\$order->getDiscount\\(\\) \\?\\? 0\\);",

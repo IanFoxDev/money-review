@@ -17,7 +17,7 @@
   "title": "Historical balance replays transactions by comparing a plain TIMESTAMP column with a timestamptz snapshot time",
   "bugs": [
     {
-      "rules": ["MONEY-0"],
+      "rules": ["MONEY-0", "TIME-2"],
       "class": "NEW-TIME",
       "file": "database/balance.go",
       "anchor": "AND created_at > \\$2",

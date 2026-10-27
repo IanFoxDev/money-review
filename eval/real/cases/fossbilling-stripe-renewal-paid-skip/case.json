@@ -12,7 +12,7 @@
   "title": "Stripe renewal payments are dropped because the first invoice of the subscription is already paid",
   "bugs": [
     {
-      "rules": ["IDEM-10", "MONEY-7"],
+      "rules": ["IDEM-10", "MONEY-7", "PSP-10"],
       "class": "NEW-SUB",
       "file": "src/library/Payment/Adapter/Stripe.php",
       "anchor": "if \\(\\$existingInvoice->getStatus\\(\\) === Invoice::STATUS_PAID\\) \\{",

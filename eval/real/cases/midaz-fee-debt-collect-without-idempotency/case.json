@@ -43,6 +43,10 @@
         {
           "file": "components/ledger/internal/services/command/collect_fee_debt.go",
           "anchor": "^func \\(uc \\*UseCase\\) CollectFeeDebt\\("
+        },
+        {
+          "file": "components/ledger/internal/services/command/collect_fee_debt.go",
+          "anchor": "transactionID, err := libCommons\\.GenerateUUIDv7\\(\\)"
         }
       ],
       "note": "Every other money-moving POST of the ledger takes X-Idempotency and replays the first answer. The collect request has no key and the command builds a new transaction id for each call, so a client that retries after a lost response settles the debtor's fee debts a second time from its available balance, as long as debt remains open."

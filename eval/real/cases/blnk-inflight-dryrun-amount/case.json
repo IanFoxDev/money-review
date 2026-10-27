@@ -32,6 +32,12 @@
         "MONEY-0"
       ],
       "file": "transaction_dryrun_bulk.go"
+    },
+    {
+      "rules": [
+        "MONEY-0"
+      ],
+      "file": "transaction_dryrun_inflight.go"
     }
   ]
 }

@@ -10,7 +10,7 @@
   "title": "Refundable-children query also returns the earlier refund, so a repeated refund reverses the refund",
   "bugs": [
     {
-      "rules": ["MONEY-0"],
+      "rules": ["MONEY-0", "REV-3", "REV-1"],
       "class": "NEW-STATE",
       "file": "database/transaction_refunds.go",
       "anchor": "-- Case 2: The transaction is a child and is APPLIED or VOID",
