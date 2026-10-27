@@ -51,7 +51,7 @@ final class PspWebhookController
             return; // late or out of order event, the state already moved
         }
         $payment->status = 'succeeded';
-        $payment->paid_at = now(); // the commission jobs select payments by this time
+        $payment->paid_at = now('UTC'); // the commission jobs select payments by this time, in UTC
         $payment->save();
 
         // Top-up: money arrives from the provider's clearing account to the user's wallet.

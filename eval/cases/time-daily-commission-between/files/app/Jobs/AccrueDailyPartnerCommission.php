@@ -35,6 +35,7 @@ final class AccrueDailyPartnerCommission implements ShouldQueue
             ->get();
 
         foreach ($totals as $row) {
+            // Rounded down to the cent, as the partner agreement says.
             $commission = intdiv((int) $row->total_cents * self::PERCENT, 100);
             if ($commission === 0) {
                 continue;

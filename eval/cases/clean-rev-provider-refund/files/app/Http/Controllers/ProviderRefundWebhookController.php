@@ -69,7 +69,17 @@ final class ProviderRefundWebhookController
                     'refund_id' => $refundId, 'payment_id' => $payment->id,
                     'amount_cents' => $amountCents, 'refunded_cents' => $payment->refunded_cents,
                 ]);
-                throw new \UnexpectedValueException("refund {$refundId} does not fit payment {$payment->id}");
+                // The provider has already paid it out: keep a row for support to settle,
+                // without touching refunded_cents.
+                Refund::create([
+                    'payment_id' => $payment->id,
+                    'amount_cents' => $amountCents,
+                    'reason' => "provider:{$refundId}",
+                    'status' => 'needs_review',
+                    'psp_reference' => $refundId,
+                ]);
+
+                return;
             }
 
             Refund::create([
