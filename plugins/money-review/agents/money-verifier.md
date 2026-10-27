@@ -64,7 +64,9 @@ The caller gives you:
      changed code safe on its own.
    - the scenario can happen, but a comment at that code states it as a decision (a
      paid purchase stands while only the counter is capped; a grant is kept when the
-     old sale fails to cancel). The team has already weighed it. Keep only what the
+     old sale fails to cancel). A doc in the repository (README, a module's notes,
+     `docs/`) or a named constant that states the rule (a game's forced-loss chance)
+     counts the same as a comment. The team has already weighed it. Keep only what the
      decision leaves out: the money it leaves with no trace in data (only a log line),
      a contract, docblock or doc that promises the opposite, a case the comment does not
      mention. Severity `low`, unless that part alone loses money in a realistic case.
