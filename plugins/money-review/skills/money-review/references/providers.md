@@ -157,7 +157,9 @@ ignored, a unique key on the provider's transaction id for the money row.
 
 Do not report: a default that does nothing with money (logs, ignores, stores the raw
 event for later); a handler behind a provider setting that sends only one type, when the
-code or its configuration shows that setting.
+code, its configuration, its route or its docblock shows that setting (an endpoint for
+`chargeback.created` only). Report it when one URL gets several types and the handler
+does not look at the type.
 
 ## PSP-4. Fix applied to one provider or path, the siblings keep the bug
 

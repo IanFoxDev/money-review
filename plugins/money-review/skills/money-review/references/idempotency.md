@@ -8,7 +8,11 @@ second delivery of the same thing?
 ## IDEM-1. Callback or consumer without a dedup key
 
 Look for: a webhook handler, a queue consumer or a job that changes money (credit,
-debit, status that triggers fulfilment) and does not record the incoming event id.
+debit, status that triggers fulfilment) and does not record the incoming event id; an
+API endpoint that moves money on a client's request (a transfer, a collection, a
+payout) and takes no idempotency key, while the other money endpoints of the same API
+do; a stored idempotency key whose saved answer is replayed for a request with a
+different body, so the second request is never executed.
 
 Failure scenario: the provider sends `payment.succeeded`, our response takes 11
 seconds, the provider times out at 10 and retries. Both deliveries credit the wallet.
@@ -90,6 +94,10 @@ it. Rows 1 to 7000 are paid twice.
 
 Good: a unique key per unit and period (`payout:{partner}:{2026-09}`), status per
 unit, re-run skips done units.
+
+Do not report: an action a person starts by hand (a bulk price change from an admin
+screen), where running it again is a new request for the same effect. Report it when a
+scheduler, a queue retry or a client retry can run it again without anyone asking.
 
 ## IDEM-6. Retry wrapper around a non-idempotent block
 
