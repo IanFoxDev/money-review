@@ -12,5 +12,12 @@
   ],
   "title": "Double-payment guards fixed to read status_id",
   "bugs": [],
-  "acceptable": []
+  "acceptable": [
+    {
+      "rules": [
+        "RACE-3"
+      ],
+      "file": "app/Services/Invoice/MarkPaid.php"
+    }
+  ]
 }

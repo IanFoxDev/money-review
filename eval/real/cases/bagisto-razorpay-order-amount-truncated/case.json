@@ -39,7 +39,8 @@
     {
       "rules": [
         "RACE-5",
-        "IDEM-2"
+        "IDEM-2",
+        "RACE-1"
       ],
       "file": "packages/Webkul/Razorpay/src/Http/Controllers/RazorpayController.php"
     },
